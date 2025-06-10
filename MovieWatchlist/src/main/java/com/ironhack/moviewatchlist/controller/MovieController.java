@@ -62,6 +62,11 @@ public class MovieController {
         return apiServices.getStreamingAvailability(id);
     }
 
+    @GetMapping("/ratings")
+    public Mono<String> getMovieRatings(@RequestParam String id) {
+        return apiServices.getMovieRatings(id);
+    }
+
     @GetMapping("/recommendations")
     public Mono<List<info.movito.themoviedbapi.model.core.Movie>> getRecommendations(Authentication authentication) throws TmdbException {
         User currentUser = userRepository.findByUsername(authentication.getName());

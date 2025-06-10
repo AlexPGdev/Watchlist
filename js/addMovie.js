@@ -38,12 +38,13 @@
                 let movieResults = data;
 
                 movieResults.slice(0, 5).forEach(movie => {
+                    console.log(movie)
                     const movieElement = document.createElement('div');
                     movieElement.className = 'search-result-item';
                     movieElement.innerHTML = `
                             <img src="https://image.tmdb.org/t/p/w500/${movie.poster_path}"
                                 class="search-result-poster"
-                                alt="${movie.title}">
+                                alt="🎬">
                             <div class="search-result-info">
                                 <div class="search-result-title">${movie.title}</div>
                                 <div class="search-result-year">${movie.release_date.split('-')[0]}</div>
@@ -56,7 +57,8 @@
                             const response = await fetch("http://localhost:8080/api/movies/details?id=" + movie.id);
                             const movieDetails = await response.json();
 
-                            console.log(movieDetails)
+                            const response2 = await fetch("http://localhost:8080/api/movies/ratings?id=" + movieDetails.imdb_id);
+                            const movieRatings = await response2.json();
 
                             const newMovie = {
                                 title: movieDetails.title,
@@ -68,12 +70,9 @@
                                 imdbId: movieDetails.imdb_id,
                                 tmdbId: movieDetails.id,
                                 streamingServices: [],
-                                imdbRating: 0,
-                                rtRating: null
+                                imdbRating: parseFloat(movieRatings.imdbRating) ? movieRatings.imdbRating : 0,
+                                rtRating: movieRatings.Ratings.find(r => r.Source === 'Rotten Tomatoes') ? movieRatings.Ratings.find(r => r.Source === 'Rotten Tomatoes').Value : null
                             };
-
-                            console.log(newMovie.tmdbId)
-                            console.log(getMovies())
 
                             const duplicate = getMovies().find(m => m.tmdbId === newMovie.tmdbId);
 

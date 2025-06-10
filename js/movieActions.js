@@ -323,7 +323,7 @@
 
                 console.log(entries)
 
-                if(entries.flatrate.length > 0 && entries.flatrate[0].display_priority < 21){
+                if(entries.flatrate && entries.flatrate.length > 0 && entries.flatrate[0].display_priority < 21){
                     let type = document.createElement('div');
                     type.textContent = 'Stream';
                     type.style.fontWeight = 'bold';
@@ -403,151 +403,23 @@
 
                 let credit = document.createElement('a');
                 credit.textContent = "Source:";
-                credit.innerHTML = `Source: <img src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg" style="width: 85px; margin-left: 10px; margin-bottom: 4px;">`;
+                credit.innerHTML = `Source: <img src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg" style="width: 70px; margin-left: 10px; margin-bottom: 4px;"><br>`;
                 credit.href = "https://www.justwatch.com/"
                 credit.target = "_blank";
                 credit.style.color = 'white';
-                credit.style.marginTop = '5px';
                 credit.style.textDecoration = 'none';
+                credit.style.fontSize = '13px';
                 popup.appendChild(credit);
 
-                // const grouped = {};
-                // entries.forEach(entry => {
-                //     if (entry.streamingType === 'addon') {
-                //         return;
-                //     }
-                //     if (!grouped[entry.service]) {
-                //         grouped[entry.service] = {
-                //             types: new Set(),
-                //             link: entry.link,
-                //             audios: [],
-                //             subtitles: []
-                //         };
-                //         grouped[entry.service].types.add(entry.streamingType);
-                //         grouped[entry.service].audios.push(entry.audios);
-                //         grouped[entry.service].subtitles.push(entry.subtitles);
-                //     } else {
-                //         grouped[entry.service].types.add(entry.streamingType);
-                //         grouped[entry.service].audios.push(entry.audios);
-                //         grouped[entry.service].subtitles.push(entry.subtitles);
-                //     }
-                // });
-
-                // for (const service in grouped) {
-                //     const serviceInfo = grouped[service];
-
-                //     console.log(grouped[service])
-
-                //     const serviceButton = document.createElement('a');
-                //     serviceButton.href = serviceInfo.link;
-                //     serviceButton.target = '_blank';
-                //     serviceButton.style.display = 'flex';
-                //     serviceButton.style.alignItems = 'center';
-                //     serviceButton.style.marginBottom = '0.4rem';
-                //     serviceButton.style.textDecoration = 'none';
-                //     serviceButton.style.color = 'white';
-                //     serviceButton.style.fontWeight = '600';
-                //     serviceButton.style.transition = 'opacity 0.2s';
-                //     serviceButton.style.gap = '10px';
-
-                //     serviceButton.onmouseover = () => serviceButton.style.opacity = '0.8';
-                //     serviceButton.onmouseout = () => serviceButton.style.opacity = '1';
-
-                //     const icon = document.createElement('img');
-                //     icon.src = streamingIcons[service] || '';
-                //     icon.alt = service;
-                //     icon.style.width = '30px';
-                //     icon.style.height = '30px';
-                //     icon.style.borderRadius = '4px';
-
-                //     const label = document.createElement('span');
-                //     label.textContent = service === "prime" ? "Prime Video" :
-                //         service === "disney" ? "Disney+" :
-                //             service === "apple" ? "Apple TV+" :
-                //                 service.charAt(0).toUpperCase() + service.slice(1);
-
-                //     serviceButton.appendChild(icon);
-                //     serviceButton.appendChild(label);
-                //     popup.appendChild(serviceButton);
-
-                //     const tagRow = document.createElement('div');
-                //     tagRow.style.display = 'flex';
-                //     tagRow.style.gap = '0.4rem';
-                //     tagRow.style.flexWrap = 'wrap';
-                //     tagRow.style.marginBottom = '0.8rem';
-
-                //     serviceInfo.types.forEach(type => {
-                //         const tag = document.createElement('span');
-                //         tag.className = 'tag';
-                //         tag.textContent = type.charAt(0).toUpperCase() + type.slice(1);
-                //         tagRow.appendChild(tag);
-                //     });
-
-                //     popup.appendChild(tagRow);
-
-                //     const hasEnglishAudio = (grouped[service].audios || [])
-                //         .flat()
-                //         .some(audio => audio.language === 'eng');
-
-                //     const hasEnglishSubtitle = (grouped[service].subtitles || [])
-                //         .flat()
-                //         .some(sub => sub.locale?.language === 'eng');
-
-                //     if (service === 'apple') {
-                //         const audioWarning = document.createElement('div');
-                //         audioWarning.style.marginTop = '-0.8rem';
-                //         audioWarning.style.marginBottom = '0.8rem';
-                //         audioWarning.style.color = '#ffd75f';
-                //         audioWarning.textContent = "⚠️ Languages cannot be checked";
-
-                //         popup.appendChild(audioWarning);
-                //     } else {
-                //         if (!hasEnglishAudio) {
-                //             const audioWarning = document.createElement('div');
-                //             audioWarning.style.marginTop = '-0.8rem';
-                //             audioWarning.style.marginBottom = '0.8rem';
-                //             audioWarning.style.color = '#ffd75f';
-                //             audioWarning.textContent = "⚠️ No english audio available";
-
-                //             popup.appendChild(audioWarning);
-                //         }
-
-                //         if (!hasEnglishSubtitle) {
-                //             const audioWarning = document.createElement('div');
-                //             audioWarning.style.marginTop = '-0.8rem';
-                //             audioWarning.style.marginBottom = '0.8rem';
-                //             audioWarning.style.color = '#ffd75f';
-                //             audioWarning.textContent = "⚠️ No english subtitles available";
-
-                //             popup.appendChild(audioWarning);
-                //         }
-                //     }
-
-                //     console.log(id)
-                //     console.log(movie.id)
-                //     console.log(movie)
-
-                //     // fetch(`http://localhost:8080/api/movies/${movie.id}/streaming-service`, {
-                //     //     method: 'POST',
-                //     //     headers: {
-                //     //         'Content-Type': 'application/json'
-                //     //     },
-                //     //     body: JSON.stringify(service)
-                //     // })
-                //     //     .then(response => {
-                //     //         if (!response.ok) {
-                //     //             console.error('Failed to add streaming service');
-                //     //             // Revert on error
-                //     //             //badgeElement.innerHTML = originalContent;
-                //     //             return;
-                //     //         }
-                //     //     })
-                //     //     .catch(error => {
-                //     //         console.error('Error adding streaming service:', error);
-                //     //         // Revert on error
-                //     //         //badgeElement.innerHTML = originalContent;
-                //     //     });
-                // }
+                let credit2 = document.createElement('a');
+                credit2.textContent = "Provided by:";
+                credit2.innerHTML = `Provided by: <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" style="width: 70px; margin-left: 10px; margin-bottom: 4px;">`;
+                credit2.href = "https://www.themoviedb.org"
+                credit2.target = "_blank";
+                credit2.style.color = 'white';
+                credit2.style.textDecoration = 'none';
+                credit2.style.fontSize = '13px';
+                popup.appendChild(credit2);
             });
 
             console.log(event.clientX)
@@ -618,7 +490,6 @@
 
     function openMovieDetails(movieId) {
         const movie = movies.find(m => m.id === parseInt(movieId)) || getMovies().find(m => m.id === parseInt(movieId));
-        console.log(movies)
         if (!movie) return;
 
         const modal = document.getElementById('movie-details-modal');
@@ -637,18 +508,29 @@
         document.getElementById('modal-movie-external-ratings').innerHTML = `
             <h3>Ratings</h3>
             <table class="ratings-table">
-                <tr>
+                <tr id="imdb-rating">
                     <td><img src="./img/streaming-services/imdb.svg" alt="IMDb" class="icon"></td>
                     <td>IMDb</td>
-                    <td class="rating-value">8.5/10</td>
+                    <td class="rating-value">0</td>
                 </tr>
-                <tr>
+                <tr id="rt-rating">
                     <td><img src="./img/streaming-services/rt.png" alt="Rotten Tomatoes" class="icon"></td>
                     <td>Rotten Tomatoes</td>
-                    <td class="rating-value">95%</td>
+                    <td class="rating-value">0%</td>
                 </tr>
             </table>
         `;
+
+        fetch(`http://localhost:8080/api/movies/ratings?id=${movie.imdbId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                const imdbRating = document.getElementById('imdb-rating');
+                imdbRating.querySelector('.rating-value').textContent = data.imdbRating;
+
+                const rtRating = document.getElementById('rt-rating');
+                rtRating.querySelector('.rating-value').textContent = data.Ratings.find(r => r.Source === 'Rotten Tomatoes').Value;
+            })
 
         // Update ratings
         const ratingsContainer = document.getElementById('modal-movie-ratings');
@@ -659,75 +541,102 @@
         `;
 
         // Fetch and display streaming services
-        // fetch(`http://localhost:8080/api/movies/streaming-availability?id=${movie.imdbId}`)
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         const streamingServices = document.getElementById('modal-streaming-services');
-        //         streamingServices.innerHTML = '';
+        fetch(`http://localhost:8080/api/movies/streaming-availability?id=${movie.tmdbId}`)
+            .then(response => response.json())
+            .then(data => {
+                const streamingServicesContainer = document.getElementById('modal-streaming-services');
+                streamingServicesContainer.innerHTML = '';
 
-        //         const entries = data.result?.streamingInfo?.de || [];
-        //         if (entries.length === 0) {
-        //             streamingServices.innerHTML = '<div>No streaming services available</div>';
-        //             return;
-        //         }
+                if (!data || !data.DE) {
+                    streamingServicesContainer.innerHTML = '<div class="no-streaming">No streaming services available</div>';
+                    return;
+                }
 
-        //         const grouped = {};
-        //         entries.forEach(entry => {
-        //             if (entry.streamingType === 'addon') return;
-        //             if (!grouped[entry.service]) {
-        //                 grouped[entry.service] = {
-        //                     types: new Set(),
-        //                     link: entry.link,
-        //                     audios: [],
-        //                     subtitles: []
-        //                 };
-        //             }
-        //             grouped[entry.service].types.add(entry.streamingType);
-        //             grouped[entry.service].audios.push(entry.audios);
-        //             grouped[entry.service].subtitles.push(entry.subtitles);
-        //         });
+                const entries = data.DE;
+                let hasContent = false;
 
-        //         for (const service in grouped) {
-        //             const serviceInfo = grouped[service];
-        //             const serviceElement = document.createElement('div');
-        //             serviceElement.className = 'streaming-service-item';
+                // Handle flatrate (streaming) services
+                if (entries.flatrate && entries.flatrate.length > 0 || entries.buy && entries.buy.length > 0 || entries.rent && entries.rent.length > 0) {
+                    hasContent = true;
+                    const streamSection = document.createElement('div');
+                    streamSection.className = 'streaming-section';
                     
-        //             const serviceLink = document.createElement('a');
-        //             serviceLink.href = serviceInfo.link;
-        //             serviceLink.target = '_blank';
-        //             serviceLink.className = 'streaming-service-link';
+                    const streamTitle = document.createElement('h3');
+                    streamTitle.textContent = 'Available on';
+                    streamTitle.className = 'streaming-section-title';
+                    streamSection.appendChild(streamTitle);
+
+                    const streamGrid = document.createElement('div');
+                    streamGrid.className = 'streaming-grid';
                     
-        //             const icon = document.createElement('img');
-        //             icon.src = streamingIcons[service] || '';
-        //             icon.alt = service;
-                    
-        //             const label = document.createElement('span');
-        //             label.textContent = service === "prime" ? "Prime Video" :
-        //                 service === "disney" ? "Disney+" :
-        //                     service === "apple" ? "Apple TV+" :
-        //                         service.charAt(0).toUpperCase() + service.slice(1);
+                    // Combine all services
+                    const allServices = [];
+                    if (entries.flatrate) {
+                        allServices.push(...entries.flatrate.map(service => ({ ...service, type: 'stream' })));
+                    }
+                    if (entries.buy) {
+                        allServices.push(...entries.buy.map(service => ({ ...service, type: 'buy' })));
+                    }
+                    if (entries.rent) {
+                        allServices.push(...entries.rent.map(service => ({ ...service, type: 'rent' })));
+                    }
 
-        //             serviceLink.appendChild(icon);
-        //             serviceLink.appendChild(label);
-        //             serviceElement.appendChild(serviceLink);
+                    // Show only first 5 services
+                    const servicesToShow = allServices.slice(0, 5);
+                    const remainingCount = allServices.length - 5;
 
-        //             const typesContainer = document.createElement('div');
-        //             typesContainer.className = 'streaming-types';
+                    // Create a wrapper link for the entire grid
+                    const gridLink = document.createElement('a');
+                    gridLink.href = entries.link;
+                    gridLink.target = '_blank';
+                    gridLink.className = 'streaming-grid-link';
 
-        //             const typeTag = document.createElement('span');
-        //             typeTag.className = 'tag';
-        //             typeTag.textContent = Array.from(serviceInfo.types).map(type => type.charAt(0).toUpperCase() + type.slice(1)).join(", ");;
+                    servicesToShow.forEach(service => {
+                        const serviceItem = document.createElement('div');
+                        serviceItem.className = 'streaming-service-item';
+                        serviceItem.title = `${service.provider_name} (${service.type === 'stream' ? 'Stream' : 'Buy/Rent'})`;
 
-        //             typesContainer.appendChild(typeTag);
-        //             serviceElement.appendChild(typesContainer);
-        //             streamingServices.appendChild(serviceElement);
-        //         }
-        //     })
-        //     .catch(error => {
-        //         console.error('Error fetching streaming services:', error);
-        //         document.getElementById('modal-streaming-services').innerHTML = 
-        //             '<div>Error loading streaming services</div>';
-        //     });
+                        const logo = document.createElement('img');
+                        logo.src = `https://image.tmdb.org/t/p/original${service.logo_path}`;
+                        logo.alt = service.provider_name;
+                        serviceItem.appendChild(logo);
+                        gridLink.appendChild(serviceItem);
+                    });
+
+                    // Add "& more" if there are more services
+                    if (remainingCount > 0) {
+                        const moreItem = document.createElement('div');
+                        moreItem.className = 'streaming-service-item more-item';
+                        moreItem.innerHTML = `<span>+${remainingCount}</span>`;
+                        gridLink.appendChild(moreItem);
+                    }
+
+                    streamGrid.appendChild(gridLink);
+                    streamSection.appendChild(streamGrid);
+                    streamingServicesContainer.appendChild(streamSection);
+
+                    const source = document.createElement('a');
+                    source.style.display = 'flex';
+                    source.style.justifyContent = 'end';
+                    source.innerHTML = `<img src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg" style="width: 80px;">`;
+                    source.href = 'https://www.justwatch.com/';
+                    source.target = '_blank';
+                    source.alt = 'JustWatch';
+                    streamSection.appendChild(source);
+                } else {
+                    const noStreaming = document.createElement('div');
+                    noStreaming.className = 'no-streaming';
+                    noStreaming.textContent = 'No streaming services available';
+                    streamingServicesContainer.appendChild(noStreaming);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching streaming services:', error);
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'streaming-error';
+                errorMessage.textContent = 'Error loading streaming services';
+                streamingServicesContainer.appendChild(errorMessage);
+            });
 
         // Show modal with transition
         modal.style.display = 'block';

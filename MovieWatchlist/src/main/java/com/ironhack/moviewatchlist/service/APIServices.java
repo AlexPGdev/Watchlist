@@ -11,6 +11,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
@@ -23,8 +24,8 @@ public class APIServices {
     private final WebClient omdbWebClient;
     private final WebClient streamingAvailabilityWebClient;
 
-    private String apiToken = dotenv.get("OMDB_KEY");
-    private String rapidApiKey = dotenv.get("RAPIDAPI_KEY");
+    private String omdbKey = dotenv.get("OMDB_KEY");
+    private String rapidapiKey = dotenv.get("RAPIDAPI_KEY");
     private String tmdbKey = dotenv.get("TMDB_KEY");
 
     TmdbApi tmdbApi = new TmdbApi(tmdbKey);
@@ -52,19 +53,22 @@ public class APIServices {
     public MovieDb getMovieDetails(Integer id) throws TmdbException {
         MovieDb tmdbMovie = tmdbApi.getMovies().getDetails(id, "en-US");
         return tmdbMovie;
-//        return omdbWebClient.get()
-//                .uri(uriBuilder -> uriBuilder
-//                        .path("/")
-//                        .queryParam("i", id)
-//                        .queryParam("plot", "full")
-//                        .queryParam("apikey", apiToken)
-//                        .build(id))
-//                .retrieve()
-//                .bodyToMono(String.class);
     }
 
     public Map<String, WatchProviders> getStreamingAvailability(Integer id) throws TmdbException {
         ProviderResults watchProviders = tmdbApi.getMovies().getWatchProviders(id);
         return watchProviders.getResults();
+    }
+
+    public Mono<String> getMovieRatings(String id) {
+        return omdbWebClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/")
+                        .queryParam("i", id)
+                        .queryParam("plot", "short")
+                        .queryParam("apikey", omdbKey)
+                        .build(id))
+                .retrieve()
+                .bodyToMono(String.class);
     }
 }
