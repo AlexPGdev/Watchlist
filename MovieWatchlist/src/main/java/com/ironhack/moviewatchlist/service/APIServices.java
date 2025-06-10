@@ -20,13 +20,11 @@ public class APIServices {
     private final WebClient omdbWebClient;
     private final WebClient streamingAvailabilityWebClient;
 
-    @Value("${api.omdb.key}")
-    private String apiToken;
+    private String apiToken = System.getenv("OMDB_KEY");
+    private String rapidApiKey = System.getenv("RAPIDAPI_KEY");
+    private String tmdbKey = System.getenv("TMDB_KEY");
 
-    @Value("${api.rapidapi.key}")
-    private String rapidApiKey;
-
-    TmdbApi tmdbApi = new TmdbApi("key");
+    TmdbApi tmdbApi = new TmdbApi(tmdbKey);
 
     public APIServices(WebClient.Builder webClientBuilder) throws TmdbException {
         this.omdbWebClient = webClientBuilder.baseUrl("https://www.omdbapi.com").build();

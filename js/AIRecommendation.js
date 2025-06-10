@@ -1,3 +1,5 @@
+    import { getUserMovies } from "./loadPage.js";
+
     export async function getAIRecommendation() {
 
         if(document.querySelector('.movie-cards-container')){
@@ -7,8 +9,8 @@
         const loader = document.getElementById('ai-loader');
         loader.style.display = 'flex';
 
-        let watchedMovies = currentUserMovies.filter(m => m.watched);
-        let toWatchMovies = currentUserMovies.filter(m => !m.watched);
+        let watchedMovies = getUserMovies().filter(m => m.watched);
+        let toWatchMovies = getUserMovies().filter(m => !m.watched);
 
         console.log(watchedMovies.map(m => m.title).join('\n'))
         console.log(toWatchMovies.map(m => m.title).join('\n'))
