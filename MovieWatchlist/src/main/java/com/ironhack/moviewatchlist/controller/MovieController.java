@@ -1,5 +1,6 @@
 package com.ironhack.moviewatchlist.controller;
 
+import com.ironhack.moviewatchlist.dto.RatingResponse;
 import com.ironhack.moviewatchlist.exceptions.PageNotFoundException;
 import com.ironhack.moviewatchlist.model.Movie;
 import com.ironhack.moviewatchlist.model.Page;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +65,7 @@ public class MovieController {
     }
 
     @GetMapping("/ratings")
-    public Mono<String> getMovieRatings(@RequestParam String id) {
+    public RatingResponse getMovieRatings(@RequestParam String id) throws IOException {
         return apiServices.getMovieRatings(id);
     }
 

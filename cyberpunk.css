@@ -723,11 +723,13 @@ h1 {
 .search-result-title {
     font-weight: 600;
     margin-bottom: 0.25rem;
+    color: #00ffff;
 }
 
 .search-result-year {
-    color: #b8b8d1;
     font-size: 0.9rem;
+    color: #ff00ff;
+    margin-bottom: 0.5rem;
 }
 
 .header-actions {
@@ -842,12 +844,20 @@ h1 {
 .loader-spinner {
     width: 48px;
     height: 48px;
-    border: 6px solid #00ffff;
-    border-top: 6px solid #ff00ff;
+    border-top: 3px solid #f0f;
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+}
+
+.rating-loader-spinner {
+    width: 25px;
+    height: 25px;
+    border-top: 2px solid #0ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
 .loader-text {
@@ -1101,7 +1111,7 @@ h1 {
 
 .ratings-table {
     width: 100%;
-    border-collapse: collapse;
+    /* border-collapse: collapse; */
     margin-top: 0rem;
 }
 

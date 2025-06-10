@@ -511,12 +511,12 @@
                 <tr id="imdb-rating">
                     <td><img src="./img/streaming-services/imdb.svg" alt="IMDb" class="icon"></td>
                     <td>IMDb</td>
-                    <td class="rating-value">0</td>
+                    <td class="rating-loader-spinner"></td>
                 </tr>
                 <tr id="rt-rating">
                     <td><img src="./img/streaming-services/rt.png" alt="Rotten Tomatoes" class="icon"></td>
                     <td>Rotten Tomatoes</td>
-                    <td class="rating-value">0%</td>
+                    <td class="rating-loader-spinner"></td>
                 </tr>
             </table>
         `;
@@ -526,10 +526,12 @@
             .then(data => {
                 console.log(data)
                 const imdbRating = document.getElementById('imdb-rating');
-                imdbRating.querySelector('.rating-value').textContent = data.imdbRating;
+                imdbRating.appendChild(document.createTextNode(data.imdbRating));
+                document.querySelector('.rating-loader-spinner').remove();
 
                 const rtRating = document.getElementById('rt-rating');
-                rtRating.querySelector('.rating-value').textContent = data.Ratings.find(r => r.Source === 'Rotten Tomatoes').Value;
+                rtRating.appendChild(document.createTextNode(data.rtRating));
+                document.querySelector('.rating-loader-spinner').remove();
             })
 
         // Update ratings

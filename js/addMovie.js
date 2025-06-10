@@ -48,8 +48,16 @@
                             <div class="search-result-info">
                                 <div class="search-result-title">${movie.title}</div>
                                 <div class="search-result-year">${movie.release_date.split('-')[0]}</div>
+                                <div class="search-result-genres movie-genres" style="max-width: none; margin-bottom: 0;"></div>
                             </div>
                         `;
+
+                    fetch("http://localhost:8080/api/movies/details?id=" + movie.id)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        movieElement.querySelector('.search-result-genres').innerHTML = data.genres.map(genre => `<span class="search-result-genre genre-tag">${genre.name}</span>`).join('');
+                    })
 
                     movieElement.addEventListener('click', async () => {
                         try {
@@ -147,57 +155,3 @@
         }
         closeDuplicateModal();
     }
-
-    // export async function addFromUserToWatchlist(movie, event) {
-    //     const response = await fetch("http://localhost:8080/api/movies/details?id=" + movie);
-    //     const movieDetails = await response.json();
-
-    //     const newMovie = {
-    //         title: movieDetails.title,
-    //         description: movieDetails.overview,
-    //         watched: false,
-    //         year: movieDetails.release_date.split('-')[0],
-    //         genres: movieDetails.genres.map(g => g.name),
-    //         posterPath: `https://image.tmdb.org/t/p/w500/${movie.poster_path}`,
-    //         imdbId: movieDetails.imdb_id,
-    //         tmdbId: movieDetails.id,
-    //         streamingServices: [],
-    //         imdbRating: 0,
-    //         rtRating: null
-    //     };
-
-    //     const duplicate = currentUserMovies.find(m => m.imdbId === newMovie.imdbId);
-
-    //     if (duplicate) {
-    //         window.duplicateMovieToAdd = newMovie;
-    //         document.getElementById('duplicate-modal').style.display = 'block';
-    //         // document.getElementById('duplicate-modal').querySelector('.modal-content').style.opacity = '1'
-    //         setTimeout(() => {
-    //             document.getElementById('duplicate-modal').querySelector('.modal-content').classList.add('active');
-    //             console.log('asd')
-    //         }, 10);
-    //     } else {
-    //         event.target.disabled = true;
-    //         event.target.textContent = "Added to Watchlist";
-            
-    //         try {
-    //             const response = await fetch('http://localhost:8080/api/movies', {
-    //                 method: 'POST',
-    //                 credentials: 'include',
-    //                 headers: {
-    //                     'Content-Type': 'application/json'
-    //                 },
-    //                 body: JSON.stringify(newMovie)
-    //             });
-
-    //             if (response.ok) {
-    //                 closeModal(document.getElementById('add-movie-modal'));
-    //             } else {
-    //                 console.error('Failed to add movie');
-    //             }
-    //         } catch (error) {
-    //             console.error('Error adding movie:', error);
-    //         }
-    //     }
-    //     //addMovieToWatchlist(movie);
-    // }

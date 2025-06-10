@@ -1,5 +1,7 @@
 package com.ironhack.moviewatchlist.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ironhack.moviewatchlist.dto.RatingResponse;
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.core.Movie;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
@@ -8,11 +10,16 @@ import info.movito.themoviedbapi.model.core.watchproviders.WatchProviders;
 import info.movito.themoviedbapi.model.movies.MovieDb;
 import info.movito.themoviedbapi.tools.TmdbException;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -40,14 +47,6 @@ public class APIServices {
 
         System.out.println(tmdbSearch.getResults());
         return tmdbSearch.getResults();
-//        return omdbWebClient.get()
-//                .uri(uriBuilder -> uriBuilder
-//                        .path("/")
-//                        .queryParam("s", query)
-//                        .queryParam("apikey", apiToken)
-//                        .build())
-//                .retrieve()
-//                .bodyToMono(String.class);
     }
 
     public MovieDb getMovieDetails(Integer id) throws TmdbException {
@@ -60,15 +59,34 @@ public class APIServices {
         return watchProviders.getResults();
     }
 
-    public Mono<String> getMovieRatings(String id) {
-        return omdbWebClient.get()
+    public RatingResponse getMovieRatings(String id) throws IOException {
+        String result = omdbWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/")
-                        .queryParam("i", id)
-                        .queryParam("plot", "short")
                         .queryParam("apikey", omdbKey)
+                        .queryParam("tomatoes", "true")
+                        .queryParam("i", id)
                         .build(id))
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .block();
+
+        JSONObject obj = new JSONObject(result);
+        String tomatoUrl = obj.getString("tomatoURL");
+
+        Document imdb = Jsoup.connect("https://www.imdb.com/title/" + id + "/").get();
+        Document rt = Jsoup.connect(tomatoUrl).get();
+
+        Elements imdbRatingElement = imdb.select("div.sc-8eab3bd3-0:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(2) > span:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)");
+        Elements rtRatingElement = rt.select(".media-scorecard > media-scorecard:nth-child(1) > rt-text:nth-child(3)");
+
+        if (imdbRatingElement.isEmpty() || rtRatingElement.isEmpty()) {
+            throw new IOException("Could not find rating elements on one of the pages.");
+        }
+
+        double imdbRating = Double.parseDouble(imdbRatingElement.text());
+        String rtRating = rtRatingElement.text();
+
+        return new RatingResponse(imdbRating, rtRating);
     }
 }
