@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Watchlist</title>
+    <link rel="stylesheet" href="cyberpunk.css">
+    <link rel="stylesheet" href="watchlist.css">
+    <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1><a href="/">🎬 Watchlist</a></h1>
+        <div class="search-user">
+            <input type="text" class="search-user-input" placeholder="Search user" id="search-user-input">
+            <ul id="autocomplete-list"></ul>
+        </div>
+        <div class="header-actions">
+            <button id="login-btn" class="login-btn">Login</button>
+            <div class="profile-container" style="display: none;">
+                <button class="profile-btn">
+                    <img src="" alt="Profile" class="profile-pic">
+                </button>
+                <div class="profile-dropdown">
+                    <div class="dropdown-item theme-item">
+                        Change Theme
+                        <div class="theme-submenu">
+                            <button class="theme-option theme-default">
+                                Default
+                            </button>
+                            <button class="theme-option theme-cyberpunk">
+                                Cyberpunk
+                            </button>
+                        </div>
+                    </div>
+                    <button id="logout-btn" class="dropdown-item">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="total-movies">0</div>
+            <div class="stat-label">Total Movies</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="watched-count">0</div>
+            <div class="stat-label">Watched</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="to-watch-count">0</div>
+            <div class="stat-label">To Watch</div>
+        </div>
+    </div>
+
+    <h2 id="watchlist-title">My Watchlist</h2>
+    <br>
+    
+    <div class="controls">
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search movies..." id="search-input">
+        </div>
+        <button id="add-btn" class="add-btn">+ Add Movie</button>
+    </div>
+
+    <div class="filter-tabs">
+        <button id="filter-tab-all" class="filter-tab active">All Movies</button>
+        <button id="filter-tab-to-watch" class="filter-tab">To Watch</button>
+        <button id="filter-tab-watched" class="filter-tab">Watched</button>
+    </div>
+
+    <div class="movies-grid" id="movies-grid">
+        <!-- Movies will be dynamically added here -->
+    </div>
+
+</div>
+
+<div id="streaming-popup" class="streaming-popup" style="display: none;"></div>
+<!-- Login Modal -->
+<div class="modal" id="login-modal">
+    <div class="modal-content">
+        <h3>Login</h3>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="login-username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter password">
+        </div>
+        <div class="modal-actions">
+            <button id="login-modal-cancel" class="action-btn remove-btn">Cancel</button>
+            <button id="login" class="action-btn watch-btn">Login</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Movie Modal -->
+<div class="modal" id="add-movie-modal">
+    <div class="modal-content">
+        <h3>Add New Movie</h3>
+        <div class="form-group">
+            <label>Search Movie</label>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search for a movie..." id="modalSearchInput">
+                <div class="search-results" id="modalSearchResults"></div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button id="ai-recommendation-btn" class="action-btn watch-btn recommendations-btn">AI Recommendations</button>
+            <button id="cancel-add-btn" class="action-btn remove-btn">Cancel</button>
+        </div>
+
+        <div id="ai-loader" class="ai-loader" style="display: none;">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Fetching AI Recommendations...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Duplicate Movie Modal -->
+<div class="modal" id="duplicate-modal">
+    <div class="modal-content">
+        <h3>Duplicate Movie</h3>
+        <p>This movie is already in your watchlist</p>
+        <div class="modal-actions" style="margin-top: 10px;">
+            <button id="dont-add-btn" class="action-btn remove-btn">Don't Add</button>
+            <button id="force-add-btn" class="action-btn watch-btn">Add Anyway</button>
+        </div>
+    </div>
+</div>
+
+<!-- Movie Details Modal -->
+<div class="modal" id="movie-details-modal">
+    <div class="modal-content movie-details-content">
+        <div class="movie-details-header">
+            <div class="movie-details-poster">
+                <img src="" alt="" id="modal-movie-poster">
+            </div>
+            <div class="movie-details-info">
+                <h2 id="modal-movie-title"></h2>
+                <div class="movie-details-year" id="modal-movie-year"></div>
+                <div class="movie-details-genres" id="modal-movie-genres"></div>
+                <div class="movie-details-actions">
+                    <h3>Rate:</h3>
+                    <div class="movie-details-ratings" id="modal-movie-ratings">
+                        <button class="rating-btn"><span>👎 Did not like it</span></button>
+                        <button class="rating-btn"><span>👍 Liked it</span></button>
+                        <button class="rating-btn"><span>❤️ Loved it</span></button>
+                    </div>
+                </div>
+                <div class="movie-details-external-ratings" id="modal-movie-external-ratings"></div>
+                <div class="movie-details-streaming" id="modal-movie-streaming">
+                    <h3>Available on:</h3>
+                    <div class="streaming-services" id="modal-streaming-services"></div>
+                </div>
+            </div>
+        </div>
+        <div class="movie-details-body">
+            <div class="movie-details-description" id="modal-movie-description"></div>
+        </div>
+        <div class="movie-details-streaming" id="modal-movie-streaming">
+            <h3>Also Watch:</h3>
+            <div class="also-watch-movies">
+                <div class="also-watch-movie">
+                    <div class="also-watch-poster">
+                        <img src="https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg" alt="The Matrix">
+                    </div>
+                    <div class="also-watch-info">
+                        <h4>The Matrix</h4>
+                        <span>1999</span>
+                    </div>
+                </div>
+                <div class="also-watch-movie">
+                    <div class="also-watch-poster">
+                        <img src="https://m.media-amazon.com/images/M/MV5BMTY5OTU0OTc2NV5BMl5BanBnXkFtZTcwMzU4MDcyMQ@@._V1_SX300.jpg" alt="Inception">
+                    </div>
+                    <div class="also-watch-info">
+                        <h4>Inception</h4>
+                        <span>2010</span>
+                    </div>
+                </div>
+                <div class="also-watch-movie">
+                    <div class="also-watch-poster">
+                        <img src="https://m.media-amazon.com/images/I/81rGCm0PyHL.jpg" alt="The Dark Knight">
+                    </div>
+                    <div class="also-watch-info">
+                        <h4>The Dark Knight</h4>
+                        <span>2008</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="close-modal-btn">×</button>
+    </div>
+</div>
+</body>
+</html>
