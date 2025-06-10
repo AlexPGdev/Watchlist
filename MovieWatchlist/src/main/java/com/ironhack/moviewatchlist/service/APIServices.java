@@ -7,6 +7,7 @@ import info.movito.themoviedbapi.model.core.watchproviders.ProviderResults;
 import info.movito.themoviedbapi.model.core.watchproviders.WatchProviders;
 import info.movito.themoviedbapi.model.movies.MovieDb;
 import info.movito.themoviedbapi.tools.TmdbException;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,12 +18,14 @@ import java.util.Map;
 @Service
 public class APIServices {
 
+    private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+
     private final WebClient omdbWebClient;
     private final WebClient streamingAvailabilityWebClient;
 
-    private String apiToken = System.getenv("OMDB_KEY");
-    private String rapidApiKey = System.getenv("RAPIDAPI_KEY");
-    private String tmdbKey = System.getenv("TMDB_KEY");
+    private String apiToken = dotenv.get("OMDB_KEY");
+    private String rapidApiKey = dotenv.get("RAPIDAPI_KEY");
+    private String tmdbKey = dotenv.get("TMDB_KEY");
 
     TmdbApi tmdbApi = new TmdbApi(tmdbKey);
 

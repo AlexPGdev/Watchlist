@@ -1,4 +1,5 @@
     import { getUserMovies } from "./loadPage.js";
+    import { addMovieToWatchlist } from "./addMovie.js";
 
     export async function getAIRecommendation() {
 
@@ -22,14 +23,19 @@
             });
             let data = await response.json();
 
+            console.log(data)
+            console.log(data[0])
+
             let movies = [];
             
-            let movie1 = JSON.parse(data[0])
-            let movie2 = JSON.parse(data[1])
-            let movie3 = JSON.parse(data[2])
+            let movie1 = data[0]
+            let movie2 = data[1]
+            let movie3 = data[2]
             movies.push(movie1)
             movies.push(movie2)
             movies.push(movie3)
+
+            console.log(movies)
     
             let movieCardContainer = document.createElement('div');
             movieCardContainer.className = "movie-cards-container";
@@ -44,14 +50,14 @@
             for(let i = 0; i < movies.length; i++) {
                 console.log(movies[i])
     
-                if(movies[i].Search[0]){
+                if(movies[i]){
                     let movieCard = document.createElement('div');
                     movieCard.style.padding = '0.5rem'
                     movieCard.style.width = '165px'
                     movieCard.style.height = '200px'
                     movieCard.style.cursor = 'pointer'
                     movieCard.className = 'movie-card';
-                    movieCard.addEventListener('click', () => addMovieToWatchlistAI(movies[i].Search[0].imdbID));
+                    movieCard.addEventListener('click', () => addMovieToWatchlistAI(movies[i].id));
             
                     let movieHeader = document.createElement('div');
                     movieHeader.className = 'movie-header';
@@ -61,7 +67,7 @@
                     moviePoster.style.width = '60px'
                     moviePoster.style.height = '70px'
             
-                    moviePoster.innerHTML = `<img src="${movies[i].Search[0].Poster}">`;
+                    moviePoster.innerHTML = `<img src="https://image.tmdb.org/t/p/w500/${movies[i].poster_path}">`;
             
                     let movieInfo = document.createElement('div');
                     movieInfo.className = 'movie-info';
@@ -69,22 +75,22 @@
                     let movieTitle = document.createElement('div');
                     movieTitle.className = 'movie-title';
                     movieTitle.style.fontSize = "0.9rem"
-                    movieTitle.style.marginTop = "0px"
+                    movieTitle.style.marginTop = "20px"
                     movieTitle.style.marginBottom = "0px"
                     movieTitle.style.lineHeight = "18px"
                     movieTitle.style.marginBottom = "5px"
-                    movieTitle.textContent = movies[i].Search[0].Title;
+                    movieTitle.textContent = movies[i].title;
             
                     let movieYear = document.createElement('div');
                     movieYear.className = 'movie-year';
                     movieYear.style.fontSize = "0.8rem"
-                    movieYear.textContent = movies[i].Search[0].Year;
+                    movieYear.textContent = movies[i].release_date.split('-')[0];
             
                     let movieDescription = document.createElement('div');
                     movieDescription.className = 'movie-description';
                     movieDescription.style.fontSize = "0.8rem"
-                    movieDescription.style.marginTop = "-16px"
-                    movieDescription.textContent = "movies[i].results[0].overview";
+                    movieDescription.style.marginTop = "-125px"
+                    movieDescription.textContent = movies[i].overview;
             
                     // let movieGenres = document.createElement('div');
                     // movieGenres.className = 'movie-genres';
@@ -113,17 +119,20 @@
                             const response = await fetch("http://localhost:8080/api/movies/details?id=" + movieId);
                             const movieDetails = await response.json();
 
+                            console.log(movieDetails)
+
                             const newMovie = {
-                                title: movieDetails.Title,
-                                description: movieDetails.Plot,
+                                title: movieDetails.title,
+                                description: movieDetails.overview,
                                 watched: false,
-                                year: movieDetails.Year,
-                                genres: movieDetails.Genre.split(',').map(g => g.trim()),
-                                posterPath: movieDetails.Poster,
-                                imdbId: movieDetails.imdbID,
+                                year: movieDetails.release_date.split('-')[0],
+                                genres: movieDetails.genres.map(g => g.name),
+                                posterPath: `https://image.tmdb.org/t/p/w500/${movieDetails.poster_path}`,
+                                imdbId: movieDetails.imdb_id,
+                                tmdbId: movieDetails.id,
                                 streamingServices: [],
-                                imdbRating: movieDetails.imdbRating,
-                                rtRating: movieDetails.Ratings.find(r => r.Source === 'Rotten Tomatoes') ? movieDetails.Ratings.find(r => r.Source === 'Rotten Tomatoes').Value : null
+                                imdbRating: 0,
+                                rtRating: null
                             };
 
                             const duplicate = movies.find(m => m.imdbId === newMovie.imdbId);

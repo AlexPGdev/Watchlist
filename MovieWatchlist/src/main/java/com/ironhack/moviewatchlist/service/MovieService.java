@@ -11,6 +11,7 @@ import com.openai.models.ChatModel;
 import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
 import info.movito.themoviedbapi.tools.TmdbException;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,8 @@ import java.util.stream.Stream;
 
 @Service
 public class MovieService {
+
+    private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
@@ -99,7 +102,7 @@ public class MovieService {
 
     public Mono<List<info.movito.themoviedbapi.model.core.Movie>> getChatGPT(User user) throws TmdbException {
         OpenAIClient client = OpenAIOkHttpClient.builder()
-                .apiKey(System.getenv("OPENAI_KEY"))
+                .apiKey(dotenv.get("OPENAI_KEY"))
                 .build();
 
 //        Stream<String> movies = movieRepository.findAll().stream().map(Movie::getTitle);
