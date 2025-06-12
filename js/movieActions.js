@@ -30,7 +30,7 @@
             watchMovie(movieId);
         }
 
-        if(event.target.closest('.movie-external-ratings')) {
+        if(event.target.className === 'movie-external-ratings' || event.target.parentElement !== null && event.target.parentElement.className === 'movie-external-ratings') {
             let movieId = event.target.closest('.movie-card').dataset.movieId;
             let movieImdbId = event.target.closest('.movie-external-ratings').dataset.movieImdbid;
 
@@ -46,6 +46,14 @@
                 document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.imdbRating').innerHTML = `<img src="./img/streaming-services/imdb.svg"> ${data.imdbRating}`;
                 if (document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner')) document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner').remove();
                 document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').innerHTML = `<img src="./img/streaming-services/rt.png"> ${data.rtRating}`;
+            
+                getMovies().map(m => {
+                    if(m.id === data.id){
+                        m.imdbRating = data.imdbRating;
+                        m.rtRating = data.rtRating;
+                    }
+                    return m;
+                });
             });
         }
 

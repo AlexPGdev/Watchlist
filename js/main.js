@@ -1,4 +1,4 @@
-import { login, openLoginModal, closeLoginModal, logout } from "./auth.js";
+import { login, signup, openLoginModal, closeLoginModal, logout, switchAuthTab } from "./auth.js";
 import { getAIRecommendation } from "./AIRecommendation.js";
 import { openModal, closeModal, searchMoviesForModal, addMovieToWatchlist, closeDuplicateModal, forceAddDuplicate } from "./addMovie.js";
 import { loadPage, filterMovies, searchMovies } from "./loadPage.js";
@@ -54,16 +54,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    // Login functionality
+    // Auth functionality
     const loginBtn = document.getElementById("login");
+    const signupBtn = document.getElementById("signup");
     const loginModalCancel = document.getElementById("login-modal-cancel");
+    const signupModalCancel = document.getElementById("signup-modal-cancel");
     const loginModalBtn = document.getElementById("login-btn");
     const logoutBtn = document.getElementById("logout-btn");
+    const authTabs = document.querySelectorAll('.auth-tab');
 
     loginBtn.addEventListener("click", login);
+    signupBtn.addEventListener("click", signup);
     loginModalCancel.addEventListener("click", closeLoginModal);
+    signupModalCancel.addEventListener("click", closeLoginModal);
     loginModalBtn.addEventListener("click", openLoginModal);
     logoutBtn.addEventListener("click", logout);
+
+    authTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            switchAuthTab(tab.dataset.tab);
+        });
+    });
 
     // AI recommendation functionality
     const aiRecommendationBtn = document.getElementById("ai-recommendation-btn");
@@ -144,33 +155,45 @@ document.addEventListener("DOMContentLoaded", () => {
             closeLoginModal();
         } else if (e.key === 'Enter') {
             e.preventDefault();
-            if(document.activeElement.id === 'login-modal-cancel') {
+            if(document.activeElement.id === 'login-modal-cancel' || document.activeElement.id === 'signup-modal-cancel') {
                 closeLoginModal();
                 return;
             }
-            if(document.getElementById('login-username').value === '') {
-                document.getElementById('login-username').focus();
-            } else if(document.getElementById('login-password').value === '') {
-                document.getElementById('login-password').focus();
-            } else {
+            if(document.activeElement.id === 'login-username' || document.activeElement.id === 'signup-username') {
+                if(document.activeElement.value === '') {
+                    document.activeElement.focus();
+                } else {
+                    document.getElementById(document.activeElement.id === 'login-username' ? 'login-password' : 'signup-password').focus();
+                }
+            } else if(document.activeElement.id === 'login-password' || document.activeElement.id === 'signup-password') {
+                if(document.activeElement.value === '') {
+                    document.activeElement.focus();
+                } else if(document.activeElement.id === 'signup-password') {
+                    document.getElementById('signup-confirm-password').focus();
+                } else {
+                    login();
+                }
+            } else if(document.activeElement.id === 'signup-confirm-password') {
+                if(document.activeElement.value === '') {
+                    document.activeElement.focus();
+                } else {
+                    document.getElementById('signup').focus();
+                }
+            } else if(document.activeElement.id === 'login') {
                 login();
+            } else if(document.activeElement.id === 'signup') {
+                signup();
             }
         } else if (e.key === 'Tab') {
             e.preventDefault();
-            if(document.activeElement.id === 'login-username') {
-                document.getElementById('login-password').focus();
-            } else if(document.activeElement.id === 'login-password') {
-                if(document.getElementById('login-username').value === '') {
-                    document.getElementById('login-username').focus();
-                } else {
-                    document.getElementById('login-modal-cancel').focus();
-                }
-            } else if(document.activeElement.id === 'login-modal-cancel') {
-                document.getElementById('login').focus();
-            } else if(document.activeElement.id === 'login') {
-                document.getElementById('login-username').focus();
+            const activeForm = document.querySelector('.auth-form[style="display: block;"]');
+            const inputs = activeForm.querySelectorAll('input, button');
+            const currentIndex = Array.from(inputs).indexOf(document.activeElement);
+            
+            if (currentIndex === -1 || currentIndex === inputs.length - 1) {
+                inputs[0].focus();
             } else {
-                document.getElementById('login-username').focus();
+                inputs[currentIndex + 1].focus();
             }
         }
     });

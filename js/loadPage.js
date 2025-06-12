@@ -271,7 +271,6 @@
     export function filterMovies(filter) {
         currentFilter = filter;
 
-        // Update active tab
         document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
         event.target.classList.add('active');
 

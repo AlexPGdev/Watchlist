@@ -3,6 +3,7 @@ package com.ironhack.moviewatchlist.controller;
 import com.ironhack.moviewatchlist.exceptions.NotLoggedInException;
 import com.ironhack.moviewatchlist.model.User;
 import com.ironhack.moviewatchlist.repository.UserRepository;
+import com.ironhack.moviewatchlist.service.PageService;
 import com.ironhack.moviewatchlist.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,10 +23,12 @@ public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final PageService pageService;
 
-    public UserController(UserService userService, UserRepository userRepository) {
+    public UserController(UserService userService, UserRepository userRepository, PageService pageService) {
         this.userService = userService;
         this.userRepository = userRepository;
+        this.pageService = pageService;
     }
 
     @GetMapping("/user")
@@ -79,9 +82,12 @@ public class UserController {
         return ResponseEntity.ok(usernames);
     }
 
-    @PostMapping("/users")
+    @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveUser(@RequestBody User user) {
+    public String signup(@RequestBody User user) {
         userService.saveUser(user);
+        pageService.createPage("Movie Watchlist", "Welcome to the Movie Watchlist!", true, user);
+
+        return "User created successfully";
     }
 }

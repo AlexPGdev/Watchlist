@@ -142,6 +142,14 @@
                         document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.imdbRating').innerHTML = `<img src="./img/streaming-services/imdb.svg"> ${data.imdbRating}`;
                         if (document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner')) document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner').remove();
                         document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.rtRating').innerHTML = `<img src="./img/streaming-services/rt.png"> ${data.rtRating}`;
+                    
+                        getMovies().map(m => {
+                            if(m.id === data.id){
+                                m.imdbRating = data.imdbRating;
+                                m.rtRating = data.rtRating;
+                            }
+                            return m;
+                        });
                     });
                 });
 
