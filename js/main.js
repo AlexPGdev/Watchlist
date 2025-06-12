@@ -244,4 +244,185 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById('search-input').addEventListener('input', searchMovies);
 
+    // View controls
+    let currentView = 'grid';
+    let currentGridSize = 3;
+
+    document.getElementById('grid-view-btn').addEventListener('click', () => {
+        currentView = 'grid';
+        document.getElementById('grid-view-btn').classList.add('active');
+        document.getElementById('list-view-btn').classList.remove('active');
+        document.getElementById('movies-grid').classList.remove('list-view');
+        document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
+    });
+
+    document.getElementById('list-view-btn').addEventListener('click', () => {
+        currentView = 'list';
+        document.getElementById('list-view-btn').classList.add('active');
+        document.getElementById('grid-view-btn').classList.remove('active');
+        document.getElementById('movies-grid').classList.add('list-view');
+        document.getElementById('movies-grid').classList.remove(`grid-size-${currentGridSize}`);
+    });
+
+    document.getElementById('decrease-grid-btn').addEventListener('click', () => {
+        if (currentGridSize > 2) {
+            currentGridSize--;
+            document.getElementById('grid-size-value').textContent = currentGridSize;
+            if (currentView === 'grid') {
+                document.getElementById('movies-grid').classList.remove(`grid-size-${currentGridSize + 1}`);
+                document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
+
+                updateCardSize(currentGridSize);
+            }
+        }
+    });
+
+    document.getElementById('increase-grid-btn').addEventListener('click', () => {
+        if (currentGridSize < 5) {
+            currentGridSize++;
+            document.getElementById('grid-size-value').textContent = currentGridSize;
+            if (currentView === 'grid') {
+                document.getElementById('movies-grid').classList.remove(`grid-size-${currentGridSize - 1}`);
+                document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
+
+                updateCardSize(currentGridSize);
+            }
+        }
+    });
+
+    function updateCardSize(currentGridSize) {
+        if(currentGridSize === 3){
+            document.querySelectorAll('.movie-card').forEach(card => {
+                card.style.height = '';
+                card.style.minHeight = '';
+            });
+
+            document.querySelectorAll('.movie-header').forEach(header => {
+                header.style.gap = '';
+            });
+
+            document.querySelectorAll('.watched-badge').forEach(badge => {
+                badge.style.padding = '';
+                badge.style.fontSize = '';
+            });
+
+            document.querySelectorAll('.movie-title').forEach(title => {
+                title.style.fontSize = '';
+                title.style.marginBottom = '';
+            });
+
+            document.querySelectorAll('.movie-year').forEach(year => {
+                year.style.fontSize = '';
+                year.style.marginBottom = "";
+            });
+
+            document.querySelectorAll('.genre-tag').forEach(genres => {
+                genres.style.padding = '';
+                genres.style.fontSize = '';
+            });
+
+            document.querySelectorAll('.movie-streaming-service').forEach(service => {
+                service.style.top = "";
+            });
+
+            document.querySelectorAll('.movie-external-ratings').forEach(ratings => {
+                ratings.style.marginLeft = '';
+                ratings.style.display = '';
+                ratings.style.gap = '';
+                ratings.style.width = '';
+                ratings.style.marginTop = "";
+                ratings.style.marginLeft = "";
+            });
+
+            document.querySelectorAll('.movie-description').forEach(card => {
+                card.style.webkitLineClamp = '';
+                card.style.top = '';
+            });
+
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.style.fontSize = '';
+                btn.style.padding = "";
+            });
+
+            document.querySelectorAll('.movie-watch span').forEach(watchBtn => {
+                watchBtn.style.marginLeft = '';
+            });
+
+            document.querySelectorAll('.movie-actions').forEach(actions => {
+                actions.style.gap = '';
+            });
+
+            document.querySelectorAll('.movie-ratings').forEach(ratings => {
+                ratings.style.display = '';
+            });
+        } else if(currentGridSize === 4){
+            document.querySelectorAll('.movie-card').forEach(card => {
+                card.style.height = '340px';
+                card.style.minHeight = '340px';
+            });
+
+            document.querySelectorAll('.movie-header').forEach(header => {
+                header.style.gap = '0.5rem';
+            });
+
+            document.querySelectorAll('.watched-badge').forEach(badge => {
+                badge.style.padding = '0rem 0.3rem';
+                badge.style.fontSize = '0.7rem';
+            });
+
+            document.querySelectorAll('.movie-title').forEach(title => {
+                title.style.fontSize = '1rem';
+                title.style.marginBottom = '0.2rem';
+            });
+
+            document.querySelectorAll('.movie-year').forEach(year => {
+                year.style.fontSize = '0.9rem';
+                year.style.marginBottom = "0.1rem";
+            });
+
+            document.querySelectorAll('.genre-tag').forEach(genres => {
+                genres.style.padding = '0.1rem 0.2rem';
+                genres.style.fontSize = '10px';
+            });
+
+            document.querySelectorAll('.movie-streaming-service').forEach(service => {
+                service.style.top = "115px";
+            });
+
+            document.querySelectorAll('.movie-external-ratings').forEach(ratings => {
+                ratings.style.marginLeft = '0';
+                ratings.style.display = 'flex';
+                ratings.style.gap = '8rem';
+                ratings.style.width = '100%';
+                ratings.style.marginTop = "5px";
+                ratings.style.marginLeft = "1.5rem";
+            });
+
+            document.querySelectorAll('.movie-description').forEach(card => {
+                card.style.webkitLineClamp = 4;
+                card.style.top = '190px';
+            });
+
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.style.fontSize = '13px';
+                btn.style.padding = "0.4rem 0.4rem";
+            });
+
+            document.querySelectorAll('.movie-watch span').forEach(watchBtn => {
+                watchBtn.style.marginLeft = '0px';
+            });
+
+            document.querySelectorAll('.movie-actions').forEach(actions => {
+                actions.style.gap = '0.5rem';
+            });
+
+            document.querySelectorAll('.movie-ratings').forEach(ratings => {
+                ratings.style.display = 'none';
+            });
+        }
+    }
+
+    // Initialize grid size
+    document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
+
 });

@@ -553,7 +553,7 @@
             .then(data => {
                 console.log(data)
                 const imdbRating = document.getElementById('imdb-rating');
-                imdbRating.appendChild(document.createTextNode(data.imdbRating));
+                imdbRating.appendChild(document.createTextNode(`${data.imdbRating}/10`));
                 document.querySelector('.rating-loader-spinner').remove();
 
                 const rtRating = document.getElementById('rt-rating');
