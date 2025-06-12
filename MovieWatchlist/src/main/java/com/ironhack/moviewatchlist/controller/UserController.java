@@ -1,6 +1,7 @@
 package com.ironhack.moviewatchlist.controller;
 
 import com.ironhack.moviewatchlist.exceptions.NotLoggedInException;
+import com.ironhack.moviewatchlist.exceptions.UsernameAlreadyExistsException;
 import com.ironhack.moviewatchlist.model.User;
 import com.ironhack.moviewatchlist.repository.UserRepository;
 import com.ironhack.moviewatchlist.service.PageService;
@@ -85,6 +86,10 @@ public class UserController {
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public String signup(@RequestBody User user) {
+        if(userService.getUser(user.getUsername()) != null) {
+            throw new UsernameAlreadyExistsException("Username already exists");
+        }
+
         userService.saveUser(user);
         pageService.createPage("Movie Watchlist", "Welcome to the Movie Watchlist!", true, user);
 

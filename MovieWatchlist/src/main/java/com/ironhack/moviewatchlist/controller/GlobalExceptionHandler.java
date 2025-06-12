@@ -3,6 +3,7 @@ package com.ironhack.moviewatchlist.controller;
 import com.ironhack.moviewatchlist.exceptions.NotLoggedInException;
 import com.ironhack.moviewatchlist.exceptions.PageNotFoundException;
 import com.ironhack.moviewatchlist.exceptions.PageNotPublicException;
+import com.ironhack.moviewatchlist.exceptions.UsernameAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,6 +31,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse("NOT_LOGGED_IN", ex.getMessage()));
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<?> handleUsernameAlreadyExists(UsernameAlreadyExistsException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("USERNAME_ALREADY_EXISTS", ex.getMessage()));
     }
 
     public static class ErrorResponse {

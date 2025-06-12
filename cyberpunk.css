@@ -1644,3 +1644,12 @@ h1 {
 .auth-form {
     transition: all 0.3s ease;
 }
+
+footer span {
+    background: linear-gradient(135deg, #f0f, #0ff);
+    background-clip: border-box;
+    background-clip: border-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}

@@ -71,17 +71,28 @@ export function signup() {
     })
         .then(response => {
             if (!response.ok) {
+                initialUsername = null
+                initialPassword = null
+                if(response.status === 409) {
+                    alert('Username already exists. Please try a different username.');
+                    return;
+                }
                 throw new Error('Signup failed');
             }
+            return response.text();
         })
         .then(data => {
-            console.log(data)
-            initialUsername = username
-            initialPassword = password
-            login();
-            return;
+            if(data){
+                console.log(data)
+                initialUsername = username
+                initialPassword = password
+                login();
+                return;
+            }
         })
         .catch(error => {
+            initialUsername = null
+            initialPassword = null
             alert('Signup failed.');
             console.error('Signup error:', error.message);
         });

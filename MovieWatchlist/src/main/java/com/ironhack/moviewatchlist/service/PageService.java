@@ -29,7 +29,8 @@ public class PageService {
     }
 
     public Page createPage(String title, String description, boolean isPublic, User owner) {
-        Page page = new Page(title, description, isPublic, owner, owner.getName());
+        System.out.println(owner.getName());
+        Page page = new Page(title, description, isPublic, owner, owner.getUsername());
         return pageRepository.save(page);
     }
 
