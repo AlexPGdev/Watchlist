@@ -152,10 +152,10 @@
                             <div class="movie-genres">
                                 ${movie.genres.map(genre => `<span class="genre-tag" title="${genre}">${genre}</span>`).join('')}
                             </div>
-                            <div class="movie-external-ratings">
-                                <span><img src="./img/streaming-services/imdb.svg"> ${movie.imdbRating}</span>
-                                <span><img src="./img/streaming-services/rt.png"> ${movie.rtRating}</span>
-                            </div>
+                            <button class="movie-external-ratings" data-movie-imdbid="${movie.imdbId}">
+                                <span class="imdbRating"><img src="./img/streaming-services/imdb.svg"> ${movie.imdbRating === 0 ? "<div class ='rating-loader-spinner' style='margin-bottom: 0; width: 20px; height: 20px;'></div>" : movie.imdbRating}</span>
+                                <span class="rtRating"><img src="./img/streaming-services/rt.png"> ${movie.rtRating === null ? "<div class ='rating-loader-spinner' style='margin-bottom: 0; width: 20px; height: 20px;'></div>" : movie.rtRating}</span>
+                            </button>
                             <div class="movie-streaming-service">
                                 <button id="watch-movie-btn" class="movie-watch watch-btn action-btn"><span>🎬</span><p>Watch</p></button>
                             </div>

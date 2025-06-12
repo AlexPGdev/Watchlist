@@ -65,9 +65,6 @@
                             const response = await fetch("http://localhost:8080/api/movies/details?id=" + movie.id);
                             const movieDetails = await response.json();
 
-                            const response2 = await fetch("http://localhost:8080/api/movies/ratings?id=" + movieDetails.imdb_id);
-                            const movieRatings = await response2.json();
-
                             const newMovie = {
                                 title: movieDetails.title,
                                 description: movieDetails.overview,
@@ -78,8 +75,8 @@
                                 imdbId: movieDetails.imdb_id,
                                 tmdbId: movieDetails.id,
                                 streamingServices: [],
-                                imdbRating: parseFloat(movieRatings.imdbRating) ? movieRatings.imdbRating : 0,
-                                rtRating: movieRatings.Ratings.find(r => r.Source === 'Rotten Tomatoes') ? movieRatings.Ratings.find(r => r.Source === 'Rotten Tomatoes').Value : null
+                                imdbRating: 0,
+                                rtRating: null
                             };
 
                             const duplicate = getMovies().find(m => m.tmdbId === newMovie.tmdbId);
@@ -133,6 +130,22 @@
                 updateStats();
                 loadPage();
                 closeModal(document.getElementById('add-movie-modal'));
+
+                response.json().then(data => {
+                    console.log(data)
+                    fetch(`http://localhost:8080/api/movies/ratings?imdbId=${movie.imdbId}&id=${data.id}`, {
+                        method: "PATCH",
+                        credentials: 'include'
+                    }).then(response => response.json())
+                    .then(data => {
+                        if (document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.imdbRating').querySelector('.rating-loader-spinner')) document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.imdbRating').querySelector('.rating-loader-spinner').remove();
+                        document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.imdbRating').innerHTML = `<img src="./img/streaming-services/imdb.svg"> ${data.imdbRating}`;
+                        if (document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner')) document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner').remove();
+                        document.querySelector(`[data-movie-id="${data.id}"]`).querySelector('.rtRating').innerHTML = `<img src="./img/streaming-services/rt.png"> ${data.rtRating}`;
+                    });
+                });
+
+
             } else {
                 console.error('Failed to add movie');
             }

@@ -108,6 +108,9 @@ public class MovieController {
 
     @PatchMapping("/{id}/rating")
     public Movie updateMovieRating(@PathVariable Long id, @RequestParam(name = "rating") Integer rating, Authentication authentication) {
+        if(authentication == null) {
+            throw new RuntimeException("You need to be logged in to update the rating");
+        }
         User currentUser = userRepository.findByUsername(authentication.getName());
         Page page = pageService.getUserPage(currentUser);
         Movie movie = page.getMovies().stream().filter(m -> m.getId().equals(id)).findFirst().orElse(null);
@@ -115,6 +118,20 @@ public class MovieController {
             throw new PageNotFoundException("Movie not found in your library");
         }
         return movieService.updateMovieRating(id, rating);
+    }
+
+    @PatchMapping("/ratings")
+    public Movie updateMovieRatings(@RequestParam(name = "imdbId") String imdbId, @RequestParam(name = "id") Long id, Authentication authentication) throws IOException {
+        if(authentication == null) {
+            throw new RuntimeException("You need to be logged in to update the ratings");
+        }
+        User currentUser = userRepository.findByUsername(authentication.getName());
+        Page page = pageService.getUserPage(currentUser);
+        Movie movie = page.getMovies().stream().filter(m -> m.getId().equals(id)).findFirst().orElse(null);
+        if(movie == null) {
+            throw new PageNotFoundException("Movie not found in your library");
+        }
+        return movieService.updateMovieRatings(imdbId, id);
     }
 
     @PatchMapping("/{id}/watch-date")

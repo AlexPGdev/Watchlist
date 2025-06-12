@@ -30,6 +30,25 @@
             watchMovie(movieId);
         }
 
+        if(event.target.closest('.movie-external-ratings')) {
+            let movieId = event.target.closest('.movie-card').dataset.movieId;
+            let movieImdbId = event.target.closest('.movie-external-ratings').dataset.movieImdbid;
+
+            document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.imdbRating').innerHTML = `<img src="./img/streaming-services/imdb.svg"> <div class ='rating-loader-spinner' style='margin-bottom: 0; width: 20px; height: 20px;'></div>`;
+            document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').innerHTML = `<img src="./img/streaming-services/rt.png"> <div class ='rating-loader-spinner' style='margin-bottom: 0; width: 20px; height: 20px;'></div>`;
+
+            fetch(`http://localhost:8080/api/movies/ratings?imdbId=${movieImdbId}&id=${movieId}`, {
+                method: "PATCH",
+                credentials: 'include'
+            }).then(response => response.json())
+            .then(data => {
+                if (document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.imdbRating').querySelector('.rating-loader-spinner')) document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.imdbRating').querySelector('.rating-loader-spinner').remove();
+                document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.imdbRating').innerHTML = `<img src="./img/streaming-services/imdb.svg"> ${data.imdbRating}`;
+                if (document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner')) document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner').remove();
+                document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').innerHTML = `<img src="./img/streaming-services/rt.png"> ${data.rtRating}`;
+            });
+        }
+
         if(event.target.id === 'add-from-user') {
             let movieId = event.target.dataset.movieTmdbid;
             addFromUserToWatchlist(movieId, event);

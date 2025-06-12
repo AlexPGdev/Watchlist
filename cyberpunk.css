@@ -353,11 +353,22 @@ h1 {
 }
 
 .movie-external-ratings {
+    background: transparent;
+    color: white;
+    border: 0px;
+    font-size: 15px;
+    cursor: pointer;
     position: fixed;
     left: 0;
     margin-left: 1.5rem;
     display: grid;
     top: 150px;
+}
+
+.movie-external-ratings:hover {
+    background: rgba(87, 87, 87, 0.53);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
 }
 
 .movie-external-ratings img {

@@ -20,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -81,6 +82,21 @@ public class MovieService {
         var movie = movieRepository.findById(id).orElseThrow();
         movie.setRating(rating);
         return movieRepository.save(movie);
+    }
+
+    public Movie updateMovieRatings(String imdbId, Long id) throws IOException {
+        var movie = movieRepository.findById(id).orElseThrow();
+        var movies = movieRepository.findByImdbId(imdbId);
+        var imdbRating = apiServices.getMovieRatings(imdbId).getImdbRating();
+        var rtRating = apiServices.getMovieRatings(imdbId).getRtRating();
+
+        movies.forEach(m -> {
+            m.setImdbRating(imdbRating);
+            m.setRtRating(rtRating);
+            movieRepository.save(m);
+        });
+
+        return movie;
     }
 
     public void deleteMovie(Long id) {
