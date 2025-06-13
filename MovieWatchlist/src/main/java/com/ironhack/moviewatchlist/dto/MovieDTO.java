@@ -15,6 +15,7 @@ public class MovieDTO {
     private ArrayList<String> genres;
     private Long watchDate;
     private String profileOwner;
+    private Long addedDate;
 
     public String getTitle() {
         return title;
@@ -95,16 +96,12 @@ public class MovieDTO {
     public void setProfileOwner(String profileOwner) {
         this.profileOwner = profileOwner;
     }
+
+    public Long getAddedDate() {
+        return addedDate;
+    }
+
+    public void setAddedDate(Long addedDate) {
+        this.addedDate = addedDate;
+    }
 }
-
-
-/*
-                        title: movieDetails.title,
-                        description: movieDetails.overview,
-                        watched: false,
-                        year: movieDetails.release_date.split('-')[0],
-                        genres: movieDetails.genres.map(g => g.name).join(', ').split(',').map(g => g.trim()),
-                        posterPath: "https://image.tmdb.org/t/p/w500" + movieDetails.poster_path,
-                        tmdbId: movieDetails.id,
-                        streamingServices: []
- */

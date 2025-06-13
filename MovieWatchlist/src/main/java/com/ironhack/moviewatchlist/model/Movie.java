@@ -33,7 +33,6 @@ public class Movie {
 
     private String imdbId;
     private Integer tmdbId;
-
     private Integer rating = -1;
 
     @ElementCollection
@@ -42,7 +41,10 @@ public class Movie {
     private double imdbRating;
     private String rtRating;
 
+    private Long addedDate;
+
     public Movie() {
+        this.addedDate = System.currentTimeMillis();
     }
 
     public Movie(String title, String description, int year, List<String> genres, boolean watched, String posterPath, Long watchDate, String imdbId, Integer tmdbId, List<String> streamingServices, Integer rating, double imdbRating, String rtRating) {
@@ -59,6 +61,7 @@ public class Movie {
         this.rating = rating;
         this.imdbRating = imdbRating;
         this.rtRating = rtRating;
+        this.addedDate = System.currentTimeMillis();
     }
 
     public Long getId() {
@@ -171,5 +174,13 @@ public class Movie {
 
     public void setRtRating(String rtRating) {
         this.rtRating = rtRating;
+    }
+
+    public Long getAddedDate() {
+        return addedDate;
+    }
+
+    public void setAddedDate(Long addedDate) {
+        this.addedDate = addedDate;
     }
 }

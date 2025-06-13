@@ -1,7 +1,9 @@
 package com.ironhack.moviewatchlist.controller;
 
+import com.ironhack.moviewatchlist.dto.SettingsDTO;
 import com.ironhack.moviewatchlist.exceptions.NotLoggedInException;
 import com.ironhack.moviewatchlist.exceptions.UsernameAlreadyExistsException;
+import com.ironhack.moviewatchlist.model.Settings;
 import com.ironhack.moviewatchlist.model.User;
 import com.ironhack.moviewatchlist.repository.UserRepository;
 import com.ironhack.moviewatchlist.service.PageService;
@@ -90,9 +92,50 @@ public class UserController {
             throw new UsernameAlreadyExistsException("Username already exists");
         }
 
+        user.setSettings(new Settings("en", "default", 0, 3, user));
+
         userService.saveUser(user);
         pageService.createPage("Movie Watchlist", "Welcome to the Movie Watchlist!", true, user);
 
         return "User created successfully";
+    }
+
+    @GetMapping("/settings")
+    public SettingsDTO getSettings(Authentication authentication) {
+        if(authentication == null) {
+            throw new NotLoggedInException("Not logged in");
+        }
+        User currentUser = userRepository.findByUsername(authentication.getName());
+        if(currentUser == null) {
+            throw new RuntimeException("User not found");
+        }
+        SettingsDTO settingsDTO = new SettingsDTO(currentUser.getSettings().getLanguage(), currentUser.getSettings().getTheme(), currentUser.getSettings().getView(), currentUser.getSettings().getGridSize());
+        return settingsDTO;
+    }
+
+    @PatchMapping("/settings")
+    public Settings updateSettings(@RequestBody SettingsDTO settings, Authentication authentication) {
+        if(authentication == null) {
+            throw new NotLoggedInException("Not logged in");
+        }
+        User currentUser = userRepository.findByUsername(authentication.getName());
+        if(currentUser == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        if (settings.getTheme() != null) {
+            currentUser.getSettings().setTheme(settings.getTheme());
+        }
+        if (settings.getLanguage() != null) {
+            currentUser.getSettings().setLanguage(settings.getLanguage());
+        }
+        if (settings.getView() != null) {
+            currentUser.getSettings().setView(settings.getView());
+        }
+        if (settings.getGridSize() != null) {
+            currentUser.getSettings().setGridSize(settings.getGridSize());
+        }
+
+        return userRepository.save(currentUser).getSettings();
     }
 }

@@ -1,5 +1,6 @@
 package com.ironhack.moviewatchlist.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -29,16 +30,23 @@ public class User {
     private Collection<Role> roles = new ArrayList<>();
 
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Page page;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Settings settings;
 
     public User() {
     }
 
-    public User(String name, String username, String password, String rememberMe) {
+    public User(String name, String username, String password, String rememberMe, Page page, Settings settings) {
         this.name = name;
         this.username = username;
         this.password = password;
         this.rememberMe = rememberMe;
+        this.page = page;
+        this.settings = settings;
     }
 
     public Long getId() {
@@ -97,5 +105,21 @@ public class User {
 
     public void setRememberMe(String rememberMe) {
         this.rememberMe = rememberMe;
+    }
+
+    public Page getPage() {
+        return page;
+    }
+
+    public void setPage(Page page) {
+        this.page = page;
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
     }
 }

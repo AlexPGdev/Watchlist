@@ -1,6 +1,7 @@
 package com.ironhack.moviewatchlist.controller;
 
 import com.ironhack.moviewatchlist.dto.RatingResponse;
+import com.ironhack.moviewatchlist.exceptions.NotLoggedInException;
 import com.ironhack.moviewatchlist.exceptions.PageNotFoundException;
 import com.ironhack.moviewatchlist.model.Movie;
 import com.ironhack.moviewatchlist.model.Page;
@@ -109,7 +110,7 @@ public class MovieController {
     @PatchMapping("/{id}/rating")
     public Movie updateMovieRating(@PathVariable Long id, @RequestParam(name = "rating") Integer rating, Authentication authentication) {
         if(authentication == null) {
-            throw new RuntimeException("You need to be logged in to update the rating");
+            throw new NotLoggedInException("Not logged in");
         }
         User currentUser = userRepository.findByUsername(authentication.getName());
         Page page = pageService.getUserPage(currentUser);

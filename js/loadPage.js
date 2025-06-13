@@ -1,8 +1,11 @@
+import { openLoginModal } from "./auth.js";
+
     let movies = [];
     let loggedIn = false;
     let username;
     let currentUserMovies = [];
     let path = window.location.pathname;
+    let currentFilter = 'all';
 
     export function getMovies() {
         return movies;
@@ -18,6 +21,22 @@
 
     export function setUserMovies(newMovies) {
         currentUserMovies = newMovies;
+    }
+
+    export function getFilter() {
+        return currentFilter;
+    }
+
+    export function setFilter(newFilter) {
+        currentFilter = newFilter;
+    }
+
+    export function getUser() {
+        return username;
+    }
+
+    export function setUser(newUser) {
+        username = newUser;
     }
     
     fetch(`http://localhost:8080/api/user`, {
@@ -45,7 +64,7 @@
         .then(data => {
             if(data){
                 loggedIn = true;
-                username = data.username;
+                setUser(data.username);
                 loadPage()
     
                 fetch(`http://localhost:8080/api/page`, {
@@ -62,7 +81,7 @@
         });
 
     function myProfile(){
-        if(!path.split('/')[1] || path.split('/')[1] === username){
+        if(!path.split('/')[1] || path.split('/')[1] === getUser()){
             return true;
         } else {
             return false;
@@ -113,6 +132,7 @@
 
         if(!myProfile()){
             document.querySelector('.add-btn').style.display = 'none';
+        
         } else {
             document.querySelector('.add-btn').style.display = '';
         }
@@ -131,7 +151,10 @@
         }
 
         if(!loggedIn && !path.split('/')[1]){
-            grid.innerHTML = '<div style="text-align: center; color: #b8b8d1; grid-column: 1/-1; padding: 2rem;">Log in to view your movies.</div>';
+            grid.innerHTML = '<div style="text-align: center; color: #b8b8d1; grid-column: 1/-1; padding: 2rem;">Log in to view your movies.</div><br><div class="load-login-btn"><button id="load-login-btn" class="login-btn">Login</button></div>';
+            
+            const loadLoginModalBtn = document.getElementById("load-login-btn");
+            loadLoginModalBtn.addEventListener("click", openLoginModal);
             return;
         }
 
@@ -153,7 +176,7 @@
                                 ${movie.genres.map(genre => `<span class="genre-tag" title="${genre}">${genre}</span>`).join('')}
                             </div>
                             <button class="movie-external-ratings" data-movie-imdbid="${movie.imdbId}">
-                                <span class="imdbRating"><img src="./img/streaming-services/imdb.svg"> ${movie.imdbRating === 0 ? "<div class ='rating-loader-spinner' style='margin-bottom: 0; width: 20px; height: 20px;'></div>" : movie.imdbRating}</span>
+                                <span class="imdbRating"><img src="./img/streaming-services/imdb.svg"> ${movie.imdbRating === 0 ? "<div class ='rating-loader-spinner' style='margin-bottom: 0; width: 20px; height: 20px;'></div>" : movie.imdbRating}/10</span>
                                 <span class="rtRating"><img src="./img/streaming-services/rt.png"> ${movie.rtRating === null ? "<div class ='rating-loader-spinner' style='margin-bottom: 0; width: 20px; height: 20px;'></div>" : movie.rtRating}</span>
                             </button>
                             <div class="movie-streaming-service">
@@ -181,10 +204,20 @@
                             ${movie.watched ? 'Mark Unwatched' : 'Mark Watched'}` : ''}
                         </button>
                         ${myProfile() === true ? `<button id="remove-btn" class="action-btn remove-btn">Remove</button>` : ''}
-                        ${myProfile() === false ? `<button id="add-from-user" class="action-btn watch-btn addtowatch-btn" data-movie-tmdbId="${movie.tmdbId}">Add to Watchlist</button>` : ''}
+                        ${myProfile() === false && getUser() ? `<button id="add-from-user" class="action-btn watch-btn addtowatch-btn" data-movie-tmdbId="${movie.tmdbId}">Add to Watchlist</button>` : ''}
                     </div>
                 </div>
             `).join('');
+
+            if(document.querySelector(`[data-movie-id="${window.movieId}"]`) && window.movieId !== null){
+                document.querySelector(`[data-movie-id="${window.movieId}"]`).querySelector('#add-from-user').disabled = true;
+                window.movieId = null;
+            }
+
+            if(!myProfile()){
+                document.querySelectorAll('.rating-btn').forEach(btn => btn.disabled = true);
+            }
+
     }
 
 
@@ -208,7 +241,7 @@
             
             // Update profile picture
             const profilePic = document.querySelector('.profile-pic');
-            const imgPath = `/img/user/${username}.png`;
+            const imgPath = `/img/user/${getUser()}.png`;
             
             // Try to load custom profile picture
             const tempImg = new Image();
@@ -217,7 +250,7 @@
             };
             tempImg.onerror = function() {
                 // If image not found, create an SVG with the first letter
-                const firstLetter = username.charAt(0).toUpperCase();
+                const firstLetter = getUser().charAt(0).toUpperCase();
                 profilePic.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="%234ecdc4"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-family="Arial" font-size="20" font-weight="bold">${firstLetter}</text></svg>`;
             };
             tempImg.src = imgPath;
@@ -257,19 +290,17 @@
             // movie.description.toLowerCase().includes(query)
         );
 
-        if (currentFilter === 'watched') {
+        if (getFilter() === 'watched') {
             filteredMovies = filteredMovies.filter(m => m.watched);
-        } else if (currentFilter === 'to-watch') {
+        } else if (getFilter() === 'to-watch') {
             filteredMovies = filteredMovies.filter(m => !m.watched);
         }
 
         renderMovies(filteredMovies);
     }
 
-    let currentFilter = 'all';
-
     export function filterMovies(filter) {
-        currentFilter = filter;
+        setFilter(filter);
 
         document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
         event.target.classList.add('active');

@@ -1,15 +1,12 @@
 import { login, signup, openLoginModal, closeLoginModal, logout, switchAuthTab } from "./auth.js";
 import { getAIRecommendation } from "./AIRecommendation.js";
 import { openModal, closeModal, searchMoviesForModal, addMovieToWatchlist, closeDuplicateModal, forceAddDuplicate } from "./addMovie.js";
-import { loadPage, filterMovies, searchMovies } from "./loadPage.js";
+import { loadPage, filterMovies, searchMovies, getMovies, renderMovies, getFilter } from "./loadPage.js";
 import { toggleWatched, removeMovie, closeMovieDetailsModal } from "./movieActions.js";
 import { searchUser } from "./searchUser.js";
 import { changeTheme, getCurrentTheme } from "./themeManager.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-
-    // Theme functionality
-    changeTheme(getCurrentTheme());
 
     // Add click event listeners for profile dropdown
 
@@ -22,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     profileBtn.addEventListener('click', function(e) {
         e.stopPropagation();
+        console.log('aaaaa')
         dropdown.classList.toggle('show');
     });
 
@@ -244,183 +242,244 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById('search-input').addEventListener('input', searchMovies);
 
-    // View controls
-    let currentView = 'grid';
-    let currentGridSize = 3;
+    // Sort functionality
+    const sortSelect = document.getElementById('sort-select');
+    let currentSort = 'addeddate-asc';
 
-    document.getElementById('grid-view-btn').addEventListener('click', () => {
-        currentView = 'grid';
+    sortSelect.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        sortMovies();
+    });
+
+    function sortMovies() {
+        const [field, direction] = currentSort.split('-');
+        const isAsc = direction === 'asc';
+
+        let movies = getMovies()
+        
+        movies.sort((a, b) => {
+            let valueA, valueB;
+            
+            switch(field) {
+                case 'title':
+                    valueA = a.title.toLowerCase();
+                    valueB = b.title.toLowerCase();
+                    break;
+                case 'year':
+                    valueA = parseInt(a.year) || 0;
+                    valueB = parseInt(b.year) || 0;
+                    break;
+                case 'rating':
+                    valueA = parseFloat(a.imdbRating) || 0;
+                    valueB = parseFloat(b.imdbRating) || 0;
+                    break;
+                case 'watchdate':
+                    valueA = a.watchDate ? new Date(a.watchDate).getTime() : 0;
+                    valueB = b.watchDate ? new Date(b.watchDate).getTime() : 0;
+                    break;
+                case 'addeddate':
+                    valueA = a.addedDate ? new Date(a.addedDate).getTime() : 0;
+                    valueB = b.addedDate ? new Date(b.addedDate).getTime() : 0;
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if (valueA < valueB) return isAsc ? -1 : 1;
+            if (valueA > valueB) return isAsc ? 1 : -1;
+            return 0;
+        });
+
+        // Re-apply current filter
+        let filteredMovies = movies;
+        if (getFilter() === 'watched') {
+            filteredMovies = movies.filter(m => m.watched);
+        } else if (getFilter() === 'to-watch') {
+            filteredMovies = movies.filter(m => !m.watched);
+        }
+
+        renderMovies(filteredMovies);
+    }
+
+    // View controls
+    let currentView;
+    let currentGridSize;
+
+    fetch(`http://localhost:8080/api/settings`, {
+        method: 'GET',
+        credentials: 'include'
+    }).then(response => {
+        if (!response.ok) {
+            currentView = localStorage.getItem('view') || 'grid';
+            currentGridSize = localStorage.getItem('gridSize') || 3;
+            changeSettings();
+
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if(data){
+            currentView = data.view;
+            currentGridSize = data.gridSize;
+        }
+        
+        changeSettings();
+
+    })
+
+    function changeSettings() {
+
+        if(parseInt(currentView) === 0){
+            viewList();
+        } else {
+            viewGrid();
+        }
+
+        document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
+        document.getElementById('grid-size-value').textContent = currentGridSize;
+
+        updateCardSize(currentGridSize);
+
+    }
+
+    document.getElementById('decrease-grid-btn').addEventListener('click', () => {
+        decreaseGrid();
+    });
+    
+    document.getElementById('increase-grid-btn').addEventListener('click', () => {
+        increaseGrid();
+    });
+
+    let settingsChangeDebounceTimeout;
+
+    function decreaseGrid() {
+        if (currentGridSize > 2) {
+            currentGridSize--;
+            document.getElementById('grid-size-value').textContent = currentGridSize;
+            if (parseInt(currentView) === 1) {
+                document.getElementById('movies-grid').classList.remove(`grid-size-${currentGridSize + 1}`);
+                document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
+                    
+                updateCardSize(currentGridSize);
+
+                localStorage.setItem('gridSize', currentGridSize);
+
+                if(settingsChangeDebounceTimeout) clearTimeout(settingsChangeDebounceTimeout);
+                settingsChangeDebounceTimeout = setTimeout(() => {
+                    fetch(`http://localhost:8080/api/settings`, {
+                        method: 'PATCH',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            gridSize: currentGridSize
+                        })
+                    }).then(response => {
+                        if (!response.ok) {
+                            console.error('Failed to update grid size');
+                        }
+                    });
+                }, 300);
+            }
+        }
+    }
+
+    function increaseGrid() {
+        if (currentGridSize < 5) {
+            currentGridSize++;
+            document.getElementById('grid-size-value').textContent = currentGridSize;
+            if (parseInt(currentView) === 1) {
+                document.getElementById('movies-grid').classList.remove(`grid-size-${currentGridSize - 1}`);
+                document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
+
+                console.log(currentGridSize)
+
+                updateCardSize(currentGridSize);
+
+                localStorage.setItem('gridSize', currentGridSize);
+
+                if(settingsChangeDebounceTimeout) clearTimeout(settingsChangeDebounceTimeout);
+                settingsChangeDebounceTimeout = setTimeout(() => {
+                    fetch(`http://localhost:8080/api/settings`, {
+                        method: 'PATCH',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            gridSize: currentGridSize
+                        })
+                    })
+                }, 300);
+            }
+        }
+    }
+
+    function updateCardSize(currentGridSize) {
+        const container = document.getElementById('movies-grid');
+        container.classList.remove(`grid-size-3`, `grid-size-4`);
+        container.classList.add(`grid-size-${currentGridSize}`);
+    }
+
+    let viewChangeDebounceTimeout;
+
+    function viewGrid(){
         document.getElementById('grid-view-btn').classList.add('active');
         document.getElementById('list-view-btn').classList.remove('active');
         document.getElementById('movies-grid').classList.remove('list-view');
         document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
-    });
+    
+        localStorage.setItem('view', 1);
+    
+        if(viewChangeDebounceTimeout) clearTimeout(viewChangeDebounceTimeout);
+        viewChangeDebounceTimeout = setTimeout(() => {
+    
+            fetch(`http://localhost:8080/api/settings`, {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    view: 1
+                })
+            })
+        }, 300);
+    }
 
-    document.getElementById('list-view-btn').addEventListener('click', () => {
-        currentView = 'list';
+    function viewList(){
         document.getElementById('list-view-btn').classList.add('active');
         document.getElementById('grid-view-btn').classList.remove('active');
         document.getElementById('movies-grid').classList.add('list-view');
         document.getElementById('movies-grid').classList.remove(`grid-size-${currentGridSize}`);
-    });
-
-    document.getElementById('decrease-grid-btn').addEventListener('click', () => {
-        if (currentGridSize > 2) {
-            currentGridSize--;
-            document.getElementById('grid-size-value').textContent = currentGridSize;
-            if (currentView === 'grid') {
-                document.getElementById('movies-grid').classList.remove(`grid-size-${currentGridSize + 1}`);
-                document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
-
-                updateCardSize(currentGridSize);
-            }
-        }
-    });
-
-    document.getElementById('increase-grid-btn').addEventListener('click', () => {
-        if (currentGridSize < 5) {
-            currentGridSize++;
-            document.getElementById('grid-size-value').textContent = currentGridSize;
-            if (currentView === 'grid') {
-                document.getElementById('movies-grid').classList.remove(`grid-size-${currentGridSize - 1}`);
-                document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
-
-                updateCardSize(currentGridSize);
-            }
-        }
-    });
-
-    function updateCardSize(currentGridSize) {
-        if(currentGridSize === 3){
-            document.querySelectorAll('.movie-card').forEach(card => {
-                card.style.height = '';
-                card.style.minHeight = '';
-            });
-
-            document.querySelectorAll('.movie-header').forEach(header => {
-                header.style.gap = '';
-            });
-
-            document.querySelectorAll('.watched-badge').forEach(badge => {
-                badge.style.padding = '';
-                badge.style.fontSize = '';
-            });
-
-            document.querySelectorAll('.movie-title').forEach(title => {
-                title.style.fontSize = '';
-                title.style.marginBottom = '';
-            });
-
-            document.querySelectorAll('.movie-year').forEach(year => {
-                year.style.fontSize = '';
-                year.style.marginBottom = "";
-            });
-
-            document.querySelectorAll('.genre-tag').forEach(genres => {
-                genres.style.padding = '';
-                genres.style.fontSize = '';
-            });
-
-            document.querySelectorAll('.movie-streaming-service').forEach(service => {
-                service.style.top = "";
-            });
-
-            document.querySelectorAll('.movie-external-ratings').forEach(ratings => {
-                ratings.style.marginLeft = '';
-                ratings.style.display = '';
-                ratings.style.gap = '';
-                ratings.style.width = '';
-                ratings.style.marginTop = "";
-                ratings.style.marginLeft = "";
-            });
-
-            document.querySelectorAll('.movie-description').forEach(card => {
-                card.style.webkitLineClamp = '';
-                card.style.top = '';
-            });
-
-            document.querySelectorAll('.action-btn').forEach(btn => {
-                btn.style.fontSize = '';
-                btn.style.padding = "";
-            });
-
-            document.querySelectorAll('.movie-watch span').forEach(watchBtn => {
-                watchBtn.style.marginLeft = '';
-            });
-
-            document.querySelectorAll('.movie-actions').forEach(actions => {
-                actions.style.gap = '';
-            });
-
-            document.querySelectorAll('.movie-ratings').forEach(ratings => {
-                ratings.style.display = '';
-            });
-        } else if(currentGridSize === 4){
-            document.querySelectorAll('.movie-card').forEach(card => {
-                card.style.height = '340px';
-                card.style.minHeight = '340px';
-            });
-
-            document.querySelectorAll('.movie-header').forEach(header => {
-                header.style.gap = '0.5rem';
-            });
-
-            document.querySelectorAll('.watched-badge').forEach(badge => {
-                badge.style.padding = '0rem 0.3rem';
-                badge.style.fontSize = '0.7rem';
-            });
-
-            document.querySelectorAll('.movie-title').forEach(title => {
-                title.style.fontSize = '1rem';
-                title.style.marginBottom = '0.2rem';
-            });
-
-            document.querySelectorAll('.movie-year').forEach(year => {
-                year.style.fontSize = '0.9rem';
-                year.style.marginBottom = "0.1rem";
-            });
-
-            document.querySelectorAll('.genre-tag').forEach(genres => {
-                genres.style.padding = '0.1rem 0.2rem';
-                genres.style.fontSize = '10px';
-            });
-
-            document.querySelectorAll('.movie-streaming-service').forEach(service => {
-                service.style.top = "115px";
-            });
-
-            document.querySelectorAll('.movie-external-ratings').forEach(ratings => {
-                ratings.style.marginLeft = '0';
-                ratings.style.display = 'flex';
-                ratings.style.gap = '8rem';
-                ratings.style.width = '100%';
-                ratings.style.marginTop = "5px";
-                ratings.style.marginLeft = "1.5rem";
-            });
-
-            document.querySelectorAll('.movie-description').forEach(card => {
-                card.style.webkitLineClamp = 4;
-                card.style.top = '190px';
-            });
-
-            document.querySelectorAll('.action-btn').forEach(btn => {
-                btn.style.fontSize = '13px';
-                btn.style.padding = "0.4rem 0.4rem";
-            });
-
-            document.querySelectorAll('.movie-watch span').forEach(watchBtn => {
-                watchBtn.style.marginLeft = '0px';
-            });
-
-            document.querySelectorAll('.movie-actions').forEach(actions => {
-                actions.style.gap = '0.5rem';
-            });
-
-            document.querySelectorAll('.movie-ratings').forEach(ratings => {
-                ratings.style.display = 'none';
-            });
-        }
+        
+        localStorage.setItem('view', 0);
+        
+        if(viewChangeDebounceTimeout) clearTimeout(viewChangeDebounceTimeout);
+        viewChangeDebounceTimeout = setTimeout(() => {
+            fetch(`http://localhost:8080/api/settings`, {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    view: 0
+                })
+            })
+        }, 300);
     }
+
+    document.getElementById('grid-view-btn').addEventListener('click', () => {
+        viewGrid();
+    });
+
+    document.getElementById('list-view-btn').addEventListener('click', () => {
+        viewList();
+    });
+
 
     // Initialize grid size
     document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);

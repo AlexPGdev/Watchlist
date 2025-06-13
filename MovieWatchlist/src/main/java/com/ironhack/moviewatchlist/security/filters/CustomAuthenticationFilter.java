@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.moviewatchlist.dto.LoginRequest;
+import com.ironhack.moviewatchlist.model.Settings;
 import com.ironhack.moviewatchlist.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -95,6 +96,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not found");
             return;
         }
+
+        if(userEntity.getSettings() == null) {
+            userEntity.setSettings(new Settings("en", "default", 0, 3, userEntity));
+        }
+
         userEntity.setRememberMe(rememberToken);
         userRepository.save(userEntity);
 

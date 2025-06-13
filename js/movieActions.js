@@ -1,6 +1,16 @@
-    import { searchMovies, updateStats, getMovies, setMovies, getUserMovies, setUserMovies } from "./loadPage.js";
+    import { searchMovies, updateStats, getMovies, setMovies, getUserMovies, setUserMovies, getUser } from "./loadPage.js";
 
     let movies = [];
+
+    let path = window.location.pathname;
+
+    function myProfile(){
+        if(!path.split('/')[1] || path.split('/')[1] === getUser()){
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     document.addEventListener('click', (event) => {
         if(event.target.id === 'mark-watch-btn') {
@@ -30,7 +40,7 @@
             watchMovie(movieId);
         }
 
-        if(event.target.className === 'movie-external-ratings' || event.target.parentElement !== null && event.target.parentElement.className === 'movie-external-ratings') {
+        if(event.target.className === 'movie-external-ratings' || event.target.parentElement !== null && event.target.parentElement.className === 'movie-external-ratings' || event.target.parentElement.parentElement !== null && event.target.parentElement.parentElement.className === 'movie-external-ratings' ) {
             let movieId = event.target.closest('.movie-card').dataset.movieId;
             let movieImdbId = event.target.closest('.movie-external-ratings').dataset.movieImdbid;
 
@@ -110,25 +120,32 @@
     }
 
     export function removeMovie(id) {
-        let newMovies = getMovies().filter(m => m.id !== parseInt(id));
-        setMovies(newMovies);
-        
-        fetch(`http://localhost:8080/api/movies/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        }).then(response => {
-            if (response.ok) {
-                updateStats();
-                searchMovies();
-            } else {
-                console.error('Failed to delete movie');
-            }
-        }).catch(error => {
-            console.error('Error deleting movie:', error);
-        });
+        const movieCard = document.querySelector(`[data-movie-id="${id}"]`);
+        if (movieCard) {
+            movieCard.classList.add('removing');
+            
+            setTimeout(() => {
+                let newMovies = getMovies().filter(m => m.id !== parseInt(id));
+                setMovies(newMovies);
+                
+                fetch(`http://localhost:8080/api/movies/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                }).then(response => {
+                    if (response.ok) {
+                        updateStats();
+                        searchMovies();
+                    } else {
+                        console.error('Failed to delete movie');
+                    }
+                }).catch(error => {
+                    console.error('Error deleting movie:', error);
+                });
+            }, 300);
+        }
     }
 
     export function rateMovie(movieId, rating, button) {
@@ -489,10 +506,10 @@
             setTimeout(() => {
                 document.getElementById('duplicate-modal').querySelector('.modal-content').classList.add('active');
                 console.log('asd')
+                window.movieId = event.target.closest('.movie-card').dataset.movieId;
+                console.log(window.movieId)
             }, 10);
         } else {
-            event.target.disabled = true;
-            event.target.textContent = "Added to Watchlist";
             
             try {
                 const response = await fetch('http://localhost:8080/api/movies', {
@@ -506,6 +523,8 @@
 
                 if (response.ok) {
                     console.log('Movie added to watchlist')
+                    event.target.disabled = true;
+                    event.target.textContent = "Added to Watchlist";
                 } else {
                     console.error('Failed to add movie');
                 }
@@ -519,6 +538,8 @@
         const movie = movies.find(m => m.id === parseInt(movieId)) || getMovies().find(m => m.id === parseInt(movieId));
         if (!movie) return;
 
+        
+
         const modal = document.getElementById('movie-details-modal');
         modal.dataset.movieId = movieId;
         const modalContent = modal.querySelector('.movie-details-content');
@@ -529,7 +550,7 @@
         document.getElementById('modal-movie-title').textContent = movie.title;
         document.getElementById('modal-movie-year').textContent = movie.year;
         document.getElementById('modal-movie-genres').innerHTML = movie.genres.map(genre => 
-            `<span class="genre-tag">${genre}</span>`
+            `<span class="movie-details-genre-tag">${genre}</span>`
         ).join('');
         document.getElementById('modal-movie-description').textContent = movie.description;
         document.getElementById('modal-movie-external-ratings').innerHTML = `
@@ -538,36 +559,26 @@
                 <tr id="imdb-rating">
                     <td><img src="./img/streaming-services/imdb.svg" alt="IMDb" class="icon"></td>
                     <td>IMDb</td>
-                    <td class="rating-loader-spinner"></td>
+                    <td>${movie.imdbRating}/10</td>
                 </tr>
                 <tr id="rt-rating">
                     <td><img src="./img/streaming-services/rt.png" alt="Rotten Tomatoes" class="icon"></td>
                     <td>Rotten Tomatoes</td>
-                    <td class="rating-loader-spinner"></td>
+                    <td>${movie.rtRating}</td>
                 </tr>
             </table>
         `;
 
-        fetch(`http://localhost:8080/api/movies/ratings?id=${movie.imdbId}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                const imdbRating = document.getElementById('imdb-rating');
-                imdbRating.appendChild(document.createTextNode(`${data.imdbRating}/10`));
-                document.querySelector('.rating-loader-spinner').remove();
-
-                const rtRating = document.getElementById('rt-rating');
-                rtRating.appendChild(document.createTextNode(data.rtRating));
-                document.querySelector('.rating-loader-spinner').remove();
-            })
-
-        // Update ratings
         const ratingsContainer = document.getElementById('modal-movie-ratings');
         ratingsContainer.innerHTML = `
             <button class="rating-btn movie-details-rating ${movie.rating === 0 ? ' selected' : ''}" data-movie-rate=0><span>👎 Did not like it</span></button>
             <button class="rating-btn movie-details-rating ${movie.rating === 1 ? ' selected' : ''}" data-movie-rate=1><span>👍 Liked it</span></button>
             <button class="rating-btn movie-details-rating ${movie.rating === 2 ? ' selected' : ''}" data-movie-rate=2><span>❤️ Loved it</span></button>
         `;
+
+        if(!myProfile()){
+            document.querySelectorAll('.rating-btn').forEach(btn => btn.disabled = true);
+        }
 
         // Fetch and display streaming services
         fetch(`http://localhost:8080/api/movies/streaming-availability?id=${movie.tmdbId}`)

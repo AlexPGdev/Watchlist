@@ -73,6 +73,22 @@
         <button id="filter-tab-to-watch" class="filter-tab">To Watch</button>
         <button id="filter-tab-watched" class="filter-tab">Watched</button>
         <div class="view-controls">
+            <div class="sort-container">
+                <div class="sort-wrapper">
+                    <select id="sort-select" class="sort-select" title="Sort movies">
+                        <option value="addeddate-asc">Added Date (Oldest)</option>
+                        <option value="addeddate-desc">Added Date (Newest)</option>
+                        <option value="title-asc">Title (A-Z)</option>
+                        <option value="title-desc">Title (Z-A)</option>
+                        <option value="year-desc">Year (Newest)</option>
+                        <option value="year-asc">Year (Oldest)</option>
+                        <option value="rating-desc">IMDB Rating (High-Low)</option>
+                        <option value="rating-asc">IMDB Rating (Low-High)</option>
+                        <option value="watchdate-desc">Watch Date (Recent)</option>
+                        <option value="watchdate-asc">Watch Date (Oldest)</option>
+                    </select>
+                </div>
+            </div>
             <button id="grid-view-btn" class="view-btn active" title="Grid View">⊞</button>
             <button id="list-view-btn" class="view-btn" title="List View">≡</button>
             <div class="grid-size-control">
@@ -109,8 +125,8 @@
                 <input type="password" id="login-password" placeholder="Enter password">
             </div>
             <div class="modal-actions">
-                <button id="login-modal-cancel" class="action-btn remove-btn">Cancel</button>
-                <button id="login" class="action-btn watch-btn">Login</button>
+                <button id="login-modal-cancel" class="modal-action-btn remove-btn">Cancel</button>
+                <button id="login" class="modal-action-btn watch-btn">Login</button>
             </div>
         </div>
 
@@ -129,8 +145,8 @@
                 <input type="password" id="signup-confirm-password" placeholder="Confirm your password">
             </div>
             <div class="modal-actions">
-                <button id="signup-modal-cancel" class="action-btn remove-btn">Cancel</button>
-                <button id="signup" class="action-btn watch-btn">Sign Up</button>
+                <button id="signup-modal-cancel" class="modal-action-btn remove-btn">Cancel</button>
+                <button id="signup" class="modal-action-btn watch-btn">Sign Up</button>
             </div>
         </div>
     </div>
@@ -151,8 +167,8 @@
             </div>
         </div>
         <div class="modal-actions">
-            <button id="ai-recommendation-btn" class="action-btn watch-btn recommendations-btn">AI Recommendations</button>
-            <button id="cancel-add-btn" class="action-btn remove-btn">Cancel</button>
+            <button id="ai-recommendation-btn" class="modal-action-btn watch-btn recommendations-btn">AI Recommendations</button>
+            <button id="cancel-add-btn" class="modal-action-btn remove-btn">Cancel</button>
         </div>
 
         <div id="ai-loader" class="ai-loader" style="display: none;">
@@ -168,8 +184,8 @@
         <h3>Duplicate Movie</h3>
         <p>This movie is already in your watchlist</p>
         <div class="modal-actions" style="margin-top: 10px;">
-            <button id="dont-add-btn" class="action-btn remove-btn">Don't Add</button>
-            <button id="force-add-btn" class="action-btn watch-btn">Add Anyway</button>
+            <button id="dont-add-btn" class="modal-action-btn remove-btn">Don't Add</button>
+            <button id="force-add-btn" class="modal-action-btn watch-btn">Add Anyway</button>
         </div>
     </div>
 </div>
@@ -262,5 +278,19 @@
     <br>
     <p style="font-size: 13px;">This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+    // const grid = document.getElementById('movies-grid');
+
+    // Sortable.create(grid, {
+    // animation: 200,
+    // ghostClass: 'drag-ghost',   // optional: class for dragged item
+    // chosenClass: 'drag-chosen', // optional: class for selected item
+    // dragClass: 'dragging'       // optional: class while dragging
+    // });
+</script>
+
 </body>
 </html>
