@@ -48,9 +48,6 @@ public class MovieService {
         return movieRepository.findAll();
     }
 
-    private static final String POSTER_PATH = "/static/posters/";
-
-
     public Movie createMovie(Movie movie, User currentUser) {
         User user = userRepository.findByUsername(currentUser.getUsername());
 
@@ -121,15 +118,11 @@ public class MovieService {
                 .apiKey(dotenv.get("OPENAI_KEY"))
                 .build();
 
-//        Stream<String> movies = movieRepository.findAll().stream().map(Movie::getTitle);
-//        System.out.println(movies.collect(Collectors.joining("\n")));
-
         User username = userRepository.findByUsername(user.getUsername());
         List<Movie> watchedMovies = pageService.getUserPageMovies(username).stream().filter(m -> m.isWatched()).toList();
         List<Movie> toWatchMovies = pageService.getUserPageMovies(username).stream().filter(m -> !m.isWatched()).toList();
         System.out.println(watchedMovies.stream().map(m -> m.getTitle() + " - " + m.getRating()).collect(Collectors.joining("\n")));
         System.out.println(toWatchMovies.stream().map(m -> m.getTitle()).collect(Collectors.joining("\n")));
-        //System.out.println(watchedMovies);
 
         String instructions = "You are integrated on a website where users add movies to their watchlist. The users can rate the movies in this way after they watch it: Did not like it Liked it Loved it Based on the watched movies, and their ratings given by the user, you have to recommend other movies for them to watch. Give your response in the following json format: \"\n" +
                 "{\n" +

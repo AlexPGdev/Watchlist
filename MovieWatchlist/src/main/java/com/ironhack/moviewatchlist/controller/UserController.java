@@ -11,6 +11,7 @@ import com.ironhack.moviewatchlist.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -87,12 +88,12 @@ public class UserController {
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public String signup(@RequestBody User user) {
+    public String signup(@RequestBody @Valid User user) {
         if(userService.getUser(user.getUsername()) != null) {
             throw new UsernameAlreadyExistsException("Username already exists");
         }
 
-        user.setSettings(new Settings("en", "default", 0, 3, user));
+        user.setSettings(new Settings("en", "cyberpunk", 0, 3, user));
 
         userService.saveUser(user);
         pageService.createPage("Movie Watchlist", "Welcome to the Movie Watchlist!", true, user);

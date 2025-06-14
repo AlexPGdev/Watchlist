@@ -141,6 +141,7 @@ public class MovieController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(@PathVariable Long id, Authentication authentication) {
         User currentUser = userRepository.findByUsername(authentication.getName());
 

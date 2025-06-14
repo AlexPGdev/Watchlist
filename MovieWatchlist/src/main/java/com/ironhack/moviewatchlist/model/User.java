@@ -2,10 +2,11 @@ package com.ironhack.moviewatchlist.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 public class User {
@@ -16,9 +17,14 @@ public class User {
     private String name;
 
     @Column(name = "username", unique = true)
+    @Length(min = 2, max = 20, message = "Username must be between 2 and 20 characters long")
+    @NotNull(message = "Username cannot be null")
     private String username;
 
+    @Length(min = 8, message = "Password must be at least 8 characters long")
+    @NotNull(message = "Password cannot be null")
     private String password;
+
     private String rememberMe;
 
     @ManyToMany(fetch = FetchType.EAGER)

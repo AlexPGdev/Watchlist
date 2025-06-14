@@ -86,11 +86,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         User user = (User) authentication.getPrincipal();
 
-        // 🔁 Generate a secure random token (for remember-me functionality)
+        // Generate a secure random token
         String rememberToken = UUID.randomUUID().toString();
 
-        // 🗄️ Save the token in the DB (replace with your user repo logic)
-        // Example assumes you have a UserEntity that maps to the security user
+        // Save the token in the DB
         com.ironhack.moviewatchlist.model.User userEntity = userRepository.findByUsername(user.getUsername());
         if (userEntity == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not found");
@@ -104,7 +103,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         userEntity.setRememberMe(rememberToken);
         userRepository.save(userEntity);
 
-        // 🍪 Set the cookie with the token
+        // Set the cookie with the token
         Cookie cookie = new Cookie("remember-me", rememberToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(true); // HTTPS only
@@ -114,7 +113,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         response.addCookie(cookie);
 
-        // 📤 Optionally return some info to frontend
+        // Return info to frontend
         Map<String, String> body = new HashMap<>();
         body.put("message", "Login successful");
         response.setContentType(APPLICATION_JSON_VALUE);

@@ -14,16 +14,6 @@ import java.util.Optional;
 public interface PageRepository extends JpaRepository<Page, Long> {
     Page findByOwner(User owner);
 
-    Page findByOwnerAndIsPublic(User owner, boolean isPublic);
-
-    @Query("SELECT p FROM Page p WHERE p.isPublic = true")
-    List<Page> findAllPublicPages();
-
     @Query("SELECT p FROM Page p WHERE p.owner.username = :username")
     Page findByOwnerUsername(@Param("username") String username);
-
-    @Query("SELECT p FROM Page p WHERE p.owner.username = :username AND p.isPublic = true")
-    Page findPublicPageByOwnerUsername(@Param("username") String username);
-
-    Optional<Page> findByIdAndIsPublic(Long id, boolean isPublic);
 }

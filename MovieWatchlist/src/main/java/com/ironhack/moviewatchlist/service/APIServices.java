@@ -14,10 +14,8 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,7 +27,6 @@ public class APIServices {
     private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
     private final WebClient omdbWebClient;
-    private final WebClient streamingAvailabilityWebClient;
 
     private String omdbKey = dotenv.get("OMDB_KEY");
     private String rapidapiKey = dotenv.get("RAPIDAPI_KEY");
@@ -39,7 +36,6 @@ public class APIServices {
 
     public APIServices(WebClient.Builder webClientBuilder) throws TmdbException {
         this.omdbWebClient = webClientBuilder.baseUrl("https://www.omdbapi.com").build();
-        this.streamingAvailabilityWebClient = webClientBuilder.baseUrl("https://streaming-availability.p.rapidapi.com").build();
     }
 
     public List<Movie> searchMovies(String query) throws TmdbException {

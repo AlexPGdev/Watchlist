@@ -58,6 +58,16 @@ export function signup() {
         return;
     }
 
+    if(username.length < 2 || username.length > 20) {
+        alert('Username must be between 2 and 20 characters');
+        return;
+    }
+
+    if(password.length < 8) {
+        alert('Password must be at least 8 characters');
+        return;
+    }
+
     fetch('http://localhost:8080/api/signup', {
         method: 'POST',
         credentials: 'include',
