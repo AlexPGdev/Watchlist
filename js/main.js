@@ -429,6 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('grid-view-btn').classList.add('active');
         document.getElementById('list-view-btn').classList.remove('active');
         document.getElementById('movies-grid').classList.remove('list-view');
+        document.getElementById('movies-grid').classList.remove('grid-size-3');
         document.getElementById('movies-grid').classList.add(`grid-size-${currentGridSize}`);
     
         localStorage.setItem('view', 1);
@@ -454,6 +455,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('grid-view-btn').classList.remove('active');
         document.getElementById('movies-grid').classList.add('list-view');
         document.getElementById('movies-grid').classList.remove(`grid-size-${currentGridSize}`);
+        document.getElementById('movies-grid').classList.add(`grid-size-3`);
         
         localStorage.setItem('view', 0);
         

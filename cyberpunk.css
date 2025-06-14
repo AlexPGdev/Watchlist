@@ -450,6 +450,35 @@ h1 {
     --movie-ratings-display: none;
 }
 
+.movies-grid.list-view {
+    .movie-card {
+        height: 380px;
+    }
+    .movie-poster {
+        width: 100px;
+        height: 155px;
+    }
+    .movie-info {
+        margin-top: -1rem;
+        margin-left: 0.5rem;
+    }
+    .movie-streaming-service {
+        top: 130px;
+    }
+    .movie-ratings {
+        margin-left: 80px;
+        top: 130px;
+        margin-top: 0;
+    }
+    .movie-external-ratings {
+        top: 180px;
+    }
+    .movie-description {
+        margin-top: 4.5rem;
+        -webkit-line-clamp: 3
+    }
+}
+
 .movie-card {
     background: rgba(0, 0, 0, 0.7);
     border-radius: 20px;
