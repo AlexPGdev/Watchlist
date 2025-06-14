@@ -53,7 +53,7 @@
             }).then(response => response.json())
             .then(data => {
                 if (document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.imdbRating').querySelector('.rating-loader-spinner')) document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.imdbRating').querySelector('.rating-loader-spinner').remove();
-                document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.imdbRating').innerHTML = `<img src="./img/streaming-services/imdb.svg"> ${data.imdbRating}`;
+                document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.imdbRating').innerHTML = `<img src="./img/streaming-services/imdb.svg"> ${data.imdbRating}/10`;
                 if (document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner')) document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').querySelector('.rating-loader-spinner').remove();
                 document.querySelector(`[data-movie-id="${movieId}"]`).querySelector('.rtRating').innerHTML = `<img src="./img/streaming-services/rt.png"> ${data.rtRating}`;
             

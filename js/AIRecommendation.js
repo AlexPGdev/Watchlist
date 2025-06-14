@@ -61,6 +61,7 @@
             
                     let movieHeader = document.createElement('div');
                     movieHeader.className = 'movie-header';
+                    movieHeader.style.gap = '0.5rem'
             
                     let moviePoster = document.createElement('div');
                     moviePoster.className = 'movie-poster';
@@ -89,7 +90,6 @@
                     let movieDescription = document.createElement('div');
                     movieDescription.className = 'movie-description';
                     movieDescription.style.fontSize = "0.8rem"
-                    movieDescription.style.marginTop = "-125px"
                     movieDescription.textContent = movies[i].overview;
             
                     // let movieGenres = document.createElement('div');
