@@ -375,7 +375,7 @@ h1 {
     grid-template-columns: repeat(5, 1fr);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1150px) {
     .movies-grid.grid-size-2,
     .movies-grid.grid-size-3,
     .movies-grid.grid-size-4,
@@ -1000,7 +1000,7 @@ h1 {
     text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1150px) {
     .movies-grid {
         grid-template-columns: 1fr;
     }
@@ -1736,7 +1736,7 @@ h1 {
     background: rgba(0, 255, 255, 0.1);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1150px) {
     .movie-details-header {
         flex-direction: column;
         align-items: center;
@@ -1947,7 +1947,7 @@ h1 {
     text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1150px) {
     .about-credits {
         grid-template-columns: 1fr;
         gap: 2rem;
