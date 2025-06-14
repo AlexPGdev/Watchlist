@@ -1,5 +1,6 @@
 package com.ironhack.moviewatchlist.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -43,11 +44,16 @@ public class Movie {
 
     private Long addedDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "page_id", nullable = false)
+    @JsonIgnore
+    private Page page;
+
     public Movie() {
         this.addedDate = System.currentTimeMillis();
     }
 
-    public Movie(String title, String description, int year, List<String> genres, boolean watched, String posterPath, Long watchDate, String imdbId, Integer tmdbId, List<String> streamingServices, Integer rating, double imdbRating, String rtRating) {
+    public Movie(String title, String description, int year, List<String> genres, boolean watched, String posterPath, Long watchDate, String imdbId, Integer tmdbId, List<String> streamingServices, Integer rating, double imdbRating, String rtRating, Page page) {
         this.title = title;
         this.description = description;
         this.year = year;
@@ -62,6 +68,7 @@ public class Movie {
         this.imdbRating = imdbRating;
         this.rtRating = rtRating;
         this.addedDate = System.currentTimeMillis();
+        this.page = page;
     }
 
     public Long getId() {
@@ -182,5 +189,13 @@ public class Movie {
 
     public void setAddedDate(Long addedDate) {
         this.addedDate = addedDate;
+    }
+
+    public Page getPage() {
+        return page;
+    }
+
+    public void setPage(Page page) {
+        this.page = page;
     }
 }

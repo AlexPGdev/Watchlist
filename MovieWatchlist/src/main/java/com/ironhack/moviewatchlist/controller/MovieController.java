@@ -86,6 +86,7 @@ public class MovieController {
             page = pageService.getUserPage(currentUser);
         }
 
+        movie.setPage(page);
         movieService.createMovie(movie, currentUser);
         pageService.addMovieToPage(page.getId(), movie, currentUser);
         return movie;

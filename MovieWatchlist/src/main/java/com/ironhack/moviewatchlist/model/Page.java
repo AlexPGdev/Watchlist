@@ -31,12 +31,7 @@ public class Page {
     @Column(name = "owner_name")
     private String ownerName;
 
-    @ManyToMany
-    @JoinTable(
-            name = "page_movies",
-            joinColumns = @JoinColumn(name = "page_id"),
-            inverseJoinColumns = @JoinColumn(name = "movie_id")
-    )
+    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Movie> movies = new ArrayList<>();
 
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
