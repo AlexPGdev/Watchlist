@@ -93,7 +93,7 @@ public class UserController {
             throw new UsernameAlreadyExistsException("Username already exists");
         }
 
-        user.setSettings(new Settings("en", "cyberpunk", 0, 3, user));
+        user.setSettings(new Settings("en", "default", 1, 3, user));
 
         userService.saveUser(user);
         pageService.createPage("Movie Watchlist", "Welcome to the Movie Watchlist!", true, user);
