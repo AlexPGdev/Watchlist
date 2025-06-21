@@ -7,6 +7,7 @@ import com.ironhack.moviewatchlist.model.Movie;
 import com.ironhack.moviewatchlist.model.Page;
 import com.ironhack.moviewatchlist.model.User;
 import com.ironhack.moviewatchlist.repository.MovieRepository;
+import com.ironhack.moviewatchlist.repository.PageRepository;
 import com.ironhack.moviewatchlist.repository.UserRepository;
 import com.ironhack.moviewatchlist.service.APIServices;
 import com.ironhack.moviewatchlist.service.MovieService;
@@ -36,13 +37,15 @@ public class MovieController {
     private final PageService pageService;
     private final MovieRepository movieRepository;
     private final APIServices apiServices;
+    private final PageRepository pageRepository;
 
-    public MovieController(MovieService movieService, UserRepository userRepository, PageService pageService, MovieRepository movieRepository, APIServices apiServices) {
+    public MovieController(MovieService movieService, UserRepository userRepository, PageService pageService, MovieRepository movieRepository, APIServices apiServices, PageRepository pageRepository) {
         this.movieService = movieService;
         this.userRepository = userRepository;
         this.pageService = pageService;
         this.movieRepository = movieRepository;
         this.apiServices = apiServices;
+        this.pageRepository = pageRepository;
     }
 
     @GetMapping
@@ -151,7 +154,8 @@ public class MovieController {
         if(movie == null) {
             throw new RuntimeException("Movie not found");
         }
-        pageService.removeMovieFromPage(page.getId(), movie, currentUser);
+
+        pageService.removeMovieFromPage(page.getId(), movie, currentUser).getMovies().remove(movie);
         movieService.deleteMovie(id);
     }
 

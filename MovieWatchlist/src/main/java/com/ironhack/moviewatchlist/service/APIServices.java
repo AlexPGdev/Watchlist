@@ -1,6 +1,5 @@
 package com.ironhack.moviewatchlist.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.moviewatchlist.dto.RatingResponse;
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.core.Movie;

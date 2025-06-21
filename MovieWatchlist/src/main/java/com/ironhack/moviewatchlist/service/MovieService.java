@@ -12,6 +12,7 @@ import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
 import info.movito.themoviedbapi.tools.TmdbException;
 import io.github.cdimascio.dotenv.Dotenv;
+import jakarta.transaction.Transactional;
 import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -96,6 +97,7 @@ public class MovieService {
         return movie;
     }
 
+    @Transactional
     public void deleteMovie(Long id) {
         Movie movie = movieRepository.findById(id).orElse(null);
         if (movie != null) {

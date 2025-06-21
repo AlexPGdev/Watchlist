@@ -1,0 +1,163 @@
+"use client"
+
+import type { Movie } from "@/types/movie"
+
+export function useMovieActions() {
+  const useToggleWatched = async (movieId: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/movies/${movieId}/watch`, {
+        method: "PATCH",
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to update watch status")
+      }
+
+      // Trigger a page reload or state update
+      //window.location.reload()
+    } catch (error) {
+      console.error("Error toggling watched status:", error)
+    }
+  }
+
+  const useRemoveMovie = async (movieId: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/movies/${movieId}`, {
+        method: "DELETE",
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to remove movie")
+      }
+
+      // Trigger a page reload or state update
+      //window.location.reload()
+    } catch (error) {
+      console.error("Error removing movie:", error)
+    }
+  }
+
+  const useRateMovie = async (movieId: number, rating: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/movies/${movieId}/rating?rating=${rating}`, {
+        method: "PATCH",
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to rate movie")
+      }
+
+    } catch (error) {
+      console.error("Error rating movie:", error)
+    }
+  }
+
+  const loadExternalRatings = async (movieImdbId: string, movieId: number, onRatingsUpdated?: (ratings: any) => void) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/movies/ratings?imdbId=${movieImdbId}&id=${movieId}`, {
+        credentials: "include",
+        method: "PATCH"
+      })
+      const ratings = await response.json()
+      
+      // Call the callback if provided
+      if (onRatingsUpdated) {
+        onRatingsUpdated(ratings)
+      }
+      
+      return ratings
+    } catch (error) {
+      console.error("Error loading external ratings:", error)
+      throw error
+    }
+  }
+
+  const useAddMovieToWatchlist = async (movie: Partial<Movie>, force = false, onRatingsUpdated?: (ratings: any) => void) => {
+    try {
+      const response = await fetch("http://localhost:8080/api/movies", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...movie, force }),
+      })
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          const error = new Error("duplicate") as any
+          error.movie = movie
+          throw error
+        }
+        throw new Error("Failed to add movie")
+      }
+
+      
+      const addedMovie = await response.json()
+      loadExternalRatings(addedMovie.imdbId, addedMovie.id, onRatingsUpdated)
+
+      return addedMovie
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const useAddToWatchlist = async (tmdbId: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/movies/details?id=${tmdbId}`)
+      const movieDetails = await response.json()
+
+      const newMovie: Partial<Movie> = {
+        title: movieDetails.title,
+        description: movieDetails.overview,
+        watched: false,
+        year: movieDetails.release_date.split("-")[0],
+        genres: movieDetails.genres.map((g: any) => g.name),
+        posterPath: `https://image.tmdb.org/t/p/w500/${movieDetails.poster_path}`,
+        imdbId: movieDetails.imdb_id,
+        tmdbId: movieDetails.id,
+        streamingServices: [],
+        imdbRating: 0,
+        rtRating: null,
+      }
+
+      await useAddMovieToWatchlist(newMovie)
+    } catch (error) {
+      if (error instanceof Error && error.message === "duplicate") {
+        throw error
+      }
+      console.error("Error adding to watchlist:", error)
+    }
+  }
+
+  const useGetAIRecommendations = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/movies/recommendations", {
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to get AI recommendations")
+      }
+
+      const recommendations = await response.json()
+      return recommendations
+    } catch (error) {
+      console.error("Error getting AI recommendations:", error)
+      throw error
+    }
+  }
+
+  return {
+    useToggleWatched,
+    useRemoveMovie,
+    useRateMovie,
+    useAddMovieToWatchlist,
+    useAddToWatchlist,
+    useGetAIRecommendations,
+    loadExternalRatings
+  }
+}

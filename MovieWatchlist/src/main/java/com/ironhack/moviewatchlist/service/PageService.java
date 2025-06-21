@@ -105,13 +105,15 @@ public class PageService {
         throw new RuntimeException("Page not found or you don't have permission to add movies to it");
     }
 
+    @Transactional
     public Page removeMovieFromPage(Long pageId, Movie movie, User currentUser) {
         Optional<Page> pageOpt = pageRepository.findById(pageId);
         if(pageOpt.isPresent()) {
             Page page = pageOpt.get();
             if(page.getOwner().equals(currentUser)) {
                 page.removeMovie(movie);
-                return pageRepository.save(page);
+                pageRepository.save(page);
+                return page;
             }
         }
         throw new RuntimeException("Page not found or you don't have permission to remove movies from it");
