@@ -2,9 +2,10 @@
 
 Watchlist is a web application to help movie enthusiasts keep track of films they want to watch and share their movie journey with others.
 
-## Presentation
+## Work in Progress
 
-https://docs.google.com/presentation/d/1QhceuUAekxGngOhMxvFezqev19Y8yCuCWgl-1l270Ck/edit?usp=sharing
+Currently rewriting the frontend in React
+
 ## Future work
 
 - Make page public / private
@@ -13,8 +14,3 @@ https://docs.google.com/presentation/d/1QhceuUAekxGngOhMxvFezqev19Y8yCuCWgl-1l27
 - More themes and accessibility features
 - More statistics
 - Collections 
-
-
-## Diagram
-
-![Diagram](https://i.imgur.com/BlABK15.png)
