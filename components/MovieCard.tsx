@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import type { Movie } from "@/types/movie"
 import { useMovieActions } from "@/hooks/useMovieActions"
+import Button from "./button/Button"
 
 // import imdb from "@/img/streaming-services/imdb.svg"
 // import rt from "@/img/streaming-services/rt.png"
@@ -137,7 +138,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
           </button>
 
           <div className="movie-streaming-service">
-              <button id="watch-movie-btn" className="movie-watch watch-btn action-btn" onClick={handleStreamingAvailability}><span>🎬</span><p>Watch</p></button>
+              <Button id="watch-movie-btn" onClick={handleStreamingAvailability}><span>🎬</span><p>Watch</p></Button>
           </div>
 
           {toggleWatched && (
@@ -190,18 +191,18 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
       <div className="movie-actions">
         {isOwner && (
           <>
-            <button className="action-btn watch-btn" onClick={handleToggleWatched}>
+            <Button onClick={handleToggleWatched}>
               {toggleWatched ? "Mark Unwatched" : "Mark Watched"}
-            </button>
-            <button className="action-btn remove-btn" onClick={handleRemove}>
+            </Button>
+            <Button variant="danger" onClick={handleRemove}>
               Remove
-            </button>
+            </Button>
           </>
         )}
         {!isOwner && isLoggedIn && (
-          <button className="action-btn watch-btn addtowatch-btn" onClick={handleAddToWatchlist}>
+          <Button onClick={handleAddToWatchlist}>
             Add to Watchlist
-          </button>
+          </Button>
         )}
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Button from "./button/Button"
 
 interface FilterTabsProps {
   currentFilter: string
@@ -14,21 +15,23 @@ export function FilterTabs({ currentFilter, onFilterChange, onSortChange }: Filt
 
   return (
     <div className="filter-tabs">
-      <button className={`filter-tab ${currentFilter === "all" ? "active" : ""}`} onClick={() => onFilterChange("all")}>
+      <Button variant="filter" className={`${currentFilter === "all" ? "btn-filter-active" : ""}`} onClick={() => onFilterChange("all")}>
         All Movies
-      </button>
-      <button
-        className={`filter-tab ${currentFilter === "to-watch" ? "active" : ""}`}
+      </Button>
+      <Button
+        variant="filter"
+        className={`${currentFilter === "to-watch" ? "btn-filter-active" : ""}`}
         onClick={() => onFilterChange("to-watch")}
       >
         To Watch
-      </button>
-      <button
-        className={`filter-tab ${currentFilter === "watched" ? "active" : ""}`}
+      </Button>
+      <Button
+        variant="filter"
+        className={`${currentFilter === "watched" ? "btn-filter-active" : ""}`}
         onClick={() => onFilterChange("watched")}
       >
         Watched
-      </button>
+      </Button>
 
       <div className="view-controls">
         <div className="sort-container">

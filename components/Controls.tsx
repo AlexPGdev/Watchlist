@@ -1,5 +1,7 @@
 "use client"
 
+import Button from "./button/Button"
+
 interface ControlsProps {
   searchQuery: string
   onSearchChange: (query: string) => void
@@ -21,9 +23,9 @@ export function Controls({ searchQuery, onSearchChange, onAddMovieClick, showAdd
         />
       </div>
       {showAddButton && (
-        <button onClick={onAddMovieClick} className="add-btn">
+        <Button variant="main" onClick={onAddMovieClick}>
           + Add Movie
-        </button>
+        </Button>
       )}
     </div>
   )

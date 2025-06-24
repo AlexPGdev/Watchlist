@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { useUserMovies } from "@/hooks/useUserMovies"
 import type { Movie } from "@/types/movie"
 import '../../cyberpunk.css'
+import { Footer } from "@/components/Footer"
 
 export default function UserProfile() {
   const params = useParams()
@@ -115,58 +116,60 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="container">
-      <Header onLoginClick={() => setShowLoginModal(true)} isLoggedIn={isLoggedIn} user={user} />
+    <div>
+      <div className="container">
+        <Header onLoginClick={() => setShowLoginModal(true)} isLoggedIn={isLoggedIn} user={user} />
 
-      <Stats stats={stats} />
+        <Stats stats={stats} />
 
-      <h2 id="watchlist-title">{isOwner ? "My Watchlist" : `${ownerName}'s Watchlist`}</h2>
-      <br />
+        <h2 id="watchlist-title">{isOwner ? "My Watchlist" : `${ownerName}'s Watchlist`}</h2>
+        <br />
 
-      <Controls
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onAddMovieClick={() => setShowAddMovieModal(true)}
-        showAddButton={isOwner}
-      />
-
-      <FilterTabs currentFilter={currentFilter} onFilterChange={setCurrentFilter} onSortChange={sortMovies} />
-
-      <MoviesGrid
-        movies={filteredMovies}
-        isLoggedIn={isLoggedIn}
-        isOwner={isOwner}
-        onMovieClick={handleMovieClick}
-        onDuplicateMovie={handleDuplicateMovie}
-        onMovieRemoved={loadUserMovies}
-        updatedRatings={updatedRatings}
-        onRatingsUpdated={handleRatingsUpdated}
-        onStreamingPopup={handleStreamingPopup}
-      />
-
-      <AboutCredits />
-
-      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
-
-      {isOwner && (
-        <AddMovieModal
-          isOpen={showAddMovieModal}
-          onClose={() => setShowAddMovieModal(false)}
-          onDuplicateMovie={handleDuplicateMovie}
-          onMovieAdded={loadUserMovies}
-          onRatingsUpdated={handleRatingsUpdated}
+        <Controls
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onAddMovieClick={() => setShowAddMovieModal(true)}
+          showAddButton={isOwner}
         />
-      )}
 
-      <DuplicateModal isOpen={showDuplicateModal} onClose={() => setShowDuplicateModal(false)} movie={duplicateMovie} />
+        <FilterTabs currentFilter={currentFilter} onFilterChange={setCurrentFilter} onSortChange={sortMovies} />
 
-      <MovieDetailsModal
-        isOpen={showMovieDetailsModal}
-        onClose={() => setShowMovieDetailsModal(false)}
-        movie={selectedMovie}
-        isOwner={isOwner}
-      />
+        <MoviesGrid
+          movies={filteredMovies}
+          isLoggedIn={isLoggedIn}
+          isOwner={isOwner}
+          onMovieClick={handleMovieClick}
+          onDuplicateMovie={handleDuplicateMovie}
+          onMovieRemoved={loadUserMovies}
+          updatedRatings={updatedRatings}
+          onRatingsUpdated={handleRatingsUpdated}
+          onStreamingPopup={handleStreamingPopup}
+        />
 
+        <AboutCredits />
+
+        <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+
+        {isOwner && (
+          <AddMovieModal
+            isOpen={showAddMovieModal}
+            onClose={() => setShowAddMovieModal(false)}
+            onDuplicateMovie={handleDuplicateMovie}
+            onMovieAdded={loadUserMovies}
+            onRatingsUpdated={handleRatingsUpdated}
+          />
+        )}
+
+        <DuplicateModal isOpen={showDuplicateModal} onClose={() => setShowDuplicateModal(false)} movie={duplicateMovie} />
+
+        <MovieDetailsModal
+          isOpen={showMovieDetailsModal}
+          onClose={() => setShowMovieDetailsModal(false)}
+          movie={selectedMovie}
+          isOwner={isOwner}
+        />
+
+      </div>
       <StreamingPopup 
         isVisible={streamingPopup.isVisible}
         streamingServices={streamingPopup.streamingServices}
@@ -174,6 +177,8 @@ export default function UserProfile() {
         position={streamingPopup.position}
         onClose={() => setStreamingPopup(prev => ({ ...prev, isVisible: false }))}
       />
+
+      <Footer />
     </div>
   )
 }

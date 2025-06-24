@@ -82,7 +82,7 @@ export function useAuth() {
   }
 
   const logout = async () => {
-    await fetch("/api/logout", {
+    await fetch("http://localhost:8080/api/logout", {
       method: "POST",
       credentials: "include",
     })

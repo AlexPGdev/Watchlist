@@ -31,7 +31,7 @@ export default function Home() {
     sortMovies,
     loadMovies,
   } = useMovies()
-
+  
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showAddMovieModal, setShowAddMovieModal] = useState(false)
   const [showDuplicateModal, setShowDuplicateModal] = useState(false)

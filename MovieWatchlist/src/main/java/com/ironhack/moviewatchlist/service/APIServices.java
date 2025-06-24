@@ -23,7 +23,7 @@ import java.util.Map;
 @Service
 public class APIServices {
 
-    private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+    private static final Dotenv dotenv = Dotenv.configure().directory("d:/watchlist-react/Watchlist/MovieWatchlist").load();
 
     private final WebClient omdbWebClient;
 
@@ -38,6 +38,7 @@ public class APIServices {
     }
 
     public List<Movie> searchMovies(String query) throws TmdbException {
+
         MovieResultsPage tmdbSearch = tmdbApi.getSearch().searchMovie(query, false, "en", null, 1, "de", null);
 
         System.out.println(tmdbSearch.getResults());

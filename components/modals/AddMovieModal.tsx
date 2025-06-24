@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import type { Movie } from "@/types/movie"
 import { useMovieActions } from "@/hooks/useMovieActions"
+import Button from "../button/Button"
 
 interface AddMovieModalProps {
   isOpen: boolean
@@ -150,16 +151,15 @@ export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded,
           </div>
         </div>
         <div className="modal-actions">
-          <button
-            className="modal-action-btn watch-btn recommendations-btn"
+          <Button
             onClick={handleAIRecommendations}
             disabled={isLoading}
           >
             AI Recommendations
-          </button>
-          <button className="modal-action-btn remove-btn" onClick={onClose}>
+          </Button>
+          <Button variant="danger" onClick={onClose}>
             Cancel
-          </button>
+          </Button>
         </div>
 
         {isLoading && (
