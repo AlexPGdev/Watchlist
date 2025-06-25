@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, memo } from "react"
 import { useTheme } from "@/hooks/useTheme"
 import { useAuth } from "@/hooks/useAuth"
 
@@ -8,7 +8,7 @@ interface ProfileDropdownProps {
   user: string | null
 }
 
-export function ProfileDropdown({ user }: ProfileDropdownProps) {
+export const ProfileDropdown = memo(function ProfileDropdown({ user }: ProfileDropdownProps) {
   const [showDropdown, setShowDropdown] = useState(false)
   const [showThemeSubmenu, setShowThemeSubmenu] = useState(false)
   const { theme, setTheme } = useTheme()
@@ -105,4 +105,4 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
       )}
     </div>
   )
-}
+})

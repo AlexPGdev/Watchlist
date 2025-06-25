@@ -1,4 +1,6 @@
-export function AboutCredits() {
+import React from "react"
+
+export const AboutCredits = React.memo(function AboutCredits() {
   return (
     <div className="about-credits">
       <div className="about-section">
@@ -46,4 +48,4 @@ export function AboutCredits() {
       </div>
     </div>
   )
-}
+})

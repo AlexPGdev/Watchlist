@@ -121,34 +121,6 @@ h1 {
     text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
-.add-btn {
-    padding: 1rem 2rem;
-    background: linear-gradient(135deg, #ff00ff, #00ffff);
-    border: none;
-    border-radius: 15px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 1rem;
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    background-size: 150% 150%;
-    background-position: 0% 0%;
-}
-
-.add-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
-    background-position: 100% 100%;
-}
-
-.add-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .filter-tabs {
     display: flex;
     gap: 0.5rem;
@@ -159,25 +131,6 @@ h1 {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(0, 255, 255, 0.2);
     align-items: center;
-}
-
-.filter-tab {
-    padding: 0.8rem 1.5rem;
-    border: none;
-    background: transparent;
-    color: #00ffff;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.filter-tab.active {
-    background: linear-gradient(135deg, #ff00ff, #00ffff);
-    color: white;
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
 }
 
 .sort-container {
@@ -790,7 +743,7 @@ h1 {
     cursor: not-allowed;
 }
 
-.modal-action-btn {
+/* .modal-action-btn {
     padding: 0.6rem 1.2rem;
     border: none;
     border-radius: 10px;
@@ -798,7 +751,7 @@ h1 {
     font-weight: 600;
     transition: all 0.3s ease;
     font-size: 0.9rem;
-}
+} */
 
 .watch-btn {
     background: linear-gradient(135deg, #ff00ff, #00ffff);
@@ -863,7 +816,7 @@ h1 {
     font-weight: 600;
 }
 
-.remove-btn {
+/* .remove-btn {
     background: rgba(255, 0, 255, 0.2);
     color: #ff00ff;
     border: 1px solid rgba(255, 0, 255, 0.3);
@@ -880,7 +833,7 @@ h1 {
 .remove-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
+} */
 
 .watched-badge {
     position: absolute;

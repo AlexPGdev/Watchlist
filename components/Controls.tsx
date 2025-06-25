@@ -1,5 +1,8 @@
 "use client"
 
+import { memo } from "react"
+import Button from "./button/Button"
+
 interface ControlsProps {
   searchQuery: string
   onSearchChange: (query: string) => void
@@ -7,7 +10,7 @@ interface ControlsProps {
   showAddButton: boolean
 }
 
-export function Controls({ searchQuery, onSearchChange, onAddMovieClick, showAddButton }: ControlsProps) {
+export const Controls = memo(function Controls({ searchQuery, onSearchChange, onAddMovieClick, showAddButton }: ControlsProps) {
   return (
     <div className="controls">
       <div className="search-container">
@@ -21,10 +24,10 @@ export function Controls({ searchQuery, onSearchChange, onAddMovieClick, showAdd
         />
       </div>
       {showAddButton && (
-        <button onClick={onAddMovieClick} className="add-btn">
+        <Button variant="main" onClick={onAddMovieClick}>
           + Add Movie
-        </button>
+        </Button>
       )}
     </div>
   )
-}
+})

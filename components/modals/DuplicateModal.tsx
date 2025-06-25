@@ -2,26 +2,41 @@
 
 import type { Movie } from "@/types/movie"
 import { useMovieActions } from "@/hooks/useMovieActions"
+import Button from "../button/Button"
 
 interface DuplicateModalProps {
   isOpen: boolean
   onClose: () => void
   movie: Movie | null
+  movieId: number
+  onMovieAdded?: () => void
+  onExternalRatingsUpdated?: (ratings: any) => void
 }
 
-export function DuplicateModal({ isOpen, onClose, movie }: DuplicateModalProps) {
-  const { addMovieToWatchlist } = useMovieActions()
+export function DuplicateModal({ isOpen, onClose, movie, movieId, onMovieAdded, onExternalRatingsUpdated} : DuplicateModalProps) {
+  const { useAddMovieToWatchlist } = useMovieActions()
 
   const handleForceAdd = async () => {
     if (movie) {
+      console.log(movie)
+      console.log(movieId)
+      console.log("ADSAADASD")
+      let movieCardButton = document.querySelector(`[data-movie-id="${movieId}"] > .movie-actions > button`)
+      movieCardButton?.setAttribute("disabled", "true")
+      if (movieCardButton) movieCardButton.textContent = "Added to Watchlist"
       try {
-        await addMovieToWatchlist(movie, true) // Force add
+        await useAddMovieToWatchlist(movie, true, onExternalRatingsUpdated)
         onClose()
+        if (onMovieAdded) {
+          onMovieAdded()
+        }
       } catch (error) {
         console.error("Error force adding movie:", error)
       }
     }
   }
+
+  console.log(movie)
 
   if (!isOpen) return null
 
@@ -31,12 +46,12 @@ export function DuplicateModal({ isOpen, onClose, movie }: DuplicateModalProps) 
         <h3>Duplicate Movie</h3>
         <p>This movie is already in your watchlist</p>
         <div className="modal-actions" style={{ marginTop: "10px" }}>
-          <button className="modal-action-btn remove-btn" onClick={onClose}>
+          <Button variant="danger" onClick={onClose}>
             Don't Add
-          </button>
-          <button className="modal-action-btn watch-btn" onClick={handleForceAdd}>
+          </Button>
+          <Button onClick={handleForceAdd}>
             Add Anyway
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -3,13 +3,15 @@
 import { useState, useEffect } from "react"
 import type { Movie } from "@/types/movie"
 import { useMovieActions } from "@/hooks/useMovieActions"
+import { useMovies } from "@/hooks/useMovies"
+import Button from "../button/Button"
 
 interface AddMovieModalProps {
   isOpen: boolean
   onClose: () => void
-  onDuplicateMovie: (movie: Movie) => void
+  onDuplicateMovie: (movie: PartialMovie) => void
   onMovieAdded?: () => void
-  onRatingsUpdated?: (ratings: any) => void
+  onExternalRatingsUpdated?: (ratings: any) => void
 }
 
 interface SearchResult {
@@ -20,12 +22,13 @@ interface SearchResult {
   overview: string
 }
 
-export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded, onRatingsUpdated }: AddMovieModalProps) {
+export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded, onExternalRatingsUpdated }: AddMovieModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [showResults, setShowResults] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { useAddMovieToWatchlist, useGetAIRecommendations } = useMovieActions()
+  const { movies } = useMovies()
 
   useEffect(() => {
     if (searchQuery.length < 2) {
@@ -72,7 +75,13 @@ export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded,
         rtRating: null,
       }
 
-      await useAddMovieToWatchlist(newMovie, false, onRatingsUpdated)
+      if (movies.some((m) => m.imdbId && newMovie.imdbId && m.imdbId === newMovie.imdbId)) {
+        onDuplicateMovie(newMovie);
+        onClose();
+        return;
+      }
+
+      await useAddMovieToWatchlist(newMovie, false, onExternalRatingsUpdated)
       onClose()
       setSearchQuery("")
       setShowResults(false)
@@ -150,16 +159,15 @@ export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded,
           </div>
         </div>
         <div className="modal-actions">
-          <button
-            className="modal-action-btn watch-btn recommendations-btn"
+          <Button
             onClick={handleAIRecommendations}
             disabled={isLoading}
           >
             AI Recommendations
-          </button>
-          <button className="modal-action-btn remove-btn" onClick={onClose}>
+          </Button>
+          <Button variant="danger" onClick={onClose}>
             Cancel
-          </button>
+          </Button>
         </div>
 
         {isLoading && (

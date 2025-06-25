@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo } from "react"
 
 interface StreamingPopupProps {
   isVisible?: boolean
@@ -13,7 +13,7 @@ interface StreamingPopupProps {
 }
 
 
-export function StreamingPopup({ isVisible = false, streamingServices, movieTitle, position, onClose }: StreamingPopupProps) {
+export const StreamingPopup = memo(function StreamingPopup({ isVisible = false, streamingServices, movieTitle, position, onClose }: StreamingPopupProps) {
   const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
@@ -93,4 +93,4 @@ export function StreamingPopup({ isVisible = false, streamingServices, movieTitl
       </a>
     </div>
   )
-}
+})

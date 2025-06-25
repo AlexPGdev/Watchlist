@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import type { Movie } from "@/types/movie"
 import { useMovieActions } from "@/hooks/useMovieActions"
+import Button from "./button/Button"
 
 // import imdb from "@/img/streaming-services/imdb.svg"
 // import rt from "@/img/streaming-services/rt.png"
@@ -14,20 +15,23 @@ interface MovieCardProps {
   isOwner: boolean
   isLoggedIn: boolean
   onClick: () => void
-  onDuplicateMovie: (movie: Movie) => void
+  onDuplicateMovie: (movie: Movie, movieId: number) => void
   onMovieRemoved?: () => void
-  updatedRatings?: { [movieId: number]: { imdbRating: number; rtRating: number } }
+  updatedExternalRatings?: { [movieId: number]: { imdbRating: number; rtRating: number } }
   onStreamingPopup?: (streamingServices: any, movieTitle: string, position: { x: number; y: number }) => void
+  movieRatings?: { [movieId: number]: number }
+  onRatingsUpdate?: (movieId: number, rating: number) => void
 }
 
-export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovie, onMovieRemoved, updatedRatings, onStreamingPopup }: MovieCardProps) {
+export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovie, onMovieRemoved, updatedExternalRatings, onStreamingPopup, movieRatings, onRatingsUpdate }: MovieCardProps) {
   const { useToggleWatched, useRemoveMovie, useRateMovie, useAddToWatchlist } = useMovieActions()
   const [isRemoving, setIsRemoving] = useState(false)
   const [toggleWatched, setToggleWatched] = useState(movie.watched);
-  const [selectedRating, setSelectedRating] = useState(movie.rating ?? -1);
+
+  const selectedRating = movieRatings?.[movie.id] ?? movie.rating ?? -1
 
   // Get the current ratings (either from updatedRatings or from movie)
-  const currentRatings = updatedRatings?.[movie.id] || { imdbRating: movie.imdbRating, rtRating: movie.rtRating };
+  const currentRatings = updatedExternalRatings?.[movie.id] || { imdbRating: movie.imdbRating, rtRating: movie.rtRating };
   
   // Check if ratings are loading (imdbRating is 0 or rtRating is null)
   const isRatingsLoading = currentRatings.imdbRating === 0 || currentRatings.rtRating === null;
@@ -73,26 +77,31 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
   const handleRate = async (e: React.MouseEvent, rating: number) => {
     e.stopPropagation();
 
-    if (selectedRating === rating) {
-      setSelectedRating(-1);
-      await useRateMovie(movie.id, -1);
-    } else {
-      setSelectedRating(rating);
-      await useRateMovie(movie.id, rating);
+    const newRating = selectedRating === rating ? -1 : rating
+
+    if(onRatingsUpdate){
+      onRatingsUpdate(movie.id, newRating)
     }
+
+    await useRateMovie(movie.id, newRating);
+
+    // if (selectedRating === rating) {
+    //   setSelectedRating(-1);
+    //   await useRateMovie(movie.id, -1);
+    // } else {
+    //   setSelectedRating(rating);
+    //   await useRateMovie(movie.id, rating);
+    // }
   };
 
   const handleAddToWatchlist = async (e: React.MouseEvent) => {
     e.stopPropagation()
     try {
-      await useAddToWatchlist(movie.tmdbId)
+      await useAddToWatchlist(movie.tmdbId, movie.id, onDuplicateMovie)
       e.currentTarget.setAttribute("disabled", "true")
       e.currentTarget.textContent = "Added to Watchlist"
     } catch (error) {
       console.log(error)
-      if (error === "duplicate") {
-        onDuplicateMovie(movie)
-      }
     }
   }
 
@@ -101,7 +110,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
   }
 
   return (
-    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick}>
+    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick} data-movie-id={movie.id}>
       {toggleWatched && (
         <div className="watched-badge">
           ✓ Watched on {movie.watchDate ? formatWatchDate(movie.watchDate) : formatWatchDate(Date.now())}
@@ -137,7 +146,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
           </button>
 
           <div className="movie-streaming-service">
-              <button id="watch-movie-btn" className="movie-watch watch-btn action-btn" onClick={handleStreamingAvailability}><span>🎬</span><p>Watch</p></button>
+              <Button id="watch-movie-btn" onClick={handleStreamingAvailability}><span>🎬</span><p>Watch</p></Button>
           </div>
 
           {toggleWatched && (
@@ -170,7 +179,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
                 // Show only the selected one
                 <button
                   className="rating-btn selected"
-                  onClick={(e) => handleRate(e, selectedRating)}
+                  onClick={(e) => handleRate(e, selectedRating as number)}
                   disabled={!isOwner}
                 >
                   <span>
@@ -190,18 +199,18 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
       <div className="movie-actions">
         {isOwner && (
           <>
-            <button className="action-btn watch-btn" onClick={handleToggleWatched}>
+            <Button onClick={handleToggleWatched}>
               {toggleWatched ? "Mark Unwatched" : "Mark Watched"}
-            </button>
-            <button className="action-btn remove-btn" onClick={handleRemove}>
+            </Button>
+            <Button variant="danger" onClick={handleRemove}>
               Remove
-            </button>
+            </Button>
           </>
         )}
         {!isOwner && isLoggedIn && (
-          <button className="action-btn watch-btn addtowatch-btn" onClick={handleAddToWatchlist}>
+          <Button onClick={handleAddToWatchlist}>
             Add to Watchlist
-          </button>
+          </Button>
         )}
       </div>
     </div>

@@ -1,3 +1,5 @@
+import React from "react"
+
 interface StatsProps {
   stats: {
     total: number
@@ -6,7 +8,7 @@ interface StatsProps {
   }
 }
 
-export function Stats({ stats }: StatsProps) {
+export const Stats = React.memo(function Stats({ stats }: StatsProps) {
   return (
     <div className="stats">
       <div className="stat-card">
@@ -23,4 +25,4 @@ export function Stats({ stats }: StatsProps) {
       </div>
     </div>
   )
-}
+})
