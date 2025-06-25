@@ -37,7 +37,5 @@ build/
 watchlist_db.sql
 
 node_modules
-../.next/
-../.vscode/
 .next/
 .vscode/
