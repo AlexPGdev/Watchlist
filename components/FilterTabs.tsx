@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { memo, useState } from "react"
 import Button from "./button/Button"
 
 interface FilterTabsProps {
@@ -9,7 +9,7 @@ interface FilterTabsProps {
   onSortChange: (sort: string) => void
 }
 
-export function FilterTabs({ currentFilter, onFilterChange, onSortChange }: FilterTabsProps) {
+export const FilterTabs = memo(function FilterTabs({ currentFilter, onFilterChange, onSortChange }: FilterTabsProps) {
   const [currentView, setCurrentView] = useState<"grid" | "list">("grid")
   const [gridSize, setGridSize] = useState(3)
 
@@ -86,4 +86,4 @@ export function FilterTabs({ currentFilter, onFilterChange, onSortChange }: Filt
       </div>
     </div>
   )
-}
+})

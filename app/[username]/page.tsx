@@ -143,7 +143,7 @@ export default function UserProfile() {
           onMovieClick={handleMovieClick}
           onDuplicateMovie={handleDuplicateMovie}
           onMovieRemoved={loadUserMovies}
-          updatedExternalRatings={updatedRatings}
+          updatedRatings={updatedRatings}
           onRatingsUpdated={handleRatingsUpdated}
           onStreamingPopup={handleStreamingPopup}
         />

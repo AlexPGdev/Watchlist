@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo } from "react"
 import type { Movie } from "@/types/movie"
 import { useMovieActions } from "@/hooks/useMovieActions"
 import { useMovies } from "@/hooks/useMovies"
@@ -9,7 +9,7 @@ import Button from "../button/Button"
 interface AddMovieModalProps {
   isOpen: boolean
   onClose: () => void
-  onDuplicateMovie: (movie: PartialMovie) => void
+  onDuplicateMovie: (movie: Partial<Movie>) => void
   onMovieAdded?: () => void
   onExternalRatingsUpdated?: (ratings: any) => void
 }
@@ -22,7 +22,7 @@ interface SearchResult {
   overview: string
 }
 
-export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded, onExternalRatingsUpdated }: AddMovieModalProps) {
+export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded, onExternalRatingsUpdated }: AddMovieModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [showResults, setShowResults] = useState(false)
@@ -178,4 +178,4 @@ export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded,
       </div>
     </div>
   )
-}
+})

@@ -1,7 +1,7 @@
 "use client"
 
 import { memo, useCallback } from "react"
-import { MovieCard } from "./MovieCard"
+import { MemoizedMovieCard } from "./MovieCard"
 import type { Movie } from "@/types/movie"
 
 interface MoviesGridProps {
@@ -51,7 +51,7 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
   return (
     <div id="movies-grid" className="movies-grid grid-size-3">
       {movies.map((movie) => (
-        <MovieCard
+        <MemoizedMovieCard
           key={movie.id}
           movie={movie}
           isOwner={isOwner}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { Header } from "@/components/Header"
 import { Stats } from "@/components/Stats"
 import { Controls } from "@/components/Controls"
@@ -67,18 +67,30 @@ export default function Home() {
     }
   }, [isLoggedIn, loadMovies])
 
-  const handleMovieClick = (movie: Movie) => {
+  const handleLoginClick = useCallback(() => {
+    setShowLoginModal(true)
+  }, [])
+
+  const handleAddMovieClick = useCallback(() => {
+    setShowAddMovieModal(true)
+  }, [])
+
+  const handleFilterChange = useCallback((filter: string) => {
+    setFilter(filter)
+  }, [])
+
+  const handleMovieClick = useCallback((movie: Movie) => {
     setSelectedMovie(movie)
     setShowMovieDetailsModal(true)
-  }
+  }, [])
 
-  const handleDuplicateMovie = (movie: Movie, movieId: number) => {
+  const handleDuplicateMovie = useCallback((movie: Movie, movieId: number) => {
     setDuplicateMovie(movie)
     setDuplicateMovieId(movieId)
     setShowDuplicateModal(true)
-  }
+  }, [])
 
-  const handleExternalRatingsUpdated = (ratings: any) => {
+  const handleExternalRatingsUpdated = useCallback((ratings: any) => {
     if (ratings && ratings.id) {
       setUpdatedExternalRatings(prev => ({
         ...prev,
@@ -88,28 +100,28 @@ export default function Home() {
         }
       }))
     }
-  }
+  }, [])
 
-  const handleStreamingPopup = (streamingServices: any, movieTitle: string, position: { x: number; y: number }) => {
+  const handleStreamingPopup = useCallback((streamingServices: any, movieTitle: string, position: { x: number; y: number }) => {
     setStreamingPopup({
       isVisible: true,
       streamingServices,
       movieTitle,
       position
     })
-  }
+  }, [])
 
-  const handleRatingsUpdate = (movieId: number, rating: number) => {
+  const handleRatingsUpdate = useCallback((movieId: number, rating: number) => {
     setMovieRatings(prev => ({
       ...prev, 
       [movieId]: rating 
     }))
-  }
+  }, [])
 
   return (
     <div>
       <div className="container">
-        <Header onLoginClick={() => setShowLoginModal(true)} isLoggedIn={isLoggedIn} user={user} />
+        <Header onLoginClick={handleLoginClick} isLoggedIn={isLoggedIn} user={user} />
 
         <Stats stats={stats} />
 
@@ -119,11 +131,11 @@ export default function Home() {
         <Controls
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          onAddMovieClick={() => setShowAddMovieModal(true)}
+          onAddMovieClick={handleAddMovieClick}
           showAddButton={isLoggedIn}
         />
 
-        <FilterTabs currentFilter={filter} onFilterChange={setFilter} onSortChange={sortMovies} />
+        <FilterTabs currentFilter={filter} onFilterChange={handleFilterChange} onSortChange={sortMovies} />
 
         <MoviesGrid
           movies={filtered}

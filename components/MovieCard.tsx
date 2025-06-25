@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React, { memo } from "react"
 
 import { useState } from "react"
 import type { Movie } from "@/types/movie"
@@ -94,7 +94,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
     // }
   };
 
-  const handleAddToWatchlist = async (e: React.MouseEvent) => {
+  const handleAddToWatchlist =  async (e: React.MouseEvent) => {
     e.stopPropagation()
     try {
       await useAddToWatchlist(movie.tmdbId, movie.id, onDuplicateMovie)
@@ -216,3 +216,28 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
     </div>
   )
 }
+
+const areEqual = (prevProps: MovieCardProps, nextProps: MovieCardProps) => {
+  // Only rerender if the movie's id, rating, watched, or relevant props change
+  const prevRating = prevProps.movieRatings?.[prevProps.movie.id] ?? prevProps.movie.rating ?? -1;
+  const nextRating = nextProps.movieRatings?.[nextProps.movie.id] ?? nextProps.movie.rating ?? -1;
+
+  const prevWatched = prevProps.movie.watched;
+  const nextWatched = nextProps.movie.watched;
+
+  // Compare updatedExternalRatings for this movie
+  const prevExternal = prevProps.updatedExternalRatings?.[prevProps.movie.id];
+  const nextExternal = nextProps.updatedExternalRatings?.[nextProps.movie.id];
+  const externalChanged = JSON.stringify(prevExternal) !== JSON.stringify(nextExternal);
+
+  return (
+    prevProps.movie.id === nextProps.movie.id &&
+    prevRating === nextRating &&
+    prevWatched === nextWatched &&
+    !externalChanged &&
+    prevProps.isOwner === nextProps.isOwner &&
+    prevProps.isLoggedIn === nextProps.isLoggedIn
+  );
+};
+
+export const MemoizedMovieCard = memo(MovieCard, areEqual);

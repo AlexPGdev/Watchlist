@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import type { Movie } from "@/types/movie"
 
 export function useUserMovies(username: string) {
@@ -12,11 +12,14 @@ export function useUserMovies(username: string) {
   const [error, setError] = useState<string | null>(null)
   const [ownerName, setOwnerName] = useState<string>("")
 
-  const stats = {
-    total: movies.length,
-    watched: movies.filter((m) => m.watched).length,
-    toWatch: movies.filter((m) => !m.watched).length,
-  }
+  const stats = useMemo(
+    () => ({
+      total: movies.length,
+      watched: movies.filter((m) => m.watched).length,
+      toWatch: movies.filter((m) => !m.watched).length,
+    }),
+    [movies],
+  )
 
   const loadUserMovies = useCallback(async () => {
     try {
