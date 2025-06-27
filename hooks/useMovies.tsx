@@ -1,20 +1,48 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, memo } from "react"
 import type { Movie } from "@/types/movie"
 
-export function useMovies() {
+interface MoviesContextType {
+  movies: Movie[]
+  filteredMovies: Movie[]
+  stats: {
+    total: number
+    watched: number
+    toWatch: number
+  }
+  currentFilter: string
+  searchQuery: string
+  setSearchQuery: (q: string) => void
+  setCurrentFilter: (f: string) => void
+  sortMovies: (s: string) => void
+  loadMovies: () => Promise<void>
+  setMovies: React.Dispatch<React.SetStateAction<Movie[]>>
+}
+
+const MoviesContext = createContext<MoviesContextType | undefined>(undefined)
+
+export const MoviesProvider = memo(function MoviesProvider({ children }: { children: React.ReactNode }) {
   const [movies, setMovies] = useState<Movie[]>([])
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([])
   const [currentFilter, setCurrentFilter] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [currentSort, setCurrentSort] = useState("addeddate-asc")
 
-  const stats = {
-    total: movies.length,
-    watched: movies.filter((m) => m.watched).length,
-    toWatch: movies.filter((m) => !m.watched).length,
-  }
+  const stats = useMemo(
+    () => ({
+      total: movies.length,
+      watched: movies.filter((m) => m.watched).length,
+      toWatch: movies.filter((m) => !m.watched).length,
+    }),
+    [movies],
+  )
+
+  // const stats = {
+  //   total: movies.length,
+  //   watched: movies.filter((m) => m.watched).length,
+  //   toWatch: movies.filter((m) => !m.watched).length,
+  // }
 
   const loadMovies = useCallback(async () => {
     try {
@@ -94,7 +122,7 @@ export function useMovies() {
     setCurrentSort(sort)
   }
 
-  return {
+  const value = useMemo<MoviesContextType>(() => ({
     movies,
     filteredMovies,
     stats,
@@ -105,5 +133,15 @@ export function useMovies() {
     sortMovies,
     loadMovies,
     setMovies,
+  }), [movies, filteredMovies, currentFilter, searchQuery, currentSort, setMovies])
+
+  return <MoviesContext.Provider value={value}>{children}</MoviesContext.Provider>
+})
+
+export function useMovies() {
+  const context = useContext(MoviesContext)
+  if (!context) {
+    throw new Error("useMovies must be used within a MoviesProvider")
   }
+  return context
 }

@@ -10,13 +10,19 @@ interface MovieDetailsModalProps {
   onClose: () => void
   movie: Movie | null
   isOwner: boolean
+  movieRating?: number
+  onRatingUpdate?: (movieId: number, rating: number) => void
 }
 
-export function MovieDetailsModal({ isOpen, onClose, movie, isOwner }: MovieDetailsModalProps) {
+export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating, onRatingUpdate }: MovieDetailsModalProps) {
   const [streamingServices, setStreamingServices] = useState<any>(null)
   const [allServices, setAllServices] = useState<any>(null)
   const [loadingStreaming, setLoadingStreaming] = useState(false)
-  const { rateMovie } = useMovieActions()
+  const { useRateMovie } = useMovieActions()
+
+  const selectedRating = movieRating !== undefined ? movieRating : (movie?.rating ?? -1)
+
+  console.log(movie)
 
   useEffect(() => {
     if (isOpen && movie) {
@@ -63,9 +69,14 @@ export function MovieDetailsModal({ isOpen, onClose, movie, isOwner }: MovieDeta
   const handleRate = async (rating: number) => {
     if (!movie) return
 
+    const newRating = selectedRating === rating ? -1 : rating
+
     try {
-      await rateMovie(movie.id, rating)
-      // Update local movie state if needed
+      if(onRatingUpdate){
+        onRatingUpdate(movie.id, newRating)
+      }
+      
+      await useRateMovie(movie.id, newRating)
     } catch (error) {
       console.error("Error rating movie:", error)
     }
@@ -100,19 +111,19 @@ export function MovieDetailsModal({ isOpen, onClose, movie, isOwner }: MovieDeta
                 <h3>Rate</h3>
                 <div className="movie-details-ratings">
                   <button
-                    className={`rating-btn movie-details-rating ${movie.rating === 0 ? "selected" : ""}`}
+                    className={`rating-btn movie-details-rating ${selectedRating === 0 ? "selected" : ""}`}
                     onClick={() => handleRate(0)}
                   >
                     <span>👎 Did not like it</span>
                   </button>
                   <button
-                    className={`rating-btn movie-details-rating ${movie.rating === 1 ? "selected" : ""}`}
+                    className={`rating-btn movie-details-rating ${selectedRating === 1 ? "selected" : ""}`}
                     onClick={() => handleRate(1)}
                   >
                     <span>👍 Liked it</span>
                   </button>
                   <button
-                    className={`rating-btn movie-details-rating ${movie.rating === 2 ? "selected" : ""}`}
+                    className={`rating-btn movie-details-rating ${selectedRating === 2 ? "selected" : ""}`}
                     onClick={() => handleRate(2)}
                   >
                     <span>❤️ Loved it</span>

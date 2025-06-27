@@ -2,10 +2,10 @@
 
 import type React from "react"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, memo } from "react"
 import { useRouter } from "next/navigation"
 
-export function UserSearch() {
+export const UserSearch = memo(function UserSearch() {
   const [query, setQuery] = useState("")
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -87,4 +87,4 @@ export function UserSearch() {
       )}
     </div>
   )
-}
+})

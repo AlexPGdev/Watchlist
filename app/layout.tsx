@@ -21,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <MoviesProvider>
         <ThemeProvider>{children}</ThemeProvider>
+        </MoviesProvider>
       </body>
     </html>
   )

@@ -1,6 +1,7 @@
 "use client"
 
-import { MovieCard } from "./MovieCard"
+import { memo, useCallback } from "react"
+import { MemoizedMovieCard } from "./MovieCard"
 import type { Movie } from "@/types/movie"
 
 interface MoviesGridProps {
@@ -8,15 +9,17 @@ interface MoviesGridProps {
   isLoggedIn: boolean
   isOwner: boolean
   onMovieClick: (movie: Movie) => void
-  onDuplicateMovie: (movie: Movie) => void
+  onDuplicateMovie: (movie: Movie, movieId: number) => void
   onMovieRemoved?: () => void
   onMovieAdded?: () => void
-  updatedRatings?: { [movieId: number]: { imdbRating: number; rtRating: number } }
-  onRatingsUpdated?: (ratings: any) => void
+  updatedExternalRatings?: { [movieId: number]: { imdbRating: number; rtRating: number } }
+  onExternalRatingsUpdated?: (ratings: any) => void
   onStreamingPopup?: (streamingServices: any, movieTitle: string, position: { x: number; y: number }) => void
+  movieRatings?: { [movieId: number]: number }
+  onRatingsUpdate?: (movieId: number, rating: number) => void
 }
 
-export function MoviesGrid({ movies, isLoggedIn, isOwner, onMovieClick, onDuplicateMovie, onMovieRemoved, onMovieAdded, updatedRatings, onRatingsUpdated, onStreamingPopup }: MoviesGridProps) {
+export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner, onMovieClick, onDuplicateMovie, onMovieRemoved, onMovieAdded, updatedExternalRatings, onExternalRatingsUpdated, onStreamingPopup, movieRatings, onRatingsUpdate }: MoviesGridProps) {
   if (!isLoggedIn && !movies.length) {
     return (
       <div className="movies-grid">
@@ -37,22 +40,32 @@ export function MoviesGrid({ movies, isLoggedIn, isOwner, onMovieClick, onDuplic
     )
   }
 
+  const handleMovieClick = useCallback((movie: Movie) => {
+    onMovieClick(movie)
+  }, [onMovieClick])
+
+  const handleDuplicateClick = useCallback((movie: Movie, movieId: number) => {
+    onDuplicateMovie(movie, movieId)
+  }, [onDuplicateMovie])
+
   return (
     <div id="movies-grid" className="movies-grid grid-size-3">
       {movies.map((movie) => (
-        <MovieCard
+        <MemoizedMovieCard
           key={movie.id}
           movie={movie}
           isOwner={isOwner}
           isLoggedIn={isLoggedIn}
-          onClick={() => onMovieClick(movie)}
-          onDuplicateMovie={onDuplicateMovie}
+          onClick={() => handleMovieClick(movie)}
+          onDuplicateMovie={handleDuplicateClick}
           onMovieRemoved={onMovieRemoved}
           onMovieAdded={onMovieAdded}
-          updatedRatings={updatedRatings}
+          updatedExternalRatings={updatedExternalRatings}
           onStreamingPopup={onStreamingPopup}
+          movieRatings={movieRatings}
+          onRatingsUpdate={onRatingsUpdate}
         />
       ))}
     </div>
   )
-}
+})

@@ -23,7 +23,7 @@ import java.util.Map;
 @Service
 public class APIServices {
 
-    private static final Dotenv dotenv = Dotenv.configure().directory("d:/watchlist-react/Watchlist/MovieWatchlist").load();
+    private static final Dotenv dotenv = Dotenv.configure().load();
 
     private final WebClient omdbWebClient;
 

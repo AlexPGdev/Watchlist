@@ -2,6 +2,7 @@
 import Link from "next/link"
 import { UserSearch } from "./UserSearch"
 import { ProfileDropdown } from "./ProfileDropdown"
+import React from "react"
 
 interface HeaderProps {
   onLoginClick: () => void
@@ -9,7 +10,7 @@ interface HeaderProps {
   user: string | null
 }
 
-export function Header({ onLoginClick, isLoggedIn, user }: HeaderProps) {
+export const Header = React.memo(function Header({ onLoginClick, isLoggedIn, user }: HeaderProps) {
   return (
     <div className="header">
       <UserSearch />
@@ -29,4 +30,4 @@ export function Header({ onLoginClick, isLoggedIn, user }: HeaderProps) {
       </div>
     </div>
   )
-}
+})

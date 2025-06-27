@@ -53,6 +53,11 @@
     margin-right: 10px;
 }
 
+.btn p {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 .btn-main {
     padding: 1rem 2rem;
     border: none;

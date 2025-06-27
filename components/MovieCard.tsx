@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React, { memo } from "react"
 
 import { useState } from "react"
 import type { Movie } from "@/types/movie"
@@ -15,20 +15,23 @@ interface MovieCardProps {
   isOwner: boolean
   isLoggedIn: boolean
   onClick: () => void
-  onDuplicateMovie: (movie: Movie) => void
+  onDuplicateMovie: (movie: Movie, movieId: number) => void
   onMovieRemoved?: () => void
-  updatedRatings?: { [movieId: number]: { imdbRating: number; rtRating: number } }
+  updatedExternalRatings?: { [movieId: number]: { imdbRating: number; rtRating: number } }
   onStreamingPopup?: (streamingServices: any, movieTitle: string, position: { x: number; y: number }) => void
+  movieRatings?: { [movieId: number]: number }
+  onRatingsUpdate?: (movieId: number, rating: number) => void
 }
 
-export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovie, onMovieRemoved, updatedRatings, onStreamingPopup }: MovieCardProps) {
+export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovie, onMovieRemoved, updatedExternalRatings, onStreamingPopup, movieRatings, onRatingsUpdate }: MovieCardProps) {
   const { useToggleWatched, useRemoveMovie, useRateMovie, useAddToWatchlist } = useMovieActions()
   const [isRemoving, setIsRemoving] = useState(false)
   const [toggleWatched, setToggleWatched] = useState(movie.watched);
-  const [selectedRating, setSelectedRating] = useState(movie.rating ?? -1);
+
+  const selectedRating = movieRatings?.[movie.id] ?? movie.rating ?? -1
 
   // Get the current ratings (either from updatedRatings or from movie)
-  const currentRatings = updatedRatings?.[movie.id] || { imdbRating: movie.imdbRating, rtRating: movie.rtRating };
+  const currentRatings = updatedExternalRatings?.[movie.id] || { imdbRating: movie.imdbRating, rtRating: movie.rtRating };
   
   // Check if ratings are loading (imdbRating is 0 or rtRating is null)
   const isRatingsLoading = currentRatings.imdbRating === 0 || currentRatings.rtRating === null;
@@ -74,26 +77,31 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
   const handleRate = async (e: React.MouseEvent, rating: number) => {
     e.stopPropagation();
 
-    if (selectedRating === rating) {
-      setSelectedRating(-1);
-      await useRateMovie(movie.id, -1);
-    } else {
-      setSelectedRating(rating);
-      await useRateMovie(movie.id, rating);
+    const newRating = selectedRating === rating ? -1 : rating
+
+    if(onRatingsUpdate){
+      onRatingsUpdate(movie.id, newRating)
     }
+
+    await useRateMovie(movie.id, newRating);
+
+    // if (selectedRating === rating) {
+    //   setSelectedRating(-1);
+    //   await useRateMovie(movie.id, -1);
+    // } else {
+    //   setSelectedRating(rating);
+    //   await useRateMovie(movie.id, rating);
+    // }
   };
 
-  const handleAddToWatchlist = async (e: React.MouseEvent) => {
+  const handleAddToWatchlist =  async (e: React.MouseEvent) => {
     e.stopPropagation()
     try {
-      await useAddToWatchlist(movie.tmdbId)
+      await useAddToWatchlist(movie.tmdbId, movie.id, onDuplicateMovie)
       e.currentTarget.setAttribute("disabled", "true")
       e.currentTarget.textContent = "Added to Watchlist"
     } catch (error) {
       console.log(error)
-      if (error === "duplicate") {
-        onDuplicateMovie(movie)
-      }
     }
   }
 
@@ -102,7 +110,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
   }
 
   return (
-    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick}>
+    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick} data-movie-id={movie.id}>
       {toggleWatched && (
         <div className="watched-badge">
           ✓ Watched on {movie.watchDate ? formatWatchDate(movie.watchDate) : formatWatchDate(Date.now())}
@@ -171,7 +179,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
                 // Show only the selected one
                 <button
                   className="rating-btn selected"
-                  onClick={(e) => handleRate(e, selectedRating)}
+                  onClick={(e) => handleRate(e, selectedRating as number)}
                   disabled={!isOwner}
                 >
                   <span>
@@ -208,3 +216,28 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
     </div>
   )
 }
+
+const areEqual = (prevProps: MovieCardProps, nextProps: MovieCardProps) => {
+  // Only rerender if the movie's id, rating, watched, or relevant props change
+  const prevRating = prevProps.movieRatings?.[prevProps.movie.id] ?? prevProps.movie.rating ?? -1;
+  const nextRating = nextProps.movieRatings?.[nextProps.movie.id] ?? nextProps.movie.rating ?? -1;
+
+  const prevWatched = prevProps.movie.watched;
+  const nextWatched = nextProps.movie.watched;
+
+  // Compare updatedExternalRatings for this movie
+  const prevExternal = prevProps.updatedExternalRatings?.[prevProps.movie.id];
+  const nextExternal = nextProps.updatedExternalRatings?.[nextProps.movie.id];
+  const externalChanged = JSON.stringify(prevExternal) !== JSON.stringify(nextExternal);
+
+  return (
+    prevProps.movie.id === nextProps.movie.id &&
+    prevRating === nextRating &&
+    prevWatched === nextWatched &&
+    !externalChanged &&
+    prevProps.isOwner === nextProps.isOwner &&
+    prevProps.isLoggedIn === nextProps.isLoggedIn
+  );
+};
+
+export const MemoizedMovieCard = memo(MovieCard, areEqual);

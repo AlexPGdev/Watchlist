@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { Header } from "@/components/Header"
 import { Stats } from "@/components/Stats"
 import { Controls } from "@/components/Controls"
@@ -22,12 +22,9 @@ export default function Home() {
   const { user, isLoggedIn } = useAuth()
   const {
     movies,
-    filteredMovies,
     stats,
-    currentFilter,
     searchQuery,
     setSearchQuery,
-    setCurrentFilter,
     sortMovies,
     loadMovies,
   } = useMovies()
@@ -38,7 +35,8 @@ export default function Home() {
   const [showMovieDetailsModal, setShowMovieDetailsModal] = useState(false)
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null)
   const [duplicateMovie, setDuplicateMovie] = useState<Movie | null>(null)
-  const [updatedRatings, setUpdatedRatings] = useState<{ [movieId: number]: { imdbRating: number; rtRating: number } }>({})
+  const [duplicateMovieId, setDuplicateMovieId] = useState<number | null>(null)
+  const [updatedExternalRatings, setUpdatedExternalRatings] = useState<{ [movieId: number]: { imdbRating: number; rtRating: number } }>({})
   const [streamingPopup, setStreamingPopup] = useState<{
     isVisible: boolean;
     streamingServices: any;
@@ -50,6 +48,18 @@ export default function Home() {
     movieTitle: "",
     position: { x: 0, y: 0 }
   })
+  const [movieRatings, setMovieRatings] = useState<{ [movieId: number]: number }>({})
+
+  // Local filter state
+  const [filter, setFilter] = useState("all")
+
+  // Compute filtered movies locally
+  const filtered = useMemo(() => {
+    if (filter === "all") return movies
+    if (filter === "watched") return movies.filter(m => m.watched)
+    if (filter === "to-watch") return movies.filter(m => !m.watched)
+    return movies
+  }, [movies, filter])
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -57,19 +67,32 @@ export default function Home() {
     }
   }, [isLoggedIn, loadMovies])
 
-  const handleMovieClick = (movie: Movie) => {
+  const handleLoginClick = useCallback(() => {
+    setShowLoginModal(true)
+  }, [])
+
+  const handleAddMovieClick = useCallback(() => {
+    setShowAddMovieModal(true)
+  }, [])
+
+  const handleFilterChange = useCallback((filter: string) => {
+    setFilter(filter)
+  }, [])
+
+  const handleMovieClick = useCallback((movie: Movie) => {
     setSelectedMovie(movie)
     setShowMovieDetailsModal(true)
-  }
+  }, [])
 
-  const handleDuplicateMovie = (movie: Movie) => {
+  const handleDuplicateMovie = useCallback((movie: Movie, movieId: number) => {
     setDuplicateMovie(movie)
+    setDuplicateMovieId(movieId)
     setShowDuplicateModal(true)
-  }
+  }, [])
 
-  const handleRatingsUpdated = (ratings: any) => {
+  const handleExternalRatingsUpdated = useCallback((ratings: any) => {
     if (ratings && ratings.id) {
-      setUpdatedRatings(prev => ({
+      setUpdatedExternalRatings(prev => ({
         ...prev,
         [ratings.id]: {
           imdbRating: ratings.imdbRating,
@@ -77,21 +100,28 @@ export default function Home() {
         }
       }))
     }
-  }
+  }, [])
 
-  const handleStreamingPopup = (streamingServices: any, movieTitle: string, position: { x: number; y: number }) => {
+  const handleStreamingPopup = useCallback((streamingServices: any, movieTitle: string, position: { x: number; y: number }) => {
     setStreamingPopup({
       isVisible: true,
       streamingServices,
       movieTitle,
       position
     })
-  }
+  }, [])
+
+  const handleRatingsUpdate = useCallback((movieId: number, rating: number) => {
+    setMovieRatings(prev => ({
+      ...prev, 
+      [movieId]: rating 
+    }))
+  }, [])
 
   return (
     <div>
       <div className="container">
-        <Header onLoginClick={() => setShowLoginModal(true)} isLoggedIn={isLoggedIn} user={user} />
+        <Header onLoginClick={handleLoginClick} isLoggedIn={isLoggedIn} user={user} />
 
         <Stats stats={stats} />
 
@@ -101,22 +131,24 @@ export default function Home() {
         <Controls
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          onAddMovieClick={() => setShowAddMovieModal(true)}
+          onAddMovieClick={handleAddMovieClick}
           showAddButton={isLoggedIn}
         />
 
-        <FilterTabs currentFilter={currentFilter} onFilterChange={setCurrentFilter} onSortChange={sortMovies} />
+        <FilterTabs currentFilter={filter} onFilterChange={handleFilterChange} onSortChange={sortMovies} />
 
         <MoviesGrid
-          movies={filteredMovies}
+          movies={filtered}
           isLoggedIn={isLoggedIn}
           isOwner={true}
           onMovieClick={handleMovieClick}
           onDuplicateMovie={handleDuplicateMovie}
           onMovieRemoved={loadMovies}
-          updatedRatings={updatedRatings}
-          onRatingsUpdated={handleRatingsUpdated}
+          updatedExternalRatings={updatedExternalRatings}
+          onExternalRatingsUpdated={handleExternalRatingsUpdated}
           onStreamingPopup={handleStreamingPopup}
+          movieRatings={movieRatings}
+          onRatingsUpdate={handleRatingsUpdate}
         />
 
         <AboutCredits />
@@ -126,18 +158,27 @@ export default function Home() {
         <AddMovieModal
           isOpen={showAddMovieModal}
           onClose={() => setShowAddMovieModal(false)}
-          onDuplicateMovie={handleDuplicateMovie}
+          onDuplicateMovie={(movie) => handleDuplicateMovie(movie, movie.id)}
           onMovieAdded={loadMovies}
-          onRatingsUpdated={handleRatingsUpdated}
+          onExternalRatingsUpdated={handleExternalRatingsUpdated}
         />
 
-        <DuplicateModal isOpen={showDuplicateModal} onClose={() => setShowDuplicateModal(false)} movie={duplicateMovie} />
+        <DuplicateModal 
+          isOpen={showDuplicateModal} 
+          onClose={() => setShowDuplicateModal(false)} 
+          movie={duplicateMovie}
+          movieId={duplicateMovieId ?? 0}
+          onMovieAdded={loadMovies}
+          onExternalRatingsUpdated={handleExternalRatingsUpdated}
+        />
 
         <MovieDetailsModal
           isOpen={showMovieDetailsModal}
           onClose={() => setShowMovieDetailsModal(false)}
           movie={selectedMovie}
           isOwner={true}
+          movieRating={selectedMovie ? movieRatings[selectedMovie.id] : undefined}
+          onRatingUpdate={handleRatingsUpdate}
         />
       </div>
         <StreamingPopup 

@@ -30,7 +30,7 @@ export default function UserProfile() {
     currentFilter,
     searchQuery,
     setSearchQuery,
-    setCurrentFilter,
+    // setCurrentFilter,
     sortMovies,
     loadUserMovies,
     error,
@@ -43,6 +43,7 @@ export default function UserProfile() {
   const [showMovieDetailsModal, setShowMovieDetailsModal] = useState(false)
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null)
   const [duplicateMovie, setDuplicateMovie] = useState<Movie | null>(null)
+  const [duplicateMovieId, setDuplicateMovieId] = useState<number | null>(null)
   const [updatedRatings, setUpdatedRatings] = useState<{ [movieId: number]: { imdbRating: number; rtRating: number } }>({})
   const [streamingPopup, setStreamingPopup] = useState<{
     isVisible: boolean;
@@ -67,8 +68,9 @@ export default function UserProfile() {
     setShowMovieDetailsModal(true)
   }
 
-  const handleDuplicateMovie = (movie: Movie) => {
+  const handleDuplicateMovie = (movie: Movie, movieId: number) => {
     setDuplicateMovie(movie)
+    setDuplicateMovieId(movieId)
     setShowDuplicateModal(true)
   }
 
@@ -132,7 +134,7 @@ export default function UserProfile() {
           showAddButton={isOwner}
         />
 
-        <FilterTabs currentFilter={currentFilter} onFilterChange={setCurrentFilter} onSortChange={sortMovies} />
+        <FilterTabs currentFilter={currentFilter} onSortChange={sortMovies} />
 
         <MoviesGrid
           movies={filteredMovies}
@@ -160,7 +162,12 @@ export default function UserProfile() {
           />
         )}
 
-        <DuplicateModal isOpen={showDuplicateModal} onClose={() => setShowDuplicateModal(false)} movie={duplicateMovie} />
+        <DuplicateModal
+          isOpen={showDuplicateModal} 
+          onClose={() => setShowDuplicateModal(false)} 
+          movie={duplicateMovie}
+          movieId={duplicateMovieId}
+          />
 
         <MovieDetailsModal
           isOpen={showMovieDetailsModal}

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useAuth } from "@/hooks/useAuth"
+import Button from "../button/Button"
 
 interface LoginModalProps {
   isOpen: boolean
@@ -71,15 +72,15 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     <div className="modal show" onClick={onClose}>
       <div className="modal-content active" onClick={(e) => e.stopPropagation()}>
         <div className="auth-tabs">
-          <button className={`auth-tab ${activeTab === "login" ? "active" : ""}`} onClick={() => setActiveTab("login")}>
+          <Button className={`auth-tab ${activeTab === "login" ? "active" : ""}`} onClick={() => setActiveTab("login")}>
             Login
-          </button>
-          <button
+          </Button>
+          <Button
             className={`auth-tab ${activeTab === "signup" ? "active" : ""}`}
             onClick={() => setActiveTab("signup")}
           >
             Sign Up
-          </button>
+          </Button>
         </div>
 
         {activeTab === "login" ? (
@@ -104,12 +105,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               />
             </div>
             <div className="modal-actions">
-              <button className="modal-action-btn remove-btn" onClick={onClose}>
+              <Button variant="danger" onClick={onClose}>
                 Cancel
-              </button>
-              <button className="modal-action-btn watch-btn" onClick={handleLogin}>
+              </Button>
+              <Button onClick={handleLogin}>
                 Login
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
@@ -143,12 +144,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               />
             </div>
             <div className="modal-actions">
-              <button className="modal-action-btn remove-btn" onClick={onClose}>
+              <Button variant="danger" onClick={onClose}>
                 Cancel
-              </button>
-              <button className="modal-action-btn watch-btn" onClick={handleSignup}>
+              </Button>
+              <Button onClick={handleSignup}>
                 Sign Up
-              </button>
+              </Button>
             </div>
           </div>
         )}

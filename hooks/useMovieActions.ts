@@ -76,6 +76,7 @@ export function useMovieActions() {
   }
 
   const useAddMovieToWatchlist = async (movie: Partial<Movie>, force = false, onRatingsUpdated?: (ratings: any) => void) => {
+    console.log(movie)
     try {
       const response = await fetch("http://localhost:8080/api/movies", {
         method: "POST",
@@ -105,7 +106,7 @@ export function useMovieActions() {
     }
   }
 
-  const useAddToWatchlist = async (tmdbId: number) => {
+  const useAddToWatchlist = async (tmdbId: number, movieId: number, onDuplicate?: (movie: Partial<Movie>, movieId: number) => void) => {
     try {
       const response = await fetch(`http://localhost:8080/api/movies/details?id=${tmdbId}`)
       const movieDetails = await response.json()
@@ -124,11 +125,22 @@ export function useMovieActions() {
         rtRating: null,
       }
 
+      const userMovies = await fetch(`http://localhost:8080/api/page`, {
+        credentials: "include",
+      })
+      const userMoviesData = await userMovies.json()
+
+      if (userMoviesData.movies.find((m: Movie) => m.imdbId && newMovie.imdbId && m.imdbId === newMovie.imdbId)) {
+        if (onDuplicate) onDuplicate(newMovie, movieId);
+        return;
+      }
+      
+      let movieCardButton = document.querySelector(`[data-movie-id="${movieId}"] > .movie-actions > button`)
+      movieCardButton?.setAttribute("disabled", "true")
+      if (movieCardButton) movieCardButton.textContent = "Added to Watchlist"
+
       await useAddMovieToWatchlist(newMovie)
     } catch (error) {
-      if (error instanceof Error && error.message === "duplicate") {
-        throw error
-      }
       console.error("Error adding to watchlist:", error)
     }
   }

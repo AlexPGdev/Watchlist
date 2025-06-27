@@ -58,6 +58,7 @@ export function useAuth() {
     const data = await response.json()
     setUser(data.username)
     setIsLoggedIn(true)
+    window.location.reload()
   }
 
   const signup = async (username: string, password: string) => {

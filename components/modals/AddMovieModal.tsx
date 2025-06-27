@@ -1,16 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo } from "react"
 import type { Movie } from "@/types/movie"
 import { useMovieActions } from "@/hooks/useMovieActions"
+import { useMovies } from "@/hooks/useMovies"
 import Button from "../button/Button"
 
 interface AddMovieModalProps {
   isOpen: boolean
   onClose: () => void
-  onDuplicateMovie: (movie: Movie) => void
+  onDuplicateMovie: (movie: Partial<Movie>) => void
   onMovieAdded?: () => void
-  onRatingsUpdated?: (ratings: any) => void
+  onExternalRatingsUpdated?: (ratings: any) => void
 }
 
 interface SearchResult {
@@ -21,12 +22,13 @@ interface SearchResult {
   overview: string
 }
 
-export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded, onRatingsUpdated }: AddMovieModalProps) {
+export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded, onExternalRatingsUpdated }: AddMovieModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [showResults, setShowResults] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { useAddMovieToWatchlist, useGetAIRecommendations } = useMovieActions()
+  const { movies } = useMovies()
 
   useEffect(() => {
     if (searchQuery.length < 2) {
@@ -73,7 +75,13 @@ export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded,
         rtRating: null,
       }
 
-      await useAddMovieToWatchlist(newMovie, false, onRatingsUpdated)
+      if (movies.some((m) => m.imdbId && newMovie.imdbId && m.imdbId === newMovie.imdbId)) {
+        onDuplicateMovie(newMovie);
+        onClose();
+        return;
+      }
+
+      await useAddMovieToWatchlist(newMovie, false, onExternalRatingsUpdated)
       onClose()
       setSearchQuery("")
       setShowResults(false)
@@ -170,4 +178,4 @@ export function AddMovieModal({ isOpen, onClose, onDuplicateMovie, onMovieAdded,
       </div>
     </div>
   )
-}
+})

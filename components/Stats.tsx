@@ -1,3 +1,5 @@
+import React from "react"
+
 interface StatsProps {
   stats: {
     total: number
@@ -6,7 +8,7 @@ interface StatsProps {
   }
 }
 
-export function Stats({ stats }: StatsProps) {
+export const Stats = React.memo(function Stats({ stats }: StatsProps) {
   return (
     <div className="stats">
       <div className="stat-card">
@@ -14,13 +16,13 @@ export function Stats({ stats }: StatsProps) {
         <div className="stat-label">Total Movies</div>
       </div>
       <div className="stat-card">
-        <div className="stat-number">{stats.watched}</div>
-        <div className="stat-label">Watched</div>
-      </div>
-      <div className="stat-card">
         <div className="stat-number">{stats.toWatch}</div>
         <div className="stat-label">To Watch</div>
       </div>
+      <div className="stat-card">
+        <div className="stat-number">{stats.watched}</div>
+        <div className="stat-label">Watched</div>
+      </div>
     </div>
   )
-}
+})
