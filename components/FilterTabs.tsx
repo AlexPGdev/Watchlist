@@ -123,14 +123,16 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, onFilterChan
             className="grid-size-btn"
             onClick={handleGridSizeDecrease}
             title="Decrease Grid Size"
+            disabled={settings?.view === 0 || settings?.gridSize === 2}
           >
             -
           </Button>
-          <span id="grid-size-value">{gridSize}</span>
+          <span id="grid-size-value" aria-disabled={settings?.view === 0}>{gridSize}</span>
           <Button
             className="grid-size-btn"
             onClick={handleGridSizeIncrease}
             title="Increase Grid Size"
+            disabled={settings?.view === 0 || settings?.gridSize === 5}
           >
             +
           </Button>

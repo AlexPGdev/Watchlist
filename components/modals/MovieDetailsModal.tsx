@@ -192,12 +192,48 @@ export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating
                 )}
               </div>
             </div>
+            <a style={{display: "flex", justifyContent: "end", marginTop: "-0.5rem"}} href="https://www.justwatch.com/" target="_blank">
+                <img src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg" style={{width: "80px"}}></img>
+            </a>
             
           </div>
         </div>
 
         <div className="movie-details-body">
           <div className="movie-details-description">{movie.description}</div>
+        </div>
+
+        <div className="movie-details-streaming" id="modal-movie-streaming">
+            <h3>Also Watch</h3>
+            <div className="also-watch-movies">
+                <div className="also-watch-movie">
+                    <div className="also-watch-poster">
+                        <img src="https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg" alt="The Matrix"></img>
+                    </div>
+                    <div className="also-watch-info">
+                        <h4>The Matrix</h4>
+                        <span>1999</span>
+                    </div>
+                </div>
+                <div className="also-watch-movie">
+                    <div className="also-watch-poster">
+                        <img src="https://m.media-amazon.com/images/M/MV5BMTY5OTU0OTc2NV5BMl5BanBnXkFtZTcwMzU4MDcyMQ@@._V1_SX300.jpg" alt="Inception"></img>
+                    </div>
+                    <div className="also-watch-info">
+                        <h4>Inception</h4>
+                        <span>2010</span>
+                    </div>
+                </div>
+                <div className="also-watch-movie">
+                    <div className="also-watch-poster">
+                        <img src="https://m.media-amazon.com/images/I/81rGCm0PyHL.jpg" alt="The Dark Knight"></img>
+                    </div>
+                    <div className="also-watch-info">
+                        <h4>The Dark Knight</h4>
+                        <span>2008</span>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
