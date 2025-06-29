@@ -2167,3 +2167,13 @@ footer span {
 /* .drag-ghost {
     filter: blur(2px);
 } */
+
+.justwatch-link {
+    display: flex;
+    justify-content: end;
+    margin-top: -0.5rem;
+}
+
+.justwatch-logo {
+    width: 80px;
+}

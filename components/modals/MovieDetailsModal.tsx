@@ -192,8 +192,17 @@ export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating
                 )}
               </div>
             </div>
-            <a style={{display: "flex", justifyContent: "end", marginTop: "-0.5rem"}} href="https://www.justwatch.com/" target="_blank">
-                <img src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg" style={{width: "80px"}}></img>
+            <a 
+              className="justwatch-link" 
+              href="https://www.justwatch.com/" 
+              target="_blank" 
+              aria-label="Visit JustWatch website"
+            >
+                <img 
+                  src="https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg" 
+                  alt="JustWatch logo"
+                  className="justwatch-logo"
+                />
             </a>
             
           </div>
