@@ -355,6 +355,7 @@ h1 {
     --card-height: auto;
     --card-min-height: 400px;
     --header-gap: 1rem;
+    --header-height: 168px;
     --badge-padding: 0rem 0.6rem;
     --badge-font-size: 0.8rem;
     --title-font-size: 1.2rem;
@@ -381,6 +382,7 @@ h1 {
     --card-height: 340px;
     --card-min-height: 340px;
     --header-gap: 0.5rem;
+    --header-height: 120px;
     --badge-padding: 0rem 0.3rem;
     --badge-font-size: 0.7rem;
     --title-font-size: 1rem;
@@ -401,6 +403,31 @@ h1 {
     --movie-watch-span-margin-left: 0px;
     --movie-actions-gap: 0.5rem;
     --movie-ratings-display: none;
+}
+
+.movies-list {
+    --card-height: 300px;
+    --card-min-height: 300px;
+    --header-gap: 0.5rem;
+    --badge-padding: 0rem 0.3rem;
+    --badge-font-size: 0.7rem;
+    --title-font-size: 1.3rem;
+    --title-margin-bottom: 0.2rem;
+    --year-font-size: 1rem;
+    --year-margin-bottom: 0.1rem;
+    --genre-tag-padding: 0.1rem 0.2rem;
+    --genre-tag-font-size: 13px;
+    --streaming-service-top: 115px;
+    --external-ratings-display: flex;
+    --external-ratings-gap: 7rem;
+    --external-ratings-width: 100%;
+    --external-ratings-margin-top: 5px;
+    --description-line-clamp: 4;
+    --description-top: 190px;
+    --action-btn-padding: 0.4rem 0.4rem;
+    --action-btn-font-size: 13px;
+    --movie-watch-span-margin-left: 0px;
+    --movie-actions-gap: 0.5rem;
 }
 
 .movies-grid.list-view {
@@ -502,6 +529,7 @@ h1 {
 
 .movie-header {
     display: flex;
+    height: var(--header-height);
     gap: var(--header-gap);
     margin-bottom: 1rem;
 }
@@ -527,6 +555,8 @@ h1 {
 }
 
 .movie-info {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     margin-top: -1rem;
     min-width: 0;
@@ -614,7 +644,8 @@ h1 {
 .movie-genres {
     display: flex;
     gap: 0.2rem;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
+    margin-bottom: 0;
     max-width: 100%;
     overflow-x: auto;
     white-space: nowrap;
@@ -685,9 +716,10 @@ h1 {
     display: flex;
     gap: 0.5rem;
     flex-wrap: nowrap;
-    margin-bottom: -0.5rem;
-    position: fixed;
-    top: var(--streaming-service-top);
+    /* margin-bottom: -0.5rem; */
+    /* position: fixed; */
+    /* top: var(--streaming-service-top); */
+    margin-top: auto;
 }
 
 .movie-streaming-service img {

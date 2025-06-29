@@ -74,7 +74,7 @@ public class MovieController {
     }
 
     @GetMapping("/recommendations")
-    public Mono<List<info.movito.themoviedbapi.model.core.Movie>> getRecommendations(Authentication authentication) throws TmdbException {
+    public Mono<List<info.movito.themoviedbapi.model.core.Movie>> getRecommendations(Authentication authentication) throws TmdbException, IOException {
         User currentUser = userRepository.findByUsername(authentication.getName());
         return movieService.getRecommendations(currentUser);
     }

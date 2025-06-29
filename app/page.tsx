@@ -27,6 +27,7 @@ export default function Home() {
     setSearchQuery,
     sortMovies,
     loadMovies,
+    settings,
   } = useMovies()
   
   const [showLoginModal, setShowLoginModal] = useState(false)
@@ -112,7 +113,7 @@ export default function Home() {
   }, [])
 
   const handleRatingsUpdate = useCallback((movieId: number, rating: number) => {
-    setMovieRatings(prev => ({
+    setMovieRatings((prev: any) => ({
       ...prev, 
       [movieId]: rating 
     }))
@@ -158,7 +159,7 @@ export default function Home() {
         <AddMovieModal
           isOpen={showAddMovieModal}
           onClose={() => setShowAddMovieModal(false)}
-          onDuplicateMovie={(movie) => handleDuplicateMovie(movie, movie.id)}
+          onDuplicateMovie={(movie: { id: Movie }) => handleDuplicateMovie(movie, movie.id)}
           onMovieAdded={loadMovies}
           onExternalRatingsUpdated={handleExternalRatingsUpdated}
         />
