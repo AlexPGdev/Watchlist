@@ -12,19 +12,16 @@ import com.ironhack.moviewatchlist.repository.UserRepository;
 import com.ironhack.moviewatchlist.service.APIServices;
 import com.ironhack.moviewatchlist.service.MovieService;
 import com.ironhack.moviewatchlist.service.PageService;
+import info.movito.themoviedbapi.model.core.MovieResultsPage;
 import info.movito.themoviedbapi.model.core.watchproviders.WatchProviders;
 import info.movito.themoviedbapi.model.movies.MovieDb;
 import info.movito.themoviedbapi.tools.TmdbException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -68,13 +65,18 @@ public class MovieController {
         return apiServices.getStreamingAvailability(id);
     }
 
+    @GetMapping("/alsowatch")
+    public MovieResultsPage getAlsoWatch(@RequestParam int id) throws TmdbException {
+        return apiServices.getAlsoWatch(id);
+    }
+
     @GetMapping("/ratings")
     public RatingResponse getMovieRatings(@RequestParam String id) throws IOException {
         return apiServices.getMovieRatings(id);
     }
 
     @GetMapping("/recommendations")
-    public Mono<List<info.movito.themoviedbapi.model.core.Movie>> getRecommendations(Authentication authentication) throws TmdbException {
+    public Mono<List<info.movito.themoviedbapi.model.core.Movie>> getRecommendations(Authentication authentication) throws TmdbException, IOException {
         User currentUser = userRepository.findByUsername(authentication.getName());
         return movieService.getRecommendations(currentUser);
     }

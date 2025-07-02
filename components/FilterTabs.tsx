@@ -1,7 +1,8 @@
 "use client"
 
-import { memo, useState } from "react"
+import { memo, useCallback, useState, useEffect } from "react"
 import Button from "./button/Button"
+import { useSettings } from "@/hooks/useSettings"
 
 interface FilterTabsProps {
   currentFilter: string
@@ -10,8 +11,59 @@ interface FilterTabsProps {
 }
 
 export const FilterTabs = memo(function FilterTabs({ currentFilter, onFilterChange, onSortChange }: FilterTabsProps) {
-  const [currentView, setCurrentView] = useState<"grid" | "list">("grid")
-  const [gridSize, setGridSize] = useState(3)
+  const { settings, loading: settingsLoading, error: settingsError, updateGridSize, updateViewMode } = useSettings()
+  const [currentView, setCurrentView] = useState<"grid" | "list">("list")
+
+  useEffect(() => {
+    if (settings?.view === 1) {
+      setCurrentView("grid")
+    } else if (settings?.view === 0) {
+      setCurrentView("list")
+    }
+  }, [settings?.view])
+
+  const gridSize = settings?.gridSize || 3
+
+  const handleGridSizeIncrease = useCallback(() => {
+    const newSize = gridSize + 1
+    const gridSizeBtn = document.getElementById("movies-grid") as HTMLElement
+    if (gridSizeBtn) {
+      gridSizeBtn.classList.remove(`grid-size-${gridSize}`)
+      gridSizeBtn.classList.add(`grid-size-${newSize}`)
+    }
+    updateGridSize(newSize)
+  }, [gridSize, updateGridSize])
+
+  const handleGridSizeDecrease = useCallback(() => {
+    const newSize = gridSize - 1
+    const gridSizeBtn = document.getElementById("movies-grid") as HTMLElement
+    if (gridSizeBtn) {
+      gridSizeBtn.classList.remove(`grid-size-${gridSize}`)
+      gridSizeBtn.classList.add(`grid-size-${newSize}`)
+    }
+    updateGridSize(newSize)
+  }, [gridSize, updateGridSize])
+
+  const handleViewModeChange = useCallback((newMode: number) => {
+    if(currentView === "list" && newMode === 0 || currentView === "grid" && newMode === 1) return
+    newMode === 1 ? setCurrentView("grid") : setCurrentView("list")
+    if(newMode === 1) {
+      document.getElementById("movies-grid")?.classList.remove("movies-list")
+      document.getElementById("movies-grid")?.classList.add("movies-grid")
+    } else {
+      document.getElementById("movies-grid")?.classList.remove("movies-grid")
+      document.getElementById("movies-grid")?.classList.add("movies-list")
+    }
+    updateViewMode(newMode)
+  }, [updateViewMode])
+  
+
+  if (settingsLoading) {
+    return <div className="filter-tabs">Loading settings...</div>
+  }
+  if (settingsError) {
+    return <div className="filter-tabs">Error loading settings: {settingsError}</div>
+  }
 
   return (
     <div className="filter-tabs">
@@ -53,14 +105,14 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, onFilterChan
 
         <Button
           className={`view-btn ${currentView === "grid" ? "active" : ""}`}
-          onClick={() => setCurrentView("grid")}
+          onClick={() => handleViewModeChange(1)}
           title="Grid View"
         >
           ⊞
         </Button>
         <Button
           className={`view-btn ${currentView === "list" ? "active" : ""}`}
-          onClick={() => setCurrentView("list")}
+          onClick={() => handleViewModeChange(0)}
           title="List View"
         >
           ≡
@@ -69,16 +121,18 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, onFilterChan
         <div className="grid-size-control">
           <Button
             className="grid-size-btn"
-            onClick={() => setGridSize(Math.max(2, gridSize - 1))}
+            onClick={handleGridSizeDecrease}
             title="Decrease Grid Size"
+            disabled={settings?.view === 0 || settings?.gridSize === 2}
           >
             -
           </Button>
-          <span id="grid-size-value">{gridSize}</span>
+          <span id="grid-size-value" aria-disabled={settings?.view === 0}>{gridSize}</span>
           <Button
             className="grid-size-btn"
-            onClick={() => setGridSize(Math.min(5, gridSize + 1))}
+            onClick={handleGridSizeIncrease}
             title="Increase Grid Size"
+            disabled={settings?.view === 0 || settings?.gridSize === 5}
           >
             +
           </Button>

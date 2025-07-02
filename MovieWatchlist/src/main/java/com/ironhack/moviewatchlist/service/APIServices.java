@@ -55,6 +55,11 @@ public class APIServices {
         return watchProviders.getResults();
     }
 
+    public MovieResultsPage getAlsoWatch(int id) throws TmdbException {
+        MovieResultsPage movies = tmdbApi.getMovies().getRecommendations(id, "en-US", null);
+        return movies;
+    }
+
     public RatingResponse getMovieRatings(String id) throws IOException {
         String result = omdbWebClient.get()
                 .uri(uriBuilder -> uriBuilder

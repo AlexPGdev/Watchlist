@@ -134,17 +134,6 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
             ))}
           </div>
 
-          <button className="movie-external-ratings" data-movie-imdbid="${movie.imdbId}">
-              <span className="imdbRating">
-                <img src="/imdb.svg"></img> 
-                {isRatingsLoading ? ( <div className ='rating-loader-spinner' style={{ marginBottom: 0, width: "20px", height: "20px" }}></div> ) : currentRatings.imdbRating}/10
-              </span>
-              <span className="rtRating">
-                <img src={"/rt.png"}></img> 
-                {isRatingsLoading ? ( <div className ='rating-loader-spinner' style={{ marginBottom: 0, width: "20px", height: "20px" }}></div> ) : currentRatings.rtRating}
-              </span>
-          </button>
-
           <div className="movie-streaming-service">
               <Button id="watch-movie-btn" onClick={handleStreamingAvailability}><span>🎬</span><p>Watch</p></Button>
           </div>
@@ -193,6 +182,17 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
           )}
         </div>
       </div>
+
+      <button className="movie-external-ratings" data-movie-imdbid="${movie.imdbId}">
+        <span className="imdbRating">
+          <img src="/imdb.svg"></img> 
+          {isRatingsLoading ? ( <div className ='rating-loader-spinner' style={{ marginBottom: 0, width: "20px", height: "20px" }}></div> ) : currentRatings.imdbRating}/10
+        </span>
+        <span className="rtRating">
+          <img src={"/rt.png"}></img> 
+          {isRatingsLoading ? ( <div className ='rating-loader-spinner' style={{ marginBottom: 0, width: "20px", height: "20px" }}></div> ) : currentRatings.rtRating}
+        </span>
+      </button>
 
       <div className="movie-description">{movie.description}</div>
 

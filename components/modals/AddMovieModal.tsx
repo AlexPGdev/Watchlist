@@ -29,6 +29,17 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
   const [isLoading, setIsLoading] = useState(false)
   const { useAddMovieToWatchlist, useGetAIRecommendations } = useMovieActions()
   const { movies } = useMovies()
+  const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    if (isOpen) {
+      setShow(true)
+    } else {
+      // Delay unmount for animation
+      const timeout = setTimeout(() => setShow(false), 250)
+      return () => clearTimeout(timeout)
+    }
+  }, [isOpen])
 
   useEffect(() => {
     if (searchQuery.length < 2) {
@@ -109,11 +120,11 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
     }
   }
 
-  if (!isOpen) return null
+  if (!show && !isOpen) return null
 
   return (
-    <div className="modal show" onClick={onClose}>
-      <div className="modal-content active" onClick={(e) => e.stopPropagation()}>
+    <div className={`modal show${isOpen ? " modal-fade-in" : " modal-fade-out"}`} onClick={onClose} id="add-movie-modal">
+      <div className={`modal-content active${isOpen ? " modal-content-fade-in" : " modal-content-fade-out"}`} onClick={(e) => e.stopPropagation()}>
         <h3>Add New Movie</h3>
         <div className="form-group">
           <label>Search Movie</label>

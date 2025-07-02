@@ -3,6 +3,8 @@
 import { memo, useCallback } from "react"
 import { MemoizedMovieCard } from "./MovieCard"
 import type { Movie } from "@/types/movie"
+import { useState } from "react"
+import { useSettings } from "@/hooks/useSettings"
 
 interface MoviesGridProps {
   movies: Movie[]
@@ -19,7 +21,40 @@ interface MoviesGridProps {
   onRatingsUpdate?: (movieId: number, rating: number) => void
 }
 
-export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner, onMovieClick, onDuplicateMovie, onMovieRemoved, onMovieAdded, updatedExternalRatings, onExternalRatingsUpdated, onStreamingPopup, movieRatings, onRatingsUpdate }: MoviesGridProps) {
+export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner, onMovieClick, onDuplicateMovie, onMovieRemoved, onMovieAdded, updatedExternalRatings, onExternalRatingsUpdated, onStreamingPopup, movieRatings, onRatingsUpdate }: MoviesGridProps) {  
+  const { settings, loading: settingsLoading, error: settingsError } = useSettings()
+
+  const handleMovieClick = useCallback((movie: Movie) => {
+    onMovieClick(movie)
+  }, [onMovieClick])
+
+  const handleDuplicateClick = useCallback((movie: Movie, movieId: number) => {
+    onDuplicateMovie(movie, movieId)
+  }, [onDuplicateMovie])
+
+  if (settingsLoading) {
+    return (
+      <div className="movies-grid">
+        <div style={{ textAlign: "center", color: "#b8b8d1", gridColumn: "1/-1", padding: "2rem" }}>
+          Loading settings...
+        </div>
+      </div>
+    )
+  }
+
+  if (settingsError) {
+    return (
+      <div className="movies-grid">
+        <div style={{ textAlign: "center", color: "#b8b8d1", gridColumn: "1/-1", padding: "2rem" }}>
+          Error loading settings: {settingsError}
+        </div>
+      </div>
+    )
+  }
+
+  const gridSize = settings?.gridSize || 3;
+  const viewMode = settings?.view;
+
   if (!isLoggedIn && !movies.length) {
     return (
       <div className="movies-grid">
@@ -40,16 +75,8 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
     )
   }
 
-  const handleMovieClick = useCallback((movie: Movie) => {
-    onMovieClick(movie)
-  }, [onMovieClick])
-
-  const handleDuplicateClick = useCallback((movie: Movie, movieId: number) => {
-    onDuplicateMovie(movie, movieId)
-  }, [onDuplicateMovie])
-
   return (
-    <div id="movies-grid" className="movies-grid grid-size-3">
+    <div id="movies-grid" className={`movies-${viewMode === 1 ? "grid" : "list"} grid-size-${gridSize}`}>
       {movies.map((movie) => (
         <MemoizedMovieCard
           key={movie.id}
@@ -59,7 +86,6 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
           onClick={() => handleMovieClick(movie)}
           onDuplicateMovie={handleDuplicateClick}
           onMovieRemoved={onMovieRemoved}
-          onMovieAdded={onMovieAdded}
           updatedExternalRatings={updatedExternalRatings}
           onStreamingPopup={onStreamingPopup}
           movieRatings={movieRatings}

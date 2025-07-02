@@ -238,6 +238,10 @@ h1 {
     border: 1px solid rgba(0, 255, 255, 0.2);
 }
 
+/* .grid-size-control span[aria-disabled] {
+    color: #00ffff;
+} */
+
 .grid-size-btn {
     background: transparent;
     border: 1px solid rgba(0, 255, 255, 0.3);
@@ -264,6 +268,11 @@ h1 {
     font-weight: 600;
     min-width: 20px;
     text-align: center;
+}
+
+#grid-size-value[aria-disabled = true] {
+    opacity: 0.5;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
 /* List view styles */
@@ -351,10 +360,52 @@ h1 {
     margin-bottom: 8rem;
 }
 
+.movies-grid.grid-size-2 {
+    --card-height: 370px;
+    --card-min-height: 370px;
+    --header-gap: 1rem;
+    --header-height: fit-content;
+    --badge-padding: 0rem 0.6rem;
+    --badge-font-size: 0.8rem;
+    --title-font-size: 1.2rem;
+    --title-margin-bottom: 0.2rem;
+    --year-font-size: 1rem;
+    --year-margin-bottom: 0.1rem;
+    --genre-tag-padding: 0.2rem 0.4rem;
+    --genre-tag-font-size: 0.7rem;
+    --streaming-service-top: 150px;
+    --external-ratings-display: flex;
+    --external-ratings-gap: 1.5rem;
+    --external-ratings-width: 100%;
+    --external-ratings-margin-top: 5px;
+    --description-line-clamp: 5;
+    --description-top: 190px;
+    --action-btn-padding: 0.6rem 1.2rem;
+    --action-btn-font-size: 0.9rem;
+    --movie-watch-span-margin-left: -10px;
+    --movie-actions-gap: 1rem;
+    --movie-ratings-display: flex;
+}
+
+.grid-size-2 .movie-ratings {
+    top: 102px;
+    left: 250px;
+}
+
+.grid-size-2 .movie-actions {
+    bottom: 10px;
+    gap: 1rem;
+}
+
+.grid-size-2 .watched-badge {
+    background: linear-gradient(190deg, #ff00ff, #00ffff);
+}
+
 .movies-grid.grid-size-3 {
     --card-height: auto;
     --card-min-height: 400px;
     --header-gap: 1rem;
+    --header-height: 168px;
     --badge-padding: 0rem 0.6rem;
     --badge-font-size: 0.8rem;
     --title-font-size: 1.2rem;
@@ -381,6 +432,7 @@ h1 {
     --card-height: 340px;
     --card-min-height: 340px;
     --header-gap: 0.5rem;
+    --header-height: 120px;
     --badge-padding: 0rem 0.3rem;
     --badge-font-size: 0.7rem;
     --title-font-size: 1rem;
@@ -401,6 +453,118 @@ h1 {
     --movie-watch-span-margin-left: 0px;
     --movie-actions-gap: 0.5rem;
     --movie-ratings-display: none;
+}
+
+.movies-grid.grid-size-5 {
+    --card-height: 300px;
+    --card-min-height: 300px;
+    --header-gap: 0.5rem;
+    --header-height: 120px;
+    --badge-padding: 0rem 0.3rem;
+    --badge-font-size: 0.7rem;
+    --title-font-size: 1rem;
+    --title-margin-bottom: 0.2rem;
+    --year-font-size: 0.9rem;
+    --year-margin-bottom: 0.1rem;
+    --genre-tag-padding: 0.1rem 0.2rem;
+    --genre-tag-font-size: 10px;
+    --streaming-service-top: 115px;
+    --external-ratings-display: flex;
+    --external-ratings-gap: 7rem;
+    --external-ratings-width: 100%;
+    --external-ratings-margin-top: 5px;
+    --description-line-clamp: 4;
+    --description-top: 190px;
+    --action-btn-padding: 0.4rem 0.4rem;
+    --action-btn-font-size: 13px;
+    --movie-watch-span-margin-left: 0px;
+    --movie-actions-gap: 0.5rem;
+    --movie-ratings-display: none;
+}
+
+.grid-size-5 .movie-external-ratings, .grid-size-5 .movie-description, .grid-size-5 .movie-streaming-service, .grid-size-5 .movie-genres {
+    display: none;
+}
+
+.grid-size-5 {
+    gap: 20px;
+}
+
+.grid-size-5 .movie-header {
+    flex-direction: column;
+}
+
+.grid-size-5 .watched-badge {
+    background: linear-gradient(90deg, #f0f, #0ff, #f0f);
+    color: white;
+    text-shadow: 1px 1px 2px #3c3c3c;
+    padding: 0rem 1.5rem;
+}
+
+.grid-size-5 .movie-poster {
+    width: 120px;
+    height: 160px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.grid-size-5 .movie-poster img {
+    object-fit: cover;
+}
+
+.grid-size-5 .movie-title {
+    margin-top: 15px;
+    text-align: center;
+    margin-bottom: 0.3rem;
+}
+
+.grid-size-5 .movie-year {
+    text-align: center;
+}
+
+.movies-list {
+    --card-height: 320px;
+    --card-min-height: 320px;
+    --header-gap: 1rem;
+    --badge-padding: 0.5rem 1rem;
+    --badge-font-size: 0.7rem;
+    --title-font-size: 1.3rem;
+    --title-margin-bottom: 0.2rem;
+    --year-font-size: 1rem;
+    --year-margin-bottom: 0.1rem;
+    --genre-tag-padding: 0.1rem 0.2rem;
+    --genre-tag-font-size: 13px;
+    --streaming-service-top: 115px;
+    --external-ratings-display: flex;
+    --external-ratings-gap: 7rem;
+    --external-ratings-width: 100%;
+    --external-ratings-margin-top: 5px;
+    --description-line-clamp: 4;
+    --description-top: 190px;
+    --action-btn-padding: 0.4rem 0.4rem;
+    --action-btn-font-size: 13px;
+    --movie-watch-span-margin-left: 0px;
+    --movie-actions-gap: 0.5rem;
+}
+
+.movies-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.movies-list .watched-badge {
+    background: linear-gradient(120deg, #f0f, #0ff);
+}
+
+.movies-list .movie-ratings {
+    display: flex;
+    top: 100px;
+}
+
+.movies-list .movie-actions {
+    bottom: 10px;
+    gap: 1rem;
 }
 
 .movies-grid.list-view {
@@ -502,6 +666,7 @@ h1 {
 
 .movie-header {
     display: flex;
+    height: var(--header-height);
     gap: var(--header-gap);
     margin-bottom: 1rem;
 }
@@ -527,6 +692,8 @@ h1 {
 }
 
 .movie-info {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     margin-top: -1rem;
     min-width: 0;
@@ -614,7 +781,8 @@ h1 {
 .movie-genres {
     display: flex;
     gap: 0.2rem;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
+    margin-bottom: 0;
     max-width: 100%;
     overflow-x: auto;
     white-space: nowrap;
@@ -662,6 +830,7 @@ h1 {
     gap: var(--external-ratings-gap);
     width: var(--external-ratings-width);
     margin-top: var(--external-ratings-margin-top);
+    width: fit-content;
 }
 
 .movie-external-ratings:hover {
@@ -685,9 +854,10 @@ h1 {
     display: flex;
     gap: 0.5rem;
     flex-wrap: nowrap;
-    margin-bottom: -0.5rem;
-    position: fixed;
-    top: var(--streaming-service-top);
+    /* margin-bottom: -0.5rem; */
+    /* position: fixed; */
+    /* top: var(--streaming-service-top); */
+    margin-top: auto;
 }
 
 .movie-streaming-service img {
@@ -839,7 +1009,7 @@ h1 {
     position: absolute;
     top: 0;
     right: 0;
-    background: linear-gradient(195deg, #ff00ff, #00ffff);
+    background: linear-gradient(200deg, #ff00ff, #00ffff);
     color: white;
     padding: var(--badge-padding);
     border-radius: 20px;
@@ -848,6 +1018,7 @@ h1 {
     box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
     text-transform: uppercase;
     letter-spacing: 1px;
+    text-shadow: 1px 1px 2px #3c3c3c;
 }
 
 .modal {
@@ -1360,6 +1531,7 @@ h1 {
     backdrop-filter: blur(10px);
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 750px;
 }
 
 .movie-details-content.active {
@@ -1370,7 +1542,7 @@ h1 {
 .movie-details-header {
     display: flex;
     gap: 2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .movie-details-poster {
@@ -1537,6 +1709,7 @@ h1 {
 .movie-details-streaming {
     margin-top: 1rem;
     min-height: 140px;
+    max-width: 430px;
 }
 
 .movie-details-description {
@@ -1601,7 +1774,7 @@ h1 {
 
 .streaming-grid-link {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
     gap: 1rem;
     text-decoration: none;
     transition: all 0.3s ease;
@@ -1615,6 +1788,10 @@ h1 {
 .streaming-grid-link:hover .streaming-service-item {
     border-color: #00ffff;
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.movie-details-streaming h3 {
+    margin-bottom: 0.5rem;
 }
 
 .streaming-service-item {
@@ -1732,7 +1909,7 @@ h1 {
     /* gap: 1.5rem; */
     justify-content: space-between;
     overflow-x: auto;
-    padding: 0.5rem;
+    padding: 0.5rem 0rem;
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 255, 255, 0.5) rgba(0, 0, 0, 0.3);
 }
@@ -1996,3 +2173,46 @@ footer span {
 /* .drag-ghost {
     filter: blur(2px);
 } */
+
+.justwatch-link {
+    display: flex;
+    justify-content: end;
+    margin-top: -2rem;
+    max-width: 430px;
+}
+
+.justwatch-logo {
+    width: 80px;
+}
+
+.modal-fade-in {
+    animation: modalFadeIn 0.25s ease-in-out forwards;
+}
+.modal-fade-out {
+  animation: modalFadeOut 0.25s forwards;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes modalFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.modal-content-fade-in {
+    animation: modalContentFadeIn 0.25s cubic-bezier(0.4,0,1) forwards;
+}
+.modal-content-fade-out {
+  animation: modalContentFadeOut 0.25s ease-in-out forwards;
+}
+
+@keyframes modalContentFadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.65); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes modalContentFadeOut {
+    from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    to { opacity: 0; transform: translate(-50%, -50%) scale(0.65); }
+}
