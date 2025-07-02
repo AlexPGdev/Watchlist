@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import Button from "../button/Button"
 
@@ -18,7 +18,8 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     confirmPassword: "",
   })
   const { login, signup } = useAuth()
-
+  const [show, setShow] = useState(false)
+  
   const handleLogin = async () => {
     if (!loginData.username || !loginData.password) {
       alert("Please enter both username and password")
@@ -66,11 +67,20 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   }
 
-  if (!isOpen) return null
+  useEffect(() => {
+    if(isOpen) {
+      setShow(true)
+    } else {
+      const timeout = setTimeout(() => setShow(false), 250)
+      return () => clearTimeout(timeout)
+    }
+  }, [isOpen])
+
+  if (!show && !isOpen) return null
 
   return (
-    <div className="modal show" onClick={onClose}>
-      <div className="modal-content active" onClick={(e) => e.stopPropagation()}>
+    <div className={`modal show${isOpen ? " modal-fade-in" : " modal-fade-out"}`} onClick={onClose} id="login-modal">
+      <div className={`modal-content active${isOpen ? " modal-content-fade-in" : " modal-content-fade-out"}`}>
         <div className="auth-tabs">
           <Button className={`auth-tab ${activeTab === "login" ? "active" : ""}`} onClick={() => setActiveTab("login")}>
             Login

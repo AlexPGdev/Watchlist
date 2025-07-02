@@ -12,21 +12,36 @@ interface MovieDetailsModalProps {
   isOwner: boolean
   movieRating?: number
   onRatingUpdate?: (movieId: number, rating: number) => void
+  onMovieAdded?: () => void,
+  onExternalRatingsUpdated?: (ratings: any) => void
 }
 
-export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating, onRatingUpdate }: MovieDetailsModalProps) {
+export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating, onRatingUpdate, onMovieAdded, onExternalRatingsUpdated }: MovieDetailsModalProps) {
   const [streamingServices, setStreamingServices] = useState<any>(null)
   const [allServices, setAllServices] = useState<any>(null)
   const [loadingStreaming, setLoadingStreaming] = useState(false)
-  const { useRateMovie } = useMovieActions()
+  const { useRateMovie, useAddToWatchlist, loadExternalRatings } = useMovieActions()
+  const [show, setShow] = useState(false)
+  const [alsoWatch, setAlsoWatch] = useState<any>(null)
 
   const selectedRating = movieRating !== undefined ? movieRating : (movie?.rating ?? -1)
 
   console.log(movie)
 
   useEffect(() => {
+    if (isOpen) {
+      setShow(true)
+    } else {
+      // Delay unmount for animation
+      const timeout = setTimeout(() => setShow(false), 250)
+      return () => clearTimeout(timeout)
+    }
+  }, [isOpen])
+
+  useEffect(() => {
     if (isOpen && movie) {
       fetchStreamingServices()
+      fetchAlsoWatch()
     }
   }, [isOpen, movie])
 
@@ -35,7 +50,7 @@ export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating
 
     setLoadingStreaming(true)
     try {
-      const response = await fetch(`http://localhost:8080/api/movies/streaming-availability?id=${movie.tmdbId}`)
+      const response = await fetch(`http://localhost:8080/api/movies/streaming-availability?id=${movie?.tmdbId}`)
       const data = await response.json()
 
       let allServices = [];
@@ -66,6 +81,21 @@ export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating
     }
   }
 
+  const fetchAlsoWatch = async () => {
+    if (!movie) return
+    try {
+      const response = await fetch(`http://localhost:8080/api/movies/alsowatch?id=${movie.tmdbId}`)
+
+      if (response.ok) {
+        const data = await response.json()
+        console.log(data.results[0])
+        setAlsoWatch(data)
+      }
+    } catch (error) {
+      console.error("Error fetching also watch:", error)
+    }
+  }
+
   const handleRate = async (rating: number) => {
     if (!movie) return
 
@@ -82,11 +112,30 @@ export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating
     }
   }
 
-  if (!isOpen || !movie) return null
+  const handleAlsoWatchClick = async (movieId: number) => {
+    try {
+      // Add to watchlist and get the added movie (with id, imdbId)
+      const addedMovie = await useAddToWatchlist(movieId, 0)
+      // Update external ratings using the new id and imdbId
+      if (addedMovie?.imdbId && addedMovie?.id && onExternalRatingsUpdated) {
+        const ratings = await loadExternalRatings(addedMovie.imdbId, addedMovie.id, onExternalRatingsUpdated)
+        onExternalRatingsUpdated(ratings)
+      }
+      onClose()
+      if (onMovieAdded) {
+        onMovieAdded()
+      }
+    } catch (error) {
+      console.error("Error adding movie from Also Watch:", error)
+    }
+  }
+
+  if (!show && !isOpen) return null
+  if (!movie) return null
 
   return (
-    <div className="modal show" onClick={onClose}>
-      <div className="modal-content movie-details-content active" onClick={(e) => e.stopPropagation()}>
+    <div className={`modal show${isOpen ? " modal-fade-in" : " modal-fade-out"}`} onClick={onClose} id="movie-details-modal">
+      <div className={`modal-content movie-details-content active${isOpen ? " modal-content-fade-in" : " modal-content-fade-out"}`} onClick={(e) => e.stopPropagation()}>
         <button className="close-modal-btn" onClick={onClose}>
           ×
         </button>
@@ -208,42 +257,29 @@ export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating
           </div>
         </div>
 
-        <div className="movie-details-body">
-          <div className="movie-details-description">{movie.description}</div>
+        <div style={{position: "fixed", top: "430px", width: "92%"}}>          
+          <div className="movie-details-body">
+            <div className="movie-details-description">{movie.description}</div>
+          </div>
+
+          <div>
+              <h3 style={{color: "#00ffff", marginBottom: "0"}}>Also Watch</h3>
+              <div className="also-watch-movies">
+                  {alsoWatch?.results.slice(0, 3).map((movie: any) => (
+                      <div className="also-watch-movie" key={movie.id} onClick={() => handleAlsoWatchClick(movie.id)}>
+                          <div className="also-watch-poster">
+                              <img src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} alt={movie.title}></img>
+                          </div>
+                          <div className="also-watch-info">
+                              <h4>{movie.title}</h4>
+                              <span>{movie.release_date.split("-")[0]}</span>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
         </div>
 
-        <div className="movie-details-streaming" id="modal-movie-streaming">
-            <h3>Also Watch</h3>
-            <div className="also-watch-movies">
-                <div className="also-watch-movie">
-                    <div className="also-watch-poster">
-                        <img src="https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg" alt="The Matrix"></img>
-                    </div>
-                    <div className="also-watch-info">
-                        <h4>The Matrix</h4>
-                        <span>1999</span>
-                    </div>
-                </div>
-                <div className="also-watch-movie">
-                    <div className="also-watch-poster">
-                        <img src="https://m.media-amazon.com/images/M/MV5BMTY5OTU0OTc2NV5BMl5BanBnXkFtZTcwMzU4MDcyMQ@@._V1_SX300.jpg" alt="Inception"></img>
-                    </div>
-                    <div className="also-watch-info">
-                        <h4>Inception</h4>
-                        <span>2010</span>
-                    </div>
-                </div>
-                <div className="also-watch-movie">
-                    <div className="also-watch-poster">
-                        <img src="https://m.media-amazon.com/images/I/81rGCm0PyHL.jpg" alt="The Dark Knight"></img>
-                    </div>
-                    <div className="also-watch-info">
-                        <h4>The Dark Knight</h4>
-                        <span>2008</span>
-                    </div>
-                </div>
-            </div>
-        </div>
       </div>
     </div>
   )

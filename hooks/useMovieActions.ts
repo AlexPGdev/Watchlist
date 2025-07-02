@@ -139,7 +139,22 @@ export function useMovieActions() {
       movieCardButton?.setAttribute("disabled", "true")
       if (movieCardButton) movieCardButton.textContent = "Added to Watchlist"
 
-      await useAddMovieToWatchlist(newMovie)
+      // Actually add the movie to the watchlist
+      const addResponse = await fetch("http://localhost:8080/api/movies", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...newMovie, force: false }),
+      })
+
+      if (!addResponse.ok) {
+        throw new Error("Failed to add movie")
+      }
+
+      const addedMovie = await addResponse.json()
+      return addedMovie // <-- Return the added movie (with id, imdbId, etc)
     } catch (error) {
       console.error("Error adding to watchlist:", error)
     }

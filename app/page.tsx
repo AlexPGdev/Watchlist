@@ -180,6 +180,8 @@ export default function Home() {
           isOwner={true}
           movieRating={selectedMovie ? movieRatings[selectedMovie.id] : undefined}
           onRatingUpdate={handleRatingsUpdate}
+          onMovieAdded={loadMovies}
+          onExternalRatingsUpdated={handleExternalRatingsUpdated}
         />
       </div>
         <StreamingPopup 

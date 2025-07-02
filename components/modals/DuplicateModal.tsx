@@ -3,6 +3,7 @@
 import type { Movie } from "@/types/movie"
 import { useMovieActions } from "@/hooks/useMovieActions"
 import Button from "../button/Button"
+import { useEffect, useState } from "react"
 
 interface DuplicateModalProps {
   isOpen: boolean
@@ -15,6 +16,17 @@ interface DuplicateModalProps {
 
 export function DuplicateModal({ isOpen, onClose, movie, movieId, onMovieAdded, onExternalRatingsUpdated} : DuplicateModalProps) {
   const { useAddMovieToWatchlist } = useMovieActions()
+  const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    if (isOpen) {
+      setShow(true)
+    } else {
+      // Delay unmount for animation
+      const timeout = setTimeout(() => setShow(false), 250)
+      return () => clearTimeout(timeout)
+    }
+  }, [isOpen])
 
   const handleForceAdd = async () => {
     if (movie) {
@@ -38,11 +50,11 @@ export function DuplicateModal({ isOpen, onClose, movie, movieId, onMovieAdded, 
 
   console.log(movie)
 
-  if (!isOpen) return null
+  if (!show && !isOpen) return null
 
   return (
-    <div className="modal show" onClick={onClose}>
-      <div className="modal-content active" onClick={(e) => e.stopPropagation()}>
+    <div className={`modal show${isOpen ? " modal-fade-in" : " modal-fade-out"}`} onClick={onClose} id="duplicate-modal">
+      <div className={`modal-content active${isOpen ? " modal-content-fade-in" : " modal-content-fade-out"}`} onClick={(e) => e.stopPropagation()}>
         <h3>Duplicate Movie</h3>
         <p>This movie is already in your watchlist</p>
         <div className="modal-actions" style={{ marginTop: "10px" }}>
