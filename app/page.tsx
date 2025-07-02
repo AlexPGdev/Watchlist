@@ -182,6 +182,7 @@ export default function Home() {
           onRatingUpdate={handleRatingsUpdate}
           onMovieAdded={loadMovies}
           onExternalRatingsUpdated={handleExternalRatingsUpdated}
+          onDuplicateMovie={(movie: { id: Movie }) => handleDuplicateMovie(movie, movie.id)}
         />
       </div>
         <StreamingPopup 

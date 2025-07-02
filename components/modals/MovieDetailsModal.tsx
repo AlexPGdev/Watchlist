@@ -14,9 +14,10 @@ interface MovieDetailsModalProps {
   onRatingUpdate?: (movieId: number, rating: number) => void
   onMovieAdded?: () => void,
   onExternalRatingsUpdated?: (ratings: any) => void
+  onDuplicateMovie: (movie: Movie, movieId: number) => void
 }
 
-export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating, onRatingUpdate, onMovieAdded, onExternalRatingsUpdated }: MovieDetailsModalProps) {
+export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating, onRatingUpdate, onMovieAdded, onExternalRatingsUpdated, onDuplicateMovie }: MovieDetailsModalProps) {
   const [streamingServices, setStreamingServices] = useState<any>(null)
   const [allServices, setAllServices] = useState<any>(null)
   const [loadingStreaming, setLoadingStreaming] = useState(false)
@@ -115,15 +116,15 @@ export function MovieDetailsModal({ isOpen, onClose, movie, isOwner, movieRating
   const handleAlsoWatchClick = async (movieId: number) => {
     try {
       // Add to watchlist and get the added movie (with id, imdbId)
-      const addedMovie = await useAddToWatchlist(movieId, 0)
+      const addedMovie = await useAddToWatchlist(movieId, 0, onDuplicateMovie)
       // Update external ratings using the new id and imdbId
-      if (addedMovie?.imdbId && addedMovie?.id && onExternalRatingsUpdated) {
-        const ratings = await loadExternalRatings(addedMovie.imdbId, addedMovie.id, onExternalRatingsUpdated)
-        onExternalRatingsUpdated(ratings)
-      }
-      onClose()
       if (onMovieAdded) {
         onMovieAdded()
+        onClose()
+        if (addedMovie?.imdbId && addedMovie?.id && onExternalRatingsUpdated) {
+          const ratings = await loadExternalRatings(addedMovie.imdbId, addedMovie.id, onExternalRatingsUpdated)
+          onExternalRatingsUpdated(ratings)
+        }
       }
     } catch (error) {
       console.error("Error adding movie from Also Watch:", error)
