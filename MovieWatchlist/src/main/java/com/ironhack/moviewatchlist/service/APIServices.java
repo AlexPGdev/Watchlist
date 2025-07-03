@@ -1,11 +1,16 @@
 package com.ironhack.moviewatchlist.service;
 
 import com.ironhack.moviewatchlist.dto.RatingResponse;
+import com.ironhack.moviewatchlist.repository.MovieRepository;
+
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.core.Movie;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
+import info.movito.themoviedbapi.model.core.video.Video;
 import info.movito.themoviedbapi.model.core.watchproviders.ProviderResults;
 import info.movito.themoviedbapi.model.core.watchproviders.WatchProviders;
+import info.movito.themoviedbapi.model.movies.Cast;
+import info.movito.themoviedbapi.model.movies.Credits;
 import info.movito.themoviedbapi.model.movies.MovieDb;
 import info.movito.themoviedbapi.tools.TmdbException;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -19,9 +24,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class APIServices {
+
+    private final MovieRepository movieRepository;
 
     private static final Dotenv dotenv = Dotenv.configure().directory("D:\\watchlist-react\\Watchlist\\MovieWatchlist\\.env").load();
 
@@ -33,8 +41,9 @@ public class APIServices {
 
     TmdbApi tmdbApi = new TmdbApi(tmdbKey);
 
-    public APIServices(WebClient.Builder webClientBuilder) throws TmdbException {
+    public APIServices(WebClient.Builder webClientBuilder, MovieRepository movieRepository) throws TmdbException {
         this.omdbWebClient = webClientBuilder.baseUrl("https://www.omdbapi.com").build();
+        this.movieRepository = movieRepository;
     }
 
     public List<Movie> searchMovies(String query) throws TmdbException {
@@ -50,6 +59,12 @@ public class APIServices {
         return tmdbMovie;
     }
 
+    public Optional<Video> getMovieTrailer(int tmdbId) throws TmdbException {
+        List<Video> videos = tmdbApi.getMovies().getVideos(tmdbId, "en-US").getResults();
+        Optional<Video> trailer = videos.stream().filter(v -> v.getType().equals("Trailer")).findFirst();
+        return trailer;
+    }
+
     public Map<String, WatchProviders> getStreamingAvailability(Integer id) throws TmdbException {
         ProviderResults watchProviders = tmdbApi.getMovies().getWatchProviders(id);
         return watchProviders.getResults();
@@ -58,6 +73,11 @@ public class APIServices {
     public MovieResultsPage getAlsoWatch(int id) throws TmdbException {
         MovieResultsPage movies = tmdbApi.getMovies().getRecommendations(id, "en-US", null);
         return movies;
+    }
+
+    public List<Cast> getCast(int id) throws TmdbException {
+        List<Cast> credits = tmdbApi.getMovies().getCredits(id, "en-US").getCast();
+        return credits;
     }
 
     public RatingResponse getMovieRatings(String id) throws IOException {

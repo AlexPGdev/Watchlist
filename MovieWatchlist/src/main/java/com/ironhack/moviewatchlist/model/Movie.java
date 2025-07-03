@@ -29,6 +29,9 @@ public class Movie {
     @Column(name = "poster_path")
     private String posterPath;
 
+    @Column(name = "trailer_path")
+    private String trailerPath;
+
     @Column(name = "watch_date")
     private Long watchDate;
 
@@ -53,13 +56,14 @@ public class Movie {
         this.addedDate = System.currentTimeMillis();
     }
 
-    public Movie(String title, String description, int year, List<String> genres, boolean watched, String posterPath, Long watchDate, String imdbId, Integer tmdbId, List<String> streamingServices, Integer rating, double imdbRating, String rtRating, Page page) {
+    public Movie(String title, String description, int year, List<String> genres, boolean watched, String posterPath, String trailerPath, Long watchDate, String imdbId, Integer tmdbId, List<String> streamingServices, Integer rating, double imdbRating, String rtRating, Page page) {
         this.title = title;
         this.description = description;
         this.year = year;
         this.genres = genres;
         this.watched = watched;
         this.posterPath = posterPath;
+        this.trailerPath = trailerPath;
         this.watchDate = watchDate;
         this.imdbId = imdbId;
         this.tmdbId = tmdbId;
@@ -125,6 +129,14 @@ public class Movie {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+    }
+
+    public String getTrailerPath() {
+        return trailerPath;
+    }
+
+    public void setTrailerPath(String trailerPath) {
+        this.trailerPath = trailerPath;
     }
 
     public Long getWatchDate() {

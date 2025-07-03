@@ -14,6 +14,7 @@ export interface Movie {
   rating?: number | null
   watchDate?: number
   addedDate?: number
+  trailerPath?: string
 }
 
 export interface MovieStats {

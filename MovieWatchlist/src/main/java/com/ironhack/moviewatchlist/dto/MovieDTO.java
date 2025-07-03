@@ -9,6 +9,7 @@ public class MovieDTO {
     private String description;
     private int year;
     private String posterPath;
+    private String trailerPath;
     private boolean watched;
     private int tmdbId;
     private ArrayList<String> streamingServices;
@@ -47,6 +48,14 @@ public class MovieDTO {
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
+    }
+
+    public String getTrailerPath() {
+        return trailerPath;
+    }
+
+    public void setTrailerPath(String trailerPath) {
+        this.trailerPath = trailerPath;
     }
 
     public boolean isWatched() {

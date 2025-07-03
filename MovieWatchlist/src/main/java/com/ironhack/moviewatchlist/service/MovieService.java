@@ -10,6 +10,8 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
 import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
+
+import info.movito.themoviedbapi.model.core.video.Video;
 import info.movito.themoviedbapi.tools.TmdbException;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,14 +52,21 @@ public class MovieService {
         return movieRepository.findAll();
     }
 
-    public Movie createMovie(Movie movie, User currentUser) {
+    public Movie createMovie(Movie movie, User currentUser) throws TmdbException {
         User user = userRepository.findByUsername(currentUser.getUsername());
 
         if (user == null) {
             throw new RuntimeException("User not found");
         }
 
-        return movieRepository.save(movie);
+        Movie saveMovie = movieRepository.save(movie);
+
+        com.ironhack.moviewatchlist.model.Movie userMovie = movieRepository.findById(saveMovie.getId()).orElseThrow();
+        Optional<Video> trailer = apiServices.getMovieTrailer(saveMovie.getTmdbId());
+        userMovie.setTrailerPath(trailer.get().getKey());
+        movieRepository.save(userMovie);
+
+        return saveMovie;
     }
 
     public Movie updateMovieWatchStatus(Long id, User currentUser) {

@@ -13,7 +13,10 @@ import com.ironhack.moviewatchlist.service.APIServices;
 import com.ironhack.moviewatchlist.service.MovieService;
 import com.ironhack.moviewatchlist.service.PageService;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
+import info.movito.themoviedbapi.model.core.video.Video;
 import info.movito.themoviedbapi.model.core.watchproviders.WatchProviders;
+import info.movito.themoviedbapi.model.movies.Cast;
+import info.movito.themoviedbapi.model.movies.Credits;
 import info.movito.themoviedbapi.model.movies.MovieDb;
 import info.movito.themoviedbapi.tools.TmdbException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,7 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -60,6 +64,11 @@ public class MovieController {
         return apiServices.getMovieDetails(id);
     }
 
+    @GetMapping("/trailer")
+    public Optional<Video> getMovieTrailer(@RequestParam int tmdbId) throws TmdbException {
+        return apiServices.getMovieTrailer(tmdbId);
+    }
+
     @GetMapping("/streaming-availability")
     public Map<String, WatchProviders> getStreamingAvailability(@RequestParam Integer id) throws TmdbException {
         return apiServices.getStreamingAvailability(id);
@@ -68,6 +77,11 @@ public class MovieController {
     @GetMapping("/alsowatch")
     public MovieResultsPage getAlsoWatch(@RequestParam int id) throws TmdbException {
         return apiServices.getAlsoWatch(id);
+    }
+
+    @GetMapping("/cast")
+    public List<Cast> getCast(@RequestParam int id) throws TmdbException {
+        return apiServices.getCast(id);
     }
 
     @GetMapping("/ratings")
@@ -82,7 +96,7 @@ public class MovieController {
     }
 
     @PostMapping
-    public Movie createMovie(@RequestBody Movie movie, Authentication authentication) {
+    public Movie createMovie(@RequestBody Movie movie, Authentication authentication) throws TmdbException {
         User currentUser = userRepository.findByUsername(authentication.getName());
 
         Page page = pageService.getUserPage(currentUser);
