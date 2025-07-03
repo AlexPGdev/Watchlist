@@ -4,8 +4,10 @@ import com.ironhack.moviewatchlist.dto.RatingResponse;
 import com.ironhack.moviewatchlist.repository.MovieRepository;
 
 import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.model.collections.Images;
 import info.movito.themoviedbapi.model.core.Movie;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
+import info.movito.themoviedbapi.model.core.image.Image;
 import info.movito.themoviedbapi.model.core.video.Video;
 import info.movito.themoviedbapi.model.core.watchproviders.ProviderResults;
 import info.movito.themoviedbapi.model.core.watchproviders.WatchProviders;
@@ -13,6 +15,7 @@ import info.movito.themoviedbapi.model.movies.Cast;
 import info.movito.themoviedbapi.model.movies.Credits;
 import info.movito.themoviedbapi.model.movies.MovieDb;
 import info.movito.themoviedbapi.tools.TmdbException;
+import info.movito.themoviedbapi.tools.appendtoresponse.MovieAppendToResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -55,7 +58,9 @@ public class APIServices {
     }
 
     public MovieDb getMovieDetails(Integer id) throws TmdbException {
-        MovieDb tmdbMovie = tmdbApi.getMovies().getDetails(id, "en-US");
+        MovieDb tmdbMovie = tmdbApi.getMovies().getDetails(id, "en-US", MovieAppendToResponse.CREDITS, MovieAppendToResponse.IMAGES, MovieAppendToResponse.VIDEOS);
+        System.out.println("MOVIE DETAILS!!!!!!");
+        System.out.println(tmdbMovie);
         return tmdbMovie;
     }
 
@@ -70,14 +75,9 @@ public class APIServices {
         return watchProviders.getResults();
     }
 
-    public MovieResultsPage getAlsoWatch(int id) throws TmdbException {
-        MovieResultsPage movies = tmdbApi.getMovies().getRecommendations(id, "en-US", null);
-        return movies;
-    }
-
-    public List<Cast> getCast(int id) throws TmdbException {
-        List<Cast> credits = tmdbApi.getMovies().getCredits(id, "en-US").getCast();
-        return credits;
+    public MovieDb getExtendedMovieDetails(Integer id) throws TmdbException {
+        MovieDb tmdbMovie = tmdbApi.getMovies().getDetails(id, "en", MovieAppendToResponse.RECOMMENDATIONS, MovieAppendToResponse.CREDITS, MovieAppendToResponse.IMAGES);
+        return tmdbMovie;
     }
 
     public RatingResponse getMovieRatings(String id) throws IOException {

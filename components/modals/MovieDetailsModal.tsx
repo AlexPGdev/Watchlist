@@ -36,6 +36,9 @@ export function MovieDetailsModal({
   const [show, setShow] = useState(false);
   const [alsoWatch, setAlsoWatch] = useState<any>(null);
   const [cast, setCast] = useState<any>(null);
+  const [crew, setCrew] = useState<any>(null);
+  const [images, setImages] = useState<any>(null);
+  const [productionCompanies, setProductionCompanies] = useState<any>(null);
 
   const selectedRating =
     movieRating !== undefined ? movieRating : movie?.rating ?? -1;
@@ -55,8 +58,10 @@ export function MovieDetailsModal({
   useEffect(() => {
     if (isOpen && movie) {
       fetchStreamingServices();
-      fetchAlsoWatch();
-      fetchCast();
+      fetchExtendedDetails();
+      // fetchAlsoWatch();
+      // fetchCredits();
+      // fetchImages();
     }
   }, [isOpen, movie]);
 
@@ -106,35 +111,26 @@ export function MovieDetailsModal({
     }
   };
 
-  const fetchAlsoWatch = async () => {
-    if (!movie) return;
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/movies/alsowatch?id=${movie.tmdbId}`
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data.results[0]);
-        setAlsoWatch(data);
-      }
-    } catch (error) {
-      console.error("Error fetching also watch:", error);
-    }
-  };
-
-  const fetchCast = async () => {
+  const fetchExtendedDetails = async () => {
     if (!movie) return;
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/movies/cast?id=${movie?.tmdbId}`
+        `http://localhost:8080/api/movies/extended-details?id=${movie?.tmdbId}`
       );
       const data = await response.json();
-      console.log(data);
-      setCast(data);
+      console.log(data.credits.crew)
+      let writing = data.credits.crew.filter((c: any) => c.department === "Writing");
+      console.log(writing);
+      setAlsoWatch(data.recommendations);
+      setCast(data.credits.cast);
+      setCrew(data.credits.crew);
+      setImages(data.images);
+      console.log(data.production_companies)
+      setProductionCompanies(data.production_companies);
+      // setExtendedDetails(data);
     } catch (error) {
-      console.error("Error fetching cast:", error);
+      console.error("Error fetching extended details:", error);
     }
   };
 
@@ -224,11 +220,13 @@ export function MovieDetailsModal({
 
         <div className="movie-details-info">
           <div className="movie-details-media-container">
-            <div className="movie-details-poster">
-              <img
-                src={movie.posterPath || "/placeholder.svg"}
-                alt={movie.title}
-              />
+            <div className="movie-details-poster-container">
+              <div className="movie-details-poster">
+                <img
+                  src={movie.posterPath || "/placeholder.svg"}
+                  alt={movie.title}
+                />
+              </div>
             </div>
 
             <div className="movie-details-trailer">
@@ -333,27 +331,111 @@ export function MovieDetailsModal({
 
               <div className="movie-details-cast">
                 <h3>Cast</h3>
-                <div className="movie-details-cast-list">
-                  {cast?.map((cast: any) => (
-                    <div className="movie-details-cast-item" key={cast.id}>
-                      <div className="movie-details-cast-image">
-                        {cast.profile_path !== null ? (
-                          <img
-                            src={`https://image.tmdb.org/t/p/w500/${cast.profile_path}`}
-                            alt={cast.name}
-                          />
-                        ) : (
-                          <img
-                            src="/placeholder-user.jpg"
-                            alt={cast.name}
-                            style={{ width: "100%", height: "100%" }}
-                          />
-                        )}
+                <div className="movie-details-cast-list-wrapper">
+                  <div className="movie-details-cast-list">
+                    {cast?.map((cast: any) => (
+                      <div className="movie-details-cast-item" key={cast.id}>
+                        <div className="movie-details-cast-image">
+                          {cast.profile_path !== null ? (
+                            <img
+                              src={`https://image.tmdb.org/t/p/w500/${cast.profile_path}`}
+                              alt={cast.name}
+                            />
+                          ) : (
+                            <img
+                              src="/placeholder-user.jpg"
+                              alt={cast.name}
+                              style={{ width: "100%", height: "100%" }}
+                            />
+                          )}
+                        </div>
+                        <div className="movie-details-cast-name" title={cast.name}>{cast.name}</div>
+                        <div className="movie-details-cast-character" title={cast.character}>{cast.character}</div>
                       </div>
-                      <div className="movie-details-cast-name">{cast.name}</div>
-                      <div className="movie-details-cast-character">{cast.character}</div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="movie-details-crew">
+                <h3>Crew</h3>
+                <div className="movie-details-crew-list">
+                  <div className="movie-details-crew-director">
+                    {(() => {
+                      const directors = crew?.filter((c: { job: string; name: string }) => c.job === 'Director') || [];
+
+                      return (
+                        <>
+                          <h4>{directors.length > 1 ? 'Directors' : 'Director'}</h4>
+                          <span>{directors.map((c : { name: string; }) => c.name).join(', ')}</span>
+                        </>
+                      );
+                    })()}
+                  </div>
+
+                    
+                      {(() => {
+                        const novel = crew?.filter((c: { name: string; job: string }) => c.job === "Novel") || [];
+                        const uniqueNovelNames = Array.from(new Set(novel.map((c : any) => c.name)));
+
+                        return (
+                          <>
+                            {uniqueNovelNames.length > 0 && (
+                              <>
+                                <div className="movie-details-crew-novel">
+                                  <h4>{uniqueNovelNames.length > 1 ? 'Novels' : 'Novel'}</h4>
+                                  <span>{uniqueNovelNames.join(', ')}</span>
+                                </div>
+                              </>
+                            )}
+                          </>
+                        );
+                      })()}
+                    
+
+                  <div className="movie-details-crew-writer">
+                    {(() => {
+                        const writing = crew?.filter((c: { department: string; name: string; job: string }) => c.department === 'Writing' && c.job !== "Novel") || [];
+                        const writers = writing?.filter((c: { job: string; name: string }) => c.job === 'Writer' || c.job === "Story") || [];
+
+                        const uniqueWritingNames = Array.from(new Set(writing.map((c : any) => c.name)));
+                        const uniqueWriterNames = Array.from(new Set(writers.map((c : any) => c.name)));
+
+                        return (
+                          <>
+                            {uniqueWriterNames.length > 0 ? (
+                              <>
+                                <h4>{uniqueWriterNames.length > 1 ? 'Writers' : 'Writer'}</h4>
+                                <span>{uniqueWriterNames.join(', ')}</span>
+                              </>
+                            ) : (
+                              <>
+                                <h4>{uniqueWritingNames.length > 1 ? 'Writers' : 'Writer'}</h4>
+                                <span>{uniqueWritingNames.join(', ')}</span>
+                              </>
+                            )}
+
+                          </>
+                        );
+                      })()}
+                  </div>
+
+                  <div className="movie-details-production-companies">
+                      {(() => {
+                        const production = productionCompanies?.map((c: any) => c.name) || [];
+
+                        return (
+                          <>
+                            {production.length > 0 && (
+                              <>
+                                <h4>{production.length > 1 ? 'Production Companies' : 'Production Company'}</h4>
+                                <span>{production.join(', ')}</span>
+                              </>
+                            )}
+                          </>
+                        );
+                      })()}
+                  </div>
                 </div>
               </div>
             </div>

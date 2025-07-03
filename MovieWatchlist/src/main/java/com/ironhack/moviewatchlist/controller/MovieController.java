@@ -12,11 +12,14 @@ import com.ironhack.moviewatchlist.repository.UserRepository;
 import com.ironhack.moviewatchlist.service.APIServices;
 import com.ironhack.moviewatchlist.service.MovieService;
 import com.ironhack.moviewatchlist.service.PageService;
+
+import info.movito.themoviedbapi.model.collections.Images;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 import info.movito.themoviedbapi.model.core.video.Video;
 import info.movito.themoviedbapi.model.core.watchproviders.WatchProviders;
 import info.movito.themoviedbapi.model.movies.Cast;
 import info.movito.themoviedbapi.model.movies.Credits;
+import info.movito.themoviedbapi.model.movies.Crew;
 import info.movito.themoviedbapi.model.movies.MovieDb;
 import info.movito.themoviedbapi.tools.TmdbException;
 import org.springframework.http.HttpStatus;
@@ -74,14 +77,9 @@ public class MovieController {
         return apiServices.getStreamingAvailability(id);
     }
 
-    @GetMapping("/alsowatch")
-    public MovieResultsPage getAlsoWatch(@RequestParam int id) throws TmdbException {
-        return apiServices.getAlsoWatch(id);
-    }
-
-    @GetMapping("/cast")
-    public List<Cast> getCast(@RequestParam int id) throws TmdbException {
-        return apiServices.getCast(id);
+    @GetMapping("/extended-details")
+    public MovieDb getExtendedMovieDetails(@RequestParam int id) throws TmdbException {
+        return apiServices.getExtendedMovieDetails(id);
     }
 
     @GetMapping("/ratings")
