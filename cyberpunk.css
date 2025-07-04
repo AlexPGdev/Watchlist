@@ -1527,7 +1527,7 @@ h1 {
     width: 900px;
     max-height: 80vh;
     overflow-y: auto;
-    padding: 2rem;
+    padding: 1rem 2rem;
     background: rgba(0, 0, 0, 0.95);
     border: 2px solid #ff00ff;
     box-shadow: 0 0 20px rgba(255, 0, 255, 0.3),
@@ -1556,8 +1556,8 @@ h1 {
 }
 
 .movie-details-poster {
-    width: 190px;
-    height: 285px;
+    width: 225px;
+    height: 338px;
     border-radius: 15px;
     overflow: hidden;
     border: 2px solid #00ffff;
@@ -1585,7 +1585,7 @@ h1 {
 }
 
 .movie-details-trailer {
-    width: 506px;
+    width: 600px;
 }
 
 .movie-details-trailer iframe {
@@ -1837,10 +1837,7 @@ h1 {
 }
 
 .movie-details-cast-name {
-    background: linear-gradient(135deg, #f0f, #0ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #ededed;
     margin-top: 0.5rem;
     font-size: 1rem;
     line-height: 17px;
@@ -1886,26 +1883,23 @@ h1 {
 }
 
 .movie-details-crew h3 {
-    color: #00ffff;
+    color: #0ff;
     text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
     margin-bottom: 0.5rem;
     font-size: 1.2rem;
 }
 
 .movie-details-crew h4 {
-    color: #00ffff;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    color: #7cffffa8;
     font-size: 1rem;
 }
 
 .movie-details-crew span {
-    background: linear-gradient(135deg, #f0f, #0ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #ededed;
 }
 
 .movie-details-description {
+    color: #ededed;
     margin-top: 1rem;
     font-size: 1rem;
     line-height: 1.6;
@@ -1963,7 +1957,6 @@ h1 {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
     gap: 1rem;
-    max-width: 500px;
 }
 
 .streaming-grid-link {
@@ -1972,7 +1965,7 @@ h1 {
     gap: 0.6rem;
     text-decoration: none;
     transition: all 0.3s ease;
-    width: 500px;
+    width: 600px;
 }
 
 .streaming-grid-link:hover {
@@ -2374,7 +2367,7 @@ footer span {
     display: flex;
     justify-content: end;
     margin-top: -2rem;
-    max-width: 430px;
+    max-width: 600px;
 }
 
 .justwatch-logo {

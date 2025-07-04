@@ -231,8 +231,8 @@ export function MovieDetailsModal({
 
             <div className="movie-details-trailer">
               <iframe
-                width="100%"
-                height="285"
+                width="600"
+                height="338"
                 src={`https://www.youtube.com/embed/${movie.trailerPath}?autoplay=1&mute=1`}
               ></iframe>
             </div>
@@ -288,7 +288,7 @@ export function MovieDetailsModal({
                           rel="noopener noreferrer"
                           className="streaming-grid-link"
                         >
-                          {allServices?.slice(0, 5).map((service: any) => (
+                          {allServices?.slice(0, 7).map((service: any) => (
                             <div
                               key={service.provider_id}
                               className="streaming-service-item"
