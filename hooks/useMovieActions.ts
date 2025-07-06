@@ -173,7 +173,7 @@ export function useMovieActions() {
       const recommendations = await response.json()
       return recommendations
     } catch (error) {
-      console.error("Error getting AI recommendations:", error)
+        console.error("Error getting AI recommendations:", error)
       throw error
     }
   }

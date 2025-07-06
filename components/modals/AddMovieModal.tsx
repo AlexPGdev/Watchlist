@@ -30,6 +30,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
   const { useAddMovieToWatchlist, useGetAIRecommendations } = useMovieActions()
   const { movies } = useMovies()
   const [show, setShow] = useState(false)
+  const [ AIRecommendation, setAIRecommendation ] = useState<any>(null)
 
   useEffect(() => {
     if (isOpen) {
@@ -98,6 +99,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
       setShowResults(false)
       if (onMovieAdded) {
         onMovieAdded()
+        setAIRecommendation(null)
       }
     } catch (error) {
       if (error instanceof Error && error.message === "duplicate") {
@@ -112,11 +114,21 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
   const handleAIRecommendations = async () => {
     setIsLoading(true)
     try {
-      await useGetAIRecommendations()
+      const response = await fetch("http://localhost:8080/api/movies/recommendations", {
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to get AI recommendations")
+      }
+
+      const data = await response.json()
+      console.log(data)
+      setAIRecommendation(data)
+
+      setIsLoading(false)
     } catch (error) {
       console.error("Error getting AI recommendations:", error)
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -184,6 +196,40 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
         {isLoading && (
           <div className="ai-loader" style={{ display: "flex" }}>
             <div className="loader-spinner"></div>
+          </div>
+        )}
+        {AIRecommendation && (
+          <div className="movie-cards-container" style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "1rem", marginTop: "1rem" }}>
+            {/* <h3>AI Recommendation</h3> */}
+            {AIRecommendation.slice(0, 3).map((movie: any) => (
+              <div className="movie-card" style={{ padding: "0.5rem", width: "165px", height: "230px", cursor: "pointer" }} key={movie.id} onClick={() => handleMovieSelect(movie)}>
+                <div className="movie-poster" style={{width: "100px", height: "150px", marginLeft: "auto", marginRight: "auto" }}>
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+                    alt={movie.title}
+                  ></img>
+                </div>
+                <div className="movie-info">
+                  <div className="movie-title" style={{ fontSize: "0.9rem", marginTop: "20px", lineHeight: "18px", marginBottom: "5px" }}>{movie.title}</div>
+                  <div className="movie-year" style={{ fontSize: "0.8rem" }}>{movie.release_date.split("-")[0]}</div>
+                </div>
+              </div>
+            ))}
+            
+            {/* {AIRecommendation.map((movie: any) => (
+              <div className="ai-recommendation-movie" key={movie.id}>
+                <div className="ai-recommendation-poster">
+                  <img
+                    src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+                    alt={movie.title}
+                  ></img>
+                </div>
+                <div className="ai-recommendation-info">
+                  <div className="ai-recommendation-title">{movie.title}</div>
+                  <div className="ai-recommendation-year">{movie.release_date.split("-")[0]}</div>
+                </div>
+              </div>
+            ))} */}
           </div>
         )}
       </div>
