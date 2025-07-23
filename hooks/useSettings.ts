@@ -23,7 +23,12 @@ export function useSettings() {
       const data = await response.json()
       setSettings(data)
     } catch (err: any) {
-      setError(err.message)
+      // setError(err.message)
+      const defaultSettings = {
+        gridSize: 3,
+        view: 1
+      }
+      setSettings(defaultSettings)
     } finally {
       setLoading(false)
     }

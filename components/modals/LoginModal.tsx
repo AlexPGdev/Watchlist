@@ -80,14 +80,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <div className={`modal show${isOpen ? " modal-fade-in" : " modal-fade-out"}`} onClick={onClose} id="login-modal">
-      <div className={`modal-content active${isOpen ? " modal-content-fade-in" : " modal-content-fade-out"}`}>
+      <div className={`modal-content active${isOpen ? " modal-content-fade-in" : " modal-content-fade-out"}`} onClick={(e) => e.stopPropagation()}>
         <div className="auth-tabs">
           <Button className={`auth-tab ${activeTab === "login" ? "active" : ""}`} onClick={() => setActiveTab("login")}>
             Login
           </Button>
           <Button
             className={`auth-tab ${activeTab === "signup" ? "active" : ""}`}
-            onClick={() => setActiveTab("signup")}
+            onClick={() => {setActiveTab("signup"), setSignupData({username: "", password: "", confirmPassword: ""})}}
           >
             Sign Up
           </Button>
@@ -133,6 +133,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 placeholder="Choose a username"
                 value={signupData.username}
                 onChange={(e) => setSignupData({ ...signupData, username: e.target.value })}
+                autoComplete="off"
               />
             </div>
             <div className="form-group">
@@ -142,6 +143,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 placeholder="Choose a password"
                 value={signupData.password}
                 onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                autoComplete="new-password"
               />
             </div>
             <div className="form-group">
@@ -151,6 +153,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 placeholder="Confirm your password"
                 value={signupData.confirmPassword}
                 onChange={(e) => setSignupData({ ...signupData, confirmPassword: e.target.value })}
+                autoComplete="new-password"
               />
             </div>
             <div className="modal-actions">
