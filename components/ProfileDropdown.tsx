@@ -32,15 +32,18 @@ export const ProfileDropdown = memo(function ProfileDropdown({ user }: ProfileDr
 
     const firstLetter = user.charAt(0).toUpperCase()
 
-    // Get current theme colors
     const isDarkTheme = document.body.classList.contains("theme-cyberpunk")
-    const bgColor = isDarkTheme ? "%23ff00ff" : "%234ecdc4" // URL-encoded colors
+    const bgColor = isDarkTheme ? "%23ff00ff" : "%234ecdc4"
     const textColor = isDarkTheme ? "%2300ffff" : "white"
 
     // Dynamic font size based on letter
     const fontSize = firstLetter.length === 1 ? "18" : "14"
 
-    return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="${bgColor}"/><text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="${textColor}" fontFamily="Arial" fontSize="${fontSize}" fontWeight="bold">${firstLetter}</text></svg>`
+    return `data:image/svg+xml,` +
+      `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">` +
+        `<circle cx="20" cy="20" r="20" fill="${bgColor}"/>` +
+        `<text x="50%" y="50%" fill="${textColor}" font-family="Arial" font-size="${fontSize}" font-weight="bold" text-anchor="middle" dominant-baseline="central">${firstLetter}</text>` +
+      `</svg>`
   }
 
   return (

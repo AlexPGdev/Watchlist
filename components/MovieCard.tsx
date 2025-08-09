@@ -21,9 +21,10 @@ interface MovieCardProps {
   onStreamingPopup?: (streamingServices: any, movieTitle: string, position: { x: number; y: number }) => void
   movieRatings?: { [movieId: number]: number }
   onRatingsUpdate?: (movieId: number, rating: number) => void
+  onContextMenu?: (movieId: number, movie: Movie, position: { x: number; y: number }) => void
 }
 
-export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovie, onMovieRemoved, updatedExternalRatings, onStreamingPopup, movieRatings, onRatingsUpdate }: MovieCardProps) {
+export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovie, onMovieRemoved, updatedExternalRatings, onStreamingPopup, movieRatings, onRatingsUpdate, onContextMenu }: MovieCardProps) {
   const { useToggleWatched, useRemoveMovie, useRateMovie, useAddToWatchlist } = useMovieActions()
   const [isRemoving, setIsRemoving] = useState(false)
   const [toggleWatched, setToggleWatched] = useState(movie.watched);
@@ -105,12 +106,21 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
     }
   }
 
+  const handleRightClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    console.log("RIGHT CLICK!")
+
+    onContextMenu?.(movie.id, movie, { x: e.clientX + 10 + window.scrollX, y: e.clientY + window.scrollY })
+  }
+
   const formatWatchDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString("en-GB")
   }
 
   return (
-    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick} data-movie-id={movie.id}>
+    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick} onContextMenu={handleRightClick} data-movie-id={movie.id}>
       {toggleWatched && (
         <div className="watched-badge">
           ✓ Watched on {movie.watchDate ? formatWatchDate(movie.watchDate) : formatWatchDate(Date.now())}

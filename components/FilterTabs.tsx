@@ -6,11 +6,12 @@ import { useSettings } from "@/hooks/useSettings"
 
 interface FilterTabsProps {
   currentFilter: string
+  currentSort: string
   onFilterChange: (filter: string) => void
   onSortChange: (sort: string) => void
 }
 
-export const FilterTabs = memo(function FilterTabs({ currentFilter, onFilterChange, onSortChange }: FilterTabsProps) {
+export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort, onFilterChange, onSortChange }: FilterTabsProps) {
   const { settings, loading: settingsLoading, error: settingsError, updateGridSize, updateViewMode } = useSettings()
   const [currentView, setCurrentView] = useState<"grid" | "list">("list")
 
@@ -28,7 +29,7 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, onFilterChan
     const newSize = gridSize + 1
     const gridSizeBtn = document.getElementById("movies-grid") as HTMLElement
     if (gridSizeBtn) {
-      gridSizeBtn.classList.remove(`grid-size-${gridSize}`)
+    gridSizeBtn.classList.remove(`grid-size-${gridSize}`)
       gridSizeBtn.classList.add(`grid-size-${newSize}`)
     }
     updateGridSize(newSize)
@@ -38,7 +39,7 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, onFilterChan
     const newSize = gridSize - 1
     const gridSizeBtn = document.getElementById("movies-grid") as HTMLElement
     if (gridSizeBtn) {
-      gridSizeBtn.classList.remove(`grid-size-${gridSize}`)
+    gridSizeBtn.classList.remove(`grid-size-${gridSize}`)
       gridSizeBtn.classList.add(`grid-size-${newSize}`)
     }
     updateGridSize(newSize)
@@ -88,7 +89,7 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, onFilterChan
       <div className="view-controls">
         <div className="sort-container">
           <div className="sort-wrapper">
-            <select className="sort-select" onChange={(e) => onSortChange(e.target.value)} title="Sort movies">
+            <select className="sort-select" value={currentSort} onChange={(e) => onSortChange(e.target.value)} title="Sort movies">
               <option value="addeddate-asc">Added Date (Oldest)</option>
               <option value="addeddate-desc">Added Date (Newest)</option>
               <option value="title-asc">Title (A-Z)</option>

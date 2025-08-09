@@ -19,9 +19,10 @@ interface MoviesGridProps {
   onStreamingPopup?: (streamingServices: any, movieTitle: string, position: { x: number; y: number }) => void
   movieRatings?: { [movieId: number]: number }
   onRatingsUpdate?: (movieId: number, rating: number) => void
+  onContextMenu?: (movieId: number, movie: Movie, position: { x: number; y: number }) => void
 }
 
-export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner, onMovieClick, onDuplicateMovie, onMovieRemoved, onMovieAdded, updatedExternalRatings, onExternalRatingsUpdated, onStreamingPopup, movieRatings, onRatingsUpdate }: MoviesGridProps) {  
+export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner, onMovieClick, onDuplicateMovie, onMovieRemoved, onMovieAdded, updatedExternalRatings, onExternalRatingsUpdated, onStreamingPopup, movieRatings, onRatingsUpdate, onContextMenu }: MoviesGridProps) {  
   const { settings, loading: settingsLoading, error: settingsError } = useSettings()
 
   const handleMovieClick = useCallback((movie: Movie) => {
@@ -90,6 +91,7 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
           onStreamingPopup={onStreamingPopup}
           movieRatings={movieRatings}
           onRatingsUpdate={onRatingsUpdate}
+          onContextMenu={onContextMenu}
         />
       ))}
     </div>

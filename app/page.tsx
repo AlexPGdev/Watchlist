@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { useMovies } from "@/hooks/useMovies"
 import type { Movie } from "@/types/movie"
 import '../cyberpunk.css'
+import { ContextMenu } from "@/components/ContextMenu"
 
 export default function Home() {
   const { user, isLoggedIn } = useAuth()
@@ -25,9 +26,7 @@ export default function Home() {
     stats,
     searchQuery,
     setSearchQuery,
-    sortMovies,
-    loadMovies,
-    settings,
+    loadMovies
   } = useMovies()
   
   const [showLoginModal, setShowLoginModal] = useState(false)
@@ -49,18 +48,73 @@ export default function Home() {
     movieTitle: "",
     position: { x: 0, y: 0 }
   })
+  const [contextMenu, setContextMenu] = useState<{
+    isVisible: boolean;
+    streamingServices: any;
+    movie: Movie;
+    position: { x: number; y: number };
+  }>({
+    isVisible: false,
+    streamingServices: null,
+    movie: null,
+    position: { x: 0, y: 0 }
+  })
   const [movieRatings, setMovieRatings] = useState<{ [movieId: number]: number }>({})
 
-  // Local filter state
+  const [currentSort, setCurrentSort] = useState("addeddate-asc")
   const [filter, setFilter] = useState("all")
 
   // Compute filtered movies locally
   const filtered = useMemo(() => {
-    if (filter === "all") return movies
-    if (filter === "watched") return movies.filter(m => m.watched)
-    if (filter === "to-watch") return movies.filter(m => !m.watched)
-    return movies
-  }, [movies, filter])
+    let result = [...movies];
+    if (filter === "watched") result = result.filter(m => m.watched)
+    else if (filter === "to-watch") result = result.filter(m => !m.watched)
+    if (searchQuery && searchQuery.trim() !== "") {
+      result = result.filter(m => m.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    }
+    console.log('aa')
+    if (currentSort === "addeddate-asc") {
+      result.sort((a, b) => {
+        const aTime = a.addedDate ? new Date(a.addedDate).getTime() : 0;
+        const bTime = b.addedDate ? new Date(b.addedDate).getTime() : 0;
+        return aTime - bTime;
+      });
+    } else if (currentSort === "addeddate-desc") {
+      result.sort((a, b) => {
+        const aTime = a.addedDate ? new Date(a.addedDate).getTime() : 0;
+        const bTime = b.addedDate ? new Date(b.addedDate).getTime() : 0;
+        return bTime - aTime;
+      });
+    } else if (currentSort === "title-asc") {
+      result.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()))
+    } else if (currentSort === "title-desc") {
+      result.sort((a, b) => b.title.toLowerCase().localeCompare(a.title.toLowerCase()))
+    } else if (currentSort === "year-desc") {
+      result.sort((a, b) => Number(b.year) - Number(a.year))
+    } else if (currentSort === "year-asc") {
+      result.sort((a, b) => Number(a.year) - Number(b.year))
+    } else if (currentSort === "rating-desc") {
+      result.sort((a, b) => Number(b.imdbRating) - Number(a.imdbRating))
+    } else if (currentSort === "rating-asc") {
+      result.sort((a, b) => Number(a.imdbRating) - Number(b.imdbRating))
+    } else if (currentSort === "watchdate-desc") {
+      result.sort((a, b) => {
+        const aTime = a.watchDate ? new Date(a.watchDate).getTime() : 0;
+        const bTime = b.watchDate ? new Date(b.watchDate).getTime() : 0;
+        return bTime - aTime;
+      });
+    } else if (currentSort === "watchdate-asc") {
+      result.sort((a, b) => {
+        const aTime = a.watchDate ? new Date(a.watchDate).getTime() : 0;
+        const bTime = b.watchDate ? new Date(b.watchDate).getTime() : 0;
+        return aTime - bTime;
+      });
+    }
+
+    console.log("SORTED!!!")
+    return result;
+
+  }, [movies, filter, searchQuery, currentSort])
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -76,8 +130,17 @@ export default function Home() {
     setShowAddMovieModal(true)
   }, [])
 
+  const handleSearchChange = useCallback((searchQuery: string) => {
+    setSearchQuery(searchQuery)
+  }, [])
+
   const handleFilterChange = useCallback((filter: string) => {
     setFilter(filter)
+  }, [])
+
+  const handleSortChange = useCallback((sort: string) => {
+    console.log(sort)
+    setCurrentSort(sort)
   }, [])
 
   const handleMovieClick = useCallback((movie: Movie) => {
@@ -119,9 +182,35 @@ export default function Home() {
     }))
   }, [])
 
+  const handleContextMenu = useCallback((movieId: number, movie: Movie, position: { x: number; y: number }) => {
+    setContextMenu({
+      isVisible: true,
+      streamingServices: null,
+      movie: movie,
+      position: position
+    })
+  }, [])
+
+  const handlePageClick = useCallback(() => {
+    console.log("ALMNDKANFJWBJFRBAJKWBFJRKBWJFRBAHJ")
+    setContextMenu({
+      isVisible: false,
+      streamingServices: null,
+      movie: null,
+      position: { x: 0, y: 0 }
+    })
+
+    setStreamingPopup({
+      isVisible: false,
+      streamingServices: null,
+      movieTitle: "",
+      position: { x: 0, y: 0 }
+    })
+  }, [])
+
   return (
     <div>
-      <div className="container">
+      <div className="container" onClick={handlePageClick}>
         <Header onLoginClick={handleLoginClick} isLoggedIn={isLoggedIn} user={user} />
 
         <Stats stats={stats} />
@@ -131,12 +220,12 @@ export default function Home() {
 
         <Controls
           searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
+          onSearchChange={handleSearchChange}
           onAddMovieClick={handleAddMovieClick}
           showAddButton={isLoggedIn}
         />
 
-        <FilterTabs currentFilter={filter} onFilterChange={handleFilterChange} onSortChange={sortMovies} />
+        <FilterTabs currentFilter={filter} currentSort={currentSort} onFilterChange={handleFilterChange} onSortChange={handleSortChange} />
 
         <MoviesGrid
           movies={filtered}
@@ -150,6 +239,8 @@ export default function Home() {
           onStreamingPopup={handleStreamingPopup}
           movieRatings={movieRatings}
           onRatingsUpdate={handleRatingsUpdate}
+          onLoginClick={handleLoginClick}
+          onContextMenu={handleContextMenu}
         />
 
         <AboutCredits />
@@ -159,7 +250,7 @@ export default function Home() {
         <AddMovieModal
           isOpen={showAddMovieModal}
           onClose={() => setShowAddMovieModal(false)}
-          onDuplicateMovie={(movie: { id: Movie }) => handleDuplicateMovie(movie, movie.id)}
+          onDuplicateMovie={(movie: Partial<Movie>) => handleDuplicateMovie(movie as Movie, (movie as Movie).id)}
           onMovieAdded={loadMovies}
           onExternalRatingsUpdated={handleExternalRatingsUpdated}
         />
@@ -182,7 +273,7 @@ export default function Home() {
           onRatingUpdate={handleRatingsUpdate}
           onMovieAdded={loadMovies}
           onExternalRatingsUpdated={handleExternalRatingsUpdated}
-          onDuplicateMovie={(movie: { id: Movie }) => handleDuplicateMovie(movie, movie.id)}
+          onDuplicateMovie={handleDuplicateMovie}
         />
       </div>
         <StreamingPopup 
@@ -191,6 +282,14 @@ export default function Home() {
           movieTitle={streamingPopup.movieTitle}
           position={streamingPopup.position}
           onClose={() => setStreamingPopup(prev => ({ ...prev, isVisible: false }))}
+        />
+
+        <ContextMenu 
+          isVisible={contextMenu.isVisible}
+          movie={contextMenu.movie}
+          position={contextMenu.position}
+          onMovieRemoved={loadMovies}
+          onClose={() => setContextMenu(prev => ({ ...prev, isVisible: false }))}
         />
 
       <Footer />
