@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import type { Movie } from "@/types/movie";
 import { useMovieActions } from "@/hooks/useMovieActions";
 import { set } from "react-hook-form";
+import { Vibrant } from "node-vibrant/browser";
 
 interface MovieDetailsModalProps {
   isOpen: boolean;
@@ -39,6 +40,8 @@ export function MovieDetailsModal({
   const [crew, setCrew] = useState<any>(null);
   const [images, setImages] = useState<any>(null);
   const [productionCompanies, setProductionCompanies] = useState<any>(null);
+  const [dominantColor, setDominantColor] = useState<Array<number> | null>(null);
+
 
   const selectedRating =
     movieRating !== undefined ? movieRating : movie?.rating ?? -1;
@@ -64,6 +67,25 @@ export function MovieDetailsModal({
       // fetchImages();
     }
   }, [isOpen, movie]);
+
+  useEffect(() => {
+      if (movie?.posterPath) {
+        const imgUrl = `/api/proxy-image?url=${movie.posterPath}`;
+
+    
+        Vibrant.from(imgUrl)
+          .getPalette()
+          .then((palette) => {
+            console.log(palette)
+            if (palette.Muted) {
+              console.log(palette.Muted.rgb.toString())
+              console.log(palette.Muted.rgb)
+              setDominantColor(palette.Muted.rgb);
+            }
+          })
+          .catch((err) => console.error("Error extracting dominant color:", err));
+      }
+    }, [movie]);
 
   const fetchStreamingServices = async () => {
     if (!movie) return;
@@ -180,12 +202,18 @@ export function MovieDetailsModal({
       className={`modal show${isOpen ? " modal-fade-in" : " modal-fade-out"}`}
       onClick={onClose}
       id="movie-details-modal"
+      // Divide each color in dominantColor array by 0.8
+      style={{ backgroundColor: `rgb(${dominantColor?.map(c => Math.floor(c * 0.2))}, 0.8)` }}
     >
       <div
         className={`modal-content movie-details-content active${
           isOpen ? " modal-content-fade-in" : " modal-content-fade-out"
         }`}
         onClick={(e) => e.stopPropagation()}
+        style={{
+          backgroundColor: `rgba(${dominantColor},0.4)`,
+          transition: "background-color 0.4s ease"
+        }}
       >
         <button className="close-modal-btn" onClick={onClose}>
           ×
