@@ -433,7 +433,7 @@ h1 {
     --card-min-height: 340px;
     --header-gap: 0.5rem;
     --header-height: 120px;
-    --badge-padding: 0rem 0.3rem;
+    --badge-padding: 0rem 0.8rem;
     --badge-font-size: 0.7rem;
     --title-font-size: 1rem;
     --title-margin-bottom: 0.2rem;
@@ -448,8 +448,8 @@ h1 {
     --external-ratings-margin-top: 5px;
     --description-line-clamp: 4;
     --description-top: 190px;
-    --action-btn-padding: 0.4rem 0.4rem;
-    --action-btn-font-size: 13px;
+    /* --action-btn-padding: 0.4rem 0.4rem;
+    --action-btn-font-size: 13px; */
     --movie-watch-span-margin-left: 0px;
     --movie-actions-gap: 0.5rem;
     --movie-ratings-display: none;
