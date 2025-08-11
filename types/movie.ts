@@ -15,6 +15,7 @@ export interface Movie {
   watchDate?: number
   addedDate?: number
   trailerPath?: string
+  ambientColor?: string
 }
 
 export interface MovieStats {

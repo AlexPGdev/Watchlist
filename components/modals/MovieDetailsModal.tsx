@@ -5,6 +5,7 @@ import type { Movie } from "@/types/movie";
 import { useMovieActions } from "@/hooks/useMovieActions";
 import { set } from "react-hook-form";
 import { Vibrant } from "node-vibrant/browser";
+import { Color, getColor, useColor } from "color-thief-react";
 
 interface MovieDetailsModalProps {
   isOpen: boolean;
@@ -70,20 +71,13 @@ export function MovieDetailsModal({
 
   useEffect(() => {
       if (movie?.posterPath) {
-        const imgUrl = `/api/proxy-image?url=${movie.posterPath}`;
+        const imgUrl = `/api/proxy-image?url=${movie?.posterPath}`;
 
-    
-        Vibrant.from(imgUrl)
-          .getPalette()
-          .then((palette) => {
-            console.log(palette)
-            if (palette.Muted) {
-              console.log(palette.Muted.rgb.toString())
-              console.log(palette.Muted.rgb)
-              setDominantColor(palette.Muted.rgb);
-            }
-          })
-          .catch((err) => console.error("Error extracting dominant color:", err));
+        getColor(imgUrl, "rgbArray").then((data) => {
+          console.log(data)
+          setDominantColor(data);
+        });
+
       }
     }, [movie]);
 
@@ -194,15 +188,19 @@ export function MovieDetailsModal({
     }
   };
 
+  const handleOnClose = () => {
+    onClose();
+    //setDominantColor([0,0,0]);
+  }
+
   if (!show && !isOpen) return null;
   if (!movie) return null;
 
   return (
     <div
       className={`modal show${isOpen ? " modal-fade-in" : " modal-fade-out"}`}
-      onClick={onClose}
+      onClick={handleOnClose}
       id="movie-details-modal"
-      // Divide each color in dominantColor array by 0.8
       style={{ backgroundColor: `rgb(${dominantColor?.map(c => Math.floor(c * 0.2))}, 0.8)` }}
     >
       <div

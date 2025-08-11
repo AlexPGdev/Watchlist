@@ -1,6 +1,7 @@
 "use client"
 
 import type { Movie } from "@/types/movie"
+import { getColor } from "color-thief-react"
 
 export function useMovieActions() {
   const useToggleWatched = async (movieId: number) => {
@@ -55,6 +56,54 @@ export function useMovieActions() {
     }
   }
 
+  const loadAmbientColor = async (movieId: number, posterPath: string) => {
+
+    getColor(`/api/proxy-image?url=https://image.tmdb.org/t/p/w500/${posterPath}`, "rgbArray").then( async (data) => {
+      await fetch(`http://localhost:8080/api/movies/ambient-color?id=${movieId}&color=${data}`, {
+        method: "PATCH",
+        credentials: "include",
+      })
+
+      let movieCard = document.querySelector(`[data-movie-id="${movieId}"]`) as HTMLElement
+
+      if(movieCard) movieCard.style.backgroundColor = `rgba(${data},0.3)`
+
+    })
+
+  }
+
+  const loadExtraDetails = async (movieId: number, imdbId: string, posterPath: string, onRatingsUpdated?: (ratings: any) => void) => {
+    getColor(`/api/proxy-image?url=https://image.tmdb.org/t/p/w500/${posterPath}`, "rgbArray").then( async (data) => {
+      await fetch(`http://localhost:8080/api/movies/ambient-color?id=${movieId}&color=${data}`, {
+        method: "PATCH",
+        credentials: "include",
+      })
+
+      let movieCard = document.querySelector(`[data-movie-id="${movieId}"]`) as HTMLElement
+
+      if(movieCard) movieCard.style.backgroundColor = `rgba(${data},0.3)`
+
+      try {
+        const response = await fetch(`http://localhost:8080/api/movies/ratings?imdbId=${imdbId}&id=${movieId}`, {
+          credentials: "include",
+          method: "PATCH"
+        })
+        const ratings = await response.json()
+        
+        // Call the callback if provided
+        if (onRatingsUpdated) {
+          onRatingsUpdated(ratings)
+        }
+        
+        return ratings
+      } catch (error) {
+        console.error("Error loading external ratings:", error)
+        throw error
+      }
+
+    })
+  }
+
   const loadExternalRatings = async (movieImdbId: string, movieId: number, onRatingsUpdated?: (ratings: any) => void) => {
     try {
       const response = await fetch(`http://localhost:8080/api/movies/ratings?imdbId=${movieImdbId}&id=${movieId}`, {
@@ -98,7 +147,12 @@ export function useMovieActions() {
 
       
       const addedMovie = await response.json()
-      loadExternalRatings(addedMovie.imdbId, addedMovie.id, onRatingsUpdated)
+
+      loadExtraDetails(addedMovie.id, addedMovie.imdbId, addedMovie.posterPath, onRatingsUpdated)
+
+      // loadAmbientColor(addedMovie.id, addedMovie.posterPath)
+
+      // loadExternalRatings(addedMovie.imdbId, addedMovie.id, onRatingsUpdated)
 
       return addedMovie
     } catch (error) {
@@ -149,11 +203,16 @@ export function useMovieActions() {
         body: JSON.stringify({ ...newMovie, force: false }),
       })
 
+      
+      
       if (!addResponse.ok) {
         throw new Error("Failed to add movie")
       }
-
+      
       const addedMovie = await addResponse.json()
+
+      loadExtraDetails(addedMovie.id, addedMovie.imdbId, addedMovie.posterPath)
+
       return addedMovie // <-- Return the added movie (with id, imdbId, etc)
     } catch (error) {
       console.error("Error adding to watchlist:", error)
@@ -185,6 +244,7 @@ export function useMovieActions() {
     useAddMovieToWatchlist,
     useAddToWatchlist,
     useGetAIRecommendations,
-    loadExternalRatings
+    loadExternalRatings,
+    loadAmbientColor
   }
 }

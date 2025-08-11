@@ -45,6 +45,8 @@ public class Movie {
     private double imdbRating;
     private String rtRating;
 
+    private String ambientColor;
+
     private Long addedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -56,7 +58,7 @@ public class Movie {
         this.addedDate = System.currentTimeMillis();
     }
 
-    public Movie(String title, String description, int year, List<String> genres, boolean watched, String posterPath, String trailerPath, Long watchDate, String imdbId, Integer tmdbId, List<String> streamingServices, Integer rating, double imdbRating, String rtRating, Page page) {
+    public Movie(String title, String description, int year, List<String> genres, boolean watched, String posterPath, String trailerPath, Long watchDate, String imdbId, Integer tmdbId, List<String> streamingServices, Integer rating, double imdbRating, String rtRating, String ambientColor, Page page) {
         this.title = title;
         this.description = description;
         this.year = year;
@@ -71,6 +73,7 @@ public class Movie {
         this.rating = rating;
         this.imdbRating = imdbRating;
         this.rtRating = rtRating;
+        this.ambientColor = ambientColor;
         this.addedDate = System.currentTimeMillis();
         this.page = page;
     }
@@ -193,6 +196,14 @@ public class Movie {
 
     public void setRtRating(String rtRating) {
         this.rtRating = rtRating;
+    }
+
+    public String getAmbientColor() {
+        return ambientColor;
+    }
+
+    public void setAmbientColor(String ambientColor) {
+        this.ambientColor = ambientColor;
     }
 
     public Long getAddedDate() {

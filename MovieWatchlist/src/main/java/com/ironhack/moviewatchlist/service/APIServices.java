@@ -97,7 +97,7 @@ public class APIServices {
         Document imdb = Jsoup.connect("https://www.imdb.com/title/" + id + "/").get();
         Document rt = Jsoup.connect(tomatoUrl).get();
 
-        Elements imdbRatingElement = imdb.select("div.sc-8eab3bd3-0:nth-child(2) > div:nth-child(1) > div:nth-child(1) > a:nth-child(2) > span:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1)");
+        Elements imdbRatingElement = imdb.select("#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-b234497d-3.ffckSa > div.sc-8e956c5c-0.cfWEab.sc-13687a64-1.iWItnY > div > div:nth-child(1) > a > span > div > div.sc-4dc495c1-0.fUqjJu > div.sc-4dc495c1-2.jaffDQ > span.sc-4dc495c1-1.lbQcRY");
         Elements rtRatingElement = rt.select(".media-scorecard > media-scorecard:nth-child(1) > rt-text:nth-child(3)");
 
         if (imdbRatingElement.isEmpty() || rtRatingElement.isEmpty()) {

@@ -153,6 +153,21 @@ public class MovieController {
         return movieService.updateMovieRatings(imdbId, id);
     }
 
+    @PatchMapping("/ambient-color")
+    public Movie getAmbientColor(@RequestParam(name = "id") Long id, String color, Authentication authentication) {
+        User currentUser = userRepository.findByUsername(authentication.getName());
+        Page page = pageService.getUserPage(currentUser);
+        Movie movie = page.getMovies().stream().filter(m -> m.getId().equals(id)).findFirst().orElse(null);
+
+        movie.setAmbientColor(color);
+        movieRepository.save(movie);
+
+        System.out.println(movie);
+        System.out.println(color);
+
+        return movie;
+    }
+
     @PatchMapping("/{id}/watch-date")
     public Movie updateMovieWatchDate(@PathVariable Long id, @RequestParam(name = "watchDate") Long watchDate) {
         return movieService.updateMovieWatchDate(id, watchDate);
