@@ -119,8 +119,10 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
     return new Date(timestamp).toLocaleDateString("en-GB")
   }
 
+  console.log(String(movie.ambientColor).split(",")[0])
+
   return (
-    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick} onContextMenu={handleRightClick} data-movie-id={movie.id} style={{ background: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), rgba(${movie.ambientColor},0.3)` }}>
+    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick} onContextMenu={handleRightClick} data-movie-id={movie.id} style={{ background: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), rgba(${movie.ambientColor},${parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) < 180 ? 0.8 : parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) > 500 ? 0.2 : 0.4})` }}>
       {toggleWatched && (
         <div className="watched-badge">
           ✓ Watched on {movie.watchDate ? formatWatchDate(movie.watchDate) : formatWatchDate(Date.now())}

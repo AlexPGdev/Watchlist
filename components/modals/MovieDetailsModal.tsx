@@ -111,8 +111,16 @@ export function MovieDetailsModal({
           (a: { display_priority: number }, b: { display_priority: number }) =>
             a.display_priority - b.display_priority
         );
+
         allServices.push(...data.DE.rent);
       }
+
+      const seen = new Set();
+      allServices = allServices.filter(item => {
+        if(seen.has(item.provider_id)) return false;
+        seen.add(item.provider_id);
+        return true;
+      })
 
       // Sort by the lowest display_priority
 

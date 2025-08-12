@@ -22,6 +22,36 @@ export function useMovieActions() {
     }
   }
 
+  const removeAllMovies = async () => {
+    try {
+      console.log("ASMLDFNANKRFAJ")
+      const response = await fetch(`http://localhost:8080/api/movies`, {
+        method: "GET",
+        credentials: "include",
+      }).then(function(response) {
+        return response.json()
+      }).then(function(data) {
+        console.log(data)
+        data.forEach(m => {
+          fetch(`http://localhost:8080/api/movies/${m.id}`, {
+            method: "DELETE",
+            credentials: "include",
+          })
+        })
+        return data
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to remove movie")
+      }
+
+      // Trigger a page reload or state update
+      //window.location.reload()
+    } catch (error) {
+      console.error("Error removing all movies:", error)
+    }
+  }
+
   const useRemoveMovie = async (movieId: number) => {
     try {
       const response = await fetch(`http://localhost:8080/api/movies/${movieId}`, {
@@ -246,6 +276,7 @@ export function useMovieActions() {
     useAddToWatchlist,
     useGetAIRecommendations,
     loadExternalRatings,
-    loadAmbientColor
+    loadAmbientColor,
+    removeAllMovies
   }
 }

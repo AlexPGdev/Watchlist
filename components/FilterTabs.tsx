@@ -3,6 +3,7 @@
 import { memo, useCallback, useState, useEffect } from "react"
 import Button from "./button/Button"
 import { useSettings } from "@/hooks/useSettings"
+import { useMovieActions } from "@/hooks/useMovieActions"
 
 interface FilterTabsProps {
   currentFilter: string
@@ -13,6 +14,7 @@ interface FilterTabsProps {
 
 export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort, onFilterChange, onSortChange }: FilterTabsProps) {
   const { settings, loading: settingsLoading, error: settingsError, updateGridSize, updateViewMode } = useSettings()
+  const { removeAllMovies } = useMovieActions()
   const [currentView, setCurrentView] = useState<"grid" | "list">("list")
 
   useEffect(() => {
@@ -57,6 +59,12 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort,
     }
     updateViewMode(newMode)
   }, [updateViewMode])
+
+  const handleRemoveAllMovies = useCallback(() => {
+    alert("Are you sure you want to remove all movies? This action cannot be undone.")
+    if (!confirm("Are you sure you want to remove all movies? This action cannot be undone.")) return
+    removeAllMovies()
+  }, [removeAllMovies])
   
 
   if (settingsLoading) {
@@ -84,6 +92,10 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort,
         onClick={() => onFilterChange("watched")}
       >
         Watched
+      </Button>
+
+      <Button variant="danger" onClick={handleRemoveAllMovies}>
+        Remove All Movies
       </Button>
 
       <div className="view-controls">
