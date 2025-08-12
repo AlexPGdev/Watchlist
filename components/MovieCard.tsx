@@ -120,7 +120,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
   }
 
   return (
-    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick} onContextMenu={handleRightClick} data-movie-id={movie.id} style={{ backgroundColor: `rgba(${movie.ambientColor},0.2)` }}>
+    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""}`} onClick={onClick} onContextMenu={handleRightClick} data-movie-id={movie.id} style={{ background: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), rgba(${movie.ambientColor},0.3)` }}>
       {toggleWatched && (
         <div className="watched-badge">
           ✓ Watched on {movie.watchDate ? formatWatchDate(movie.watchDate) : formatWatchDate(Date.now())}

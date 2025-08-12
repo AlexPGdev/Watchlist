@@ -74,6 +74,7 @@ export function useMovieActions() {
 
   const loadExtraDetails = async (movieId: number, imdbId: string, posterPath: string, onRatingsUpdated?: (ratings: any) => void) => {
     getColor(`/api/proxy-image?url=https://image.tmdb.org/t/p/w500/${posterPath}`, "rgbArray").then( async (data) => {
+
       await fetch(`http://localhost:8080/api/movies/ambient-color?id=${movieId}&color=${data}`, {
         method: "PATCH",
         credentials: "include",
