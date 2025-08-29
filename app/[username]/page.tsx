@@ -95,6 +95,38 @@ export default function UserProfile() {
     })
   }
 
+  const handleScroll = () => {
+    let watchedGridElement = document.getElementById('watchedHeader') as HTMLElement
+    let toWatchGridElement = document.getElementById('toWatchHeader') as HTMLElement
+
+    let watchedButton = document.getElementById('watched-btn') as HTMLElement
+    let toWatchButton = document.getElementById('to-watch-btn') as HTMLElement
+
+    if(!watchedGridElement){
+      toWatchButton?.classList.add('btn-filter-active')
+      watchedButton?.classList.remove('btn-filter-active')
+      return;
+    }
+
+    if(!toWatchGridElement){
+      watchedButton?.classList.add('btn-filter-active')
+      toWatchButton?.classList.remove('btn-filter-active')
+      return;
+    }
+
+    if (Math.abs(document.body.getBoundingClientRect().top) > toWatchGridElement?.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 70) {
+      toWatchButton?.classList.add('btn-filter-active')
+      watchedButton?.classList.remove('btn-filter-active')
+    } else {
+      toWatchButton?.classList.remove('btn-filter-active')
+      watchedButton?.classList.add('btn-filter-active')
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('scroll', handleScroll)
+  }, [])
+
   if (error === "notFound") {
     return (
       <div className="container">

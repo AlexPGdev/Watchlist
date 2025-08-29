@@ -129,7 +129,7 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
       <div id="movies-grid-watched">
         {movies.filter((movie) => movie.watched).length > 0 && (
           <div className="watched-section">
-            <div className="watched-header" onClick={handleWatchedCollapsed}>
+            <div className="watched-header" onClick={handleWatchedCollapsed} id="watchedHeader">
                 <span className={`expand-arrow ${watchedCollapsed ? "collapsed" : ""}`} id="watchedArrow">▼</span>
                 <div className="watched-line"></div>
                 <span className="watched-text">Watched</span>
@@ -159,7 +159,7 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
         )}
         {movies.filter((movie) => !movie.watched).length > 0 && (
           <div className="watched-section">
-            <div className="watched-header" onClick={handleToWatchCollapsed}>
+            <div className="watched-header" onClick={handleToWatchCollapsed} id="toWatchHeader">
                 <span className={`expand-arrow ${toWatchCollapsed ? "collapsed" : ""}`} id="watchedArrow">▼</span>
                 <div className="watched-line"></div>
                 <span className="watched-text">To Watch</span>

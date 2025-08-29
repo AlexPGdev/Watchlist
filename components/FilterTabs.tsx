@@ -88,12 +88,12 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort,
   }, [removeAllMovies])
   
   const handleWatched = useCallback(() => {
-    let moviesGridElement = document.querySelector('#movies-grid-watched > div:nth-child(1)') as HTMLElement
+    let moviesGridElement = document.getElementById('watchedHeader') as HTMLElement
     window.scrollTo({ behavior: 'smooth', top: moviesGridElement?.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 70 })
   }, [])
 
   const handleToWatch = useCallback(() => {
-    let moviesGridElement = document.querySelector('#movies-grid-watched > div:nth-child(2)') as HTMLElement
+    let moviesGridElement = document.getElementById('toWatchHeader') as HTMLElement
     window.scrollTo({ behavior: 'smooth', top: moviesGridElement?.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 70 })
   }, [])
 

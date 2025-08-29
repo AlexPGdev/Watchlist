@@ -209,8 +209,8 @@ export default function Home() {
   }, [])
 
   const handleScroll = () => {
-    let watchedGridElement = document.querySelector('#movies-grid-watched > div:nth-child(1)') as HTMLElement
-    let toWatchGridElement = document.querySelector('#movies-grid-watched > div:nth-child(2)') as HTMLElement
+    let watchedGridElement = document.getElementById('watchedHeader') as HTMLElement
+    let toWatchGridElement = document.getElementById('toWatchHeader') as HTMLElement
 
     let watchedButton = document.getElementById('watched-btn') as HTMLElement
     let toWatchButton = document.getElementById('to-watch-btn') as HTMLElement
@@ -222,7 +222,6 @@ export default function Home() {
       toWatchButton?.classList.remove('btn-filter-active')
       watchedButton?.classList.add('btn-filter-active')
     }
-
   }
 
   useEffect(() => {
