@@ -16,7 +16,7 @@ export function useSettings() {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch("http://localhost:8080/api/settings", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/settings", {
         credentials: "include"
       })
       if (!response.ok) throw new Error("Failed to fetch settings")
@@ -40,7 +40,7 @@ export function useSettings() {
 
   const updateGridSize = async (newSize: number) => {
     try {
-      const response = await fetch("http://localhost:8080/api/settings", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/settings", {
         method: "PATCH",
         credentials: "include",
         headers: {
@@ -57,7 +57,7 @@ export function useSettings() {
 
   const updateViewMode = async (newMode: number) => {
     try {
-      const response = await fetch("http://localhost:8080/api/settings", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/settings", {
         method: "PATCH",
         credentials: "include",
         headers: {

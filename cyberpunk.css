@@ -124,13 +124,16 @@ h1 {
 .filter-tabs {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
     background: rgba(0, 0, 0, 0.5);
     padding: 0.5rem;
     border-radius: 15px;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(0, 255, 255, 0.2);
     align-items: center;
+    position: sticky;
+    top: 10px;
+    z-index: 10;
 }
 
 .sort-container {
@@ -2464,4 +2467,61 @@ footer span {
 @keyframes modalContentFadeOut {
     from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     to { opacity: 0; transform: translate(-50%, -50%) scale(0.65); }
+}
+
+.watched-section {
+    margin: 20px 0;
+}
+
+.watched-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 10px 0;
+    transition: all 0.3s ease;
+}
+
+.watched-header:hover {
+    opacity: 0.8;
+}
+
+.expand-arrow {
+    color: #00d4ff;
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+}
+
+.expand-arrow.collapsed {
+    transform: rotate(-90deg);
+}
+
+.watched-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, #00d4ff, #bd00ff, #00d4ff);
+    margin: 0 15px;
+    border-radius: 1px;
+}
+
+.watched-text {
+    color: #00d4ff;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.watched-content {
+    /* overflow: hidden; */
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    opacity: 1;
+}
+
+.watched-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
 }

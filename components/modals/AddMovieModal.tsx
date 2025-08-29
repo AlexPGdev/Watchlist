@@ -51,7 +51,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
 
     const debounceTimeout = setTimeout(async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/movies/search?query=${encodeURIComponent(searchQuery)}`)
+        const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/search?query=${encodeURIComponent(searchQuery)}`)
         const data = await response.json()
 
         if (data.Error) {
@@ -70,7 +70,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
 
   const handleMovieSelect = async (movie: SearchResult) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/movies/details?id=${movie.id}`)
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/details?id=${movie.id}`)
       const movieDetails = await response.json()
 
       const newMovie: Partial<Movie> = {
@@ -114,7 +114,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
   const handleAIRecommendations = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch("http://localhost:8080/api/movies/recommendations", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/movies/recommendations", {
         credentials: "include",
       })
 

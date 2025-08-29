@@ -53,8 +53,12 @@ public class MovieController {
     }
 
     @GetMapping
-    public List<Movie> getAllMovies() {
-        return movieService.getAllMovies();
+    public List<Movie> getAllMovies(Authentication authentication) {
+        if (authentication != null && authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_DEVELOPER"))) {
+            return movieService.getAllMovies();
+        } else {
+            return null;
+        }
     }
 
     @GetMapping("/search")

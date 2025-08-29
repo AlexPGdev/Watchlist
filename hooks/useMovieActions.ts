@@ -6,7 +6,7 @@ import { getColor } from "color-thief-react"
 export function useMovieActions() {
   const useToggleWatched = async (movieId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/movies/${movieId}/watch`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/${movieId}/watch`, {
         method: "PATCH",
         credentials: "include",
       })
@@ -25,7 +25,7 @@ export function useMovieActions() {
   const removeAllMovies = async () => {
     try {
       console.log("ASMLDFNANKRFAJ")
-      const response = await fetch(`http://localhost:8080/api/movies`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies`, {
         method: "GET",
         credentials: "include",
       }).then(function(response) {
@@ -33,7 +33,7 @@ export function useMovieActions() {
       }).then(function(data) {
         console.log(data)
         data.forEach(m => {
-          fetch(`http://localhost:8080/api/movies/${m.id}`, {
+          fetch(`https://api.alexpg.dev/watchlist/api/movies/${m.id}`, {
             method: "DELETE",
             credentials: "include",
           })
@@ -54,7 +54,7 @@ export function useMovieActions() {
 
   const useRemoveMovie = async (movieId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/movies/${movieId}`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/${movieId}`, {
         method: "DELETE",
         credentials: "include",
       })
@@ -72,7 +72,7 @@ export function useMovieActions() {
 
   const useRateMovie = async (movieId: number, rating: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/movies/${movieId}/rating?rating=${rating}`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/${movieId}/rating?rating=${rating}`, {
         method: "PATCH",
         credentials: "include",
       })
@@ -89,7 +89,7 @@ export function useMovieActions() {
   const loadAmbientColor = async (movieId: number, posterPath: string) => {
 
     getColor(`/api/proxy-image?url=https://image.tmdb.org/t/p/w500/${posterPath}`, "rgbArray").then( async (data) => {
-      await fetch(`http://localhost:8080/api/movies/ambient-color?id=${movieId}&color=${data}`, {
+      await fetch(`https://api.alexpg.dev/watchlist/api/movies/ambient-color?id=${movieId}&color=${data}`, {
         method: "PATCH",
         credentials: "include",
       })
@@ -105,7 +105,7 @@ export function useMovieActions() {
   const loadExtraDetails = async (movieId: number, imdbId: string, posterPath: string, onRatingsUpdated?: (ratings: any) => void) => {
     getColor(`/api/proxy-image?url=https://image.tmdb.org/t/p/w500/${posterPath}`, "rgbArray").then( async (data) => {
 
-      await fetch(`http://localhost:8080/api/movies/ambient-color?id=${movieId}&color=${data}`, {
+      await fetch(`https://api.alexpg.dev/watchlist/api/movies/ambient-color?id=${movieId}&color=${data}`, {
         method: "PATCH",
         credentials: "include",
       })
@@ -115,7 +115,7 @@ export function useMovieActions() {
       if(movieCard) movieCard.style.backgroundColor = `rgba(${data},0.3)`
 
       try {
-        const response = await fetch(`http://localhost:8080/api/movies/ratings?imdbId=${imdbId}&id=${movieId}`, {
+        const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/ratings?imdbId=${imdbId}&id=${movieId}`, {
           credentials: "include",
           method: "PATCH"
         })
@@ -137,7 +137,7 @@ export function useMovieActions() {
 
   const loadExternalRatings = async (movieImdbId: string, movieId: number, onRatingsUpdated?: (ratings: any) => void) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/movies/ratings?imdbId=${movieImdbId}&id=${movieId}`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/ratings?imdbId=${movieImdbId}&id=${movieId}`, {
         credentials: "include",
         method: "PATCH"
       })
@@ -158,7 +158,7 @@ export function useMovieActions() {
   const useAddMovieToWatchlist = async (movie: Partial<Movie>, force = false, onRatingsUpdated?: (ratings: any) => void) => {
     console.log(movie)
     try {
-      const response = await fetch("http://localhost:8080/api/movies", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/movies", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -193,7 +193,7 @@ export function useMovieActions() {
 
   const useAddToWatchlist = async (tmdbId: number, movieId: number, onDuplicate?: (movie: Partial<Movie>, movieId: number) => void) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/movies/details?id=${tmdbId}`)
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/details?id=${tmdbId}`)
       const movieDetails = await response.json()
 
       const newMovie: Partial<Movie> = {
@@ -210,7 +210,7 @@ export function useMovieActions() {
         rtRating: null,
       }
 
-      const userMovies = await fetch(`http://localhost:8080/api/page`, {
+      const userMovies = await fetch(`https://api.alexpg.dev/watchlist/api/page`, {
         credentials: "include",
       })
       const userMoviesData = await userMovies.json()
@@ -225,7 +225,7 @@ export function useMovieActions() {
       if (movieCardButton) movieCardButton.textContent = "Added to Watchlist"
 
       // Actually add the movie to the watchlist
-      const addResponse = await fetch("http://localhost:8080/api/movies", {
+      const addResponse = await fetch("https://api.alexpg.dev/watchlist/api/movies", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -252,7 +252,7 @@ export function useMovieActions() {
 
   const useGetAIRecommendations = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/movies/recommendations", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/movies/recommendations", {
         credentials: "include",
       })
 

@@ -33,7 +33,7 @@ import java.util.Optional;
 public class APIServices {
     private final MovieRepository movieRepository;
 
-    private static final Dotenv dotenv = Dotenv.configure().directory("D:\\watchlist-react\\Watchlist\\MovieWatchlist\\.env").load();
+    private static final Dotenv dotenv = Dotenv.configure().load();
 
     private final WebClient omdbWebClient;
 

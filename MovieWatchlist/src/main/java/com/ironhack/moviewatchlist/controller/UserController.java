@@ -73,8 +73,12 @@ public class UserController {
 
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getUsers() {
-        return userService.getUsers();
+    public List<User> getUsers(Authentication authentication) {
+        if (authentication != null && authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_DEVELOPER"))) {
+            return userService.getUsers();
+        } else {
+            return null;
+        }
     }
 
     @GetMapping("/search")

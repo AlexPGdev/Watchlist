@@ -46,7 +46,7 @@ export const MoviesProvider = memo(function MoviesProvider({ children }: { child
 
   const loadMovies = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/page", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/page", {
         credentials: "include"
       })
 

@@ -30,20 +30,35 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort,
   const handleGridSizeIncrease = useCallback(() => {
     const newSize = gridSize + 1
     const gridSizeBtn = document.getElementById("movies-grid") as HTMLElement
+    const gridSizeBtn2 = document.getElementById("movies-grid2") as HTMLElement
+
     if (gridSizeBtn) {
-    gridSizeBtn.classList.remove(`grid-size-${gridSize}`)
+      gridSizeBtn.classList.remove(`grid-size-${gridSize}`)
       gridSizeBtn.classList.add(`grid-size-${newSize}`)
     }
+
+    if (gridSizeBtn2) {
+      gridSizeBtn2.classList.remove(`grid-size-${gridSize}`)
+      gridSizeBtn2.classList.add(`grid-size-${newSize}`)
+    }
+
     updateGridSize(newSize)
   }, [gridSize, updateGridSize])
 
   const handleGridSizeDecrease = useCallback(() => {
     const newSize = gridSize - 1
     const gridSizeBtn = document.getElementById("movies-grid") as HTMLElement
+    const gridSizeBtn2 = document.getElementById("movies-grid2") as HTMLElement
+
     if (gridSizeBtn) {
     gridSizeBtn.classList.remove(`grid-size-${gridSize}`)
       gridSizeBtn.classList.add(`grid-size-${newSize}`)
     }
+    if (gridSizeBtn2) {
+      gridSizeBtn2.classList.remove(`grid-size-${gridSize}`)
+      gridSizeBtn2.classList.add(`grid-size-${newSize}`)
+    }
+
     updateGridSize(newSize)
   }, [gridSize, updateGridSize])
 
@@ -53,9 +68,15 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort,
     if(newMode === 1) {
       document.getElementById("movies-grid")?.classList.remove("movies-list")
       document.getElementById("movies-grid")?.classList.add("movies-grid")
+
+      document.getElementById("movies-grid2")?.classList.remove("movies-list")
+      document.getElementById("movies-grid2")?.classList.add("movies-grid")
     } else {
       document.getElementById("movies-grid")?.classList.remove("movies-grid")
       document.getElementById("movies-grid")?.classList.add("movies-list")
+
+      document.getElementById("movies-grid2")?.classList.remove("movies-grid")
+      document.getElementById("movies-grid2")?.classList.add("movies-list")
     }
     updateViewMode(newMode)
   }, [updateViewMode])
@@ -66,6 +87,15 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort,
     removeAllMovies()
   }, [removeAllMovies])
   
+  const handleWatched = useCallback(() => {
+    let moviesGridElement = document.querySelector('#movies-grid-watched > div:nth-child(1)') as HTMLElement
+    window.scrollTo({ behavior: 'smooth', top: moviesGridElement?.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 70 })
+  }, [])
+
+  const handleToWatch = useCallback(() => {
+    let moviesGridElement = document.querySelector('#movies-grid-watched > div:nth-child(2)') as HTMLElement
+    window.scrollTo({ behavior: 'smooth', top: moviesGridElement?.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 70 })
+  }, [])
 
   if (settingsLoading) {
     return <div className="filter-tabs">Loading settings...</div>
@@ -76,25 +106,29 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort,
 
   return (
     <div className="filter-tabs">
-      <Button variant="filter" className={`${currentFilter === "all" ? "btn-filter-active" : ""}`} onClick={() => onFilterChange("all")}>
+      {/* <Button variant="filter" className={`${currentFilter === "all" ? "btn-filter-active" : ""}`} onClick={() => onFilterChange("all")}>
         All Movies
-      </Button>
-      <Button
-        variant="filter"
-        className={`${currentFilter === "to-watch" ? "btn-filter-active" : ""}`}
-        onClick={() => onFilterChange("to-watch")}
-      >
-        To Watch
-      </Button>
+      </Button> */}
       <Button
         variant="filter"
         className={`${currentFilter === "watched" ? "btn-filter-active" : ""}`}
-        onClick={() => onFilterChange("watched")}
+        id="watched-btn"
+        // onClick={() => onFilterChange("watched")}
+        onClick={handleWatched}
       >
         Watched
       </Button>
+      <Button
+        variant="filter"
+        id="to-watch-btn"
+        className={`${currentFilter === "to-watch" ? "btn-filter-active" : ""}`}
+        // onClick={() => onFilterChange("to-watch")}
+        onClick={handleToWatch}
+      >
+        To Watch
+      </Button>
 
-      <Button variant="danger" onClick={handleRemoveAllMovies}>
+      <Button variant="danger" onClick={handleRemoveAllMovies} style={{ marginLeft: "1rem" }}>
         Remove All Movies
       </Button>
 
