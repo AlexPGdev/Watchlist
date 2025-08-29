@@ -246,7 +246,7 @@ export default function Home() {
           showAddButton={isLoggedIn}
         />
 
-        <FilterTabs currentFilter={filter} currentSort={currentSort} onFilterChange={handleFilterChange} onSortChange={handleSortChange} />
+        <FilterTabs isOwner={true} currentFilter={filter} currentSort={currentSort} onFilterChange={handleFilterChange} onSortChange={handleSortChange} />
 
         <MoviesGrid
           movies={filtered}

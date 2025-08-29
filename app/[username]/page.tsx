@@ -166,7 +166,7 @@ export default function UserProfile() {
           showAddButton={isOwner}
         />
 
-        <FilterTabs currentFilter={currentFilter} onSortChange={sortMovies} />
+        <FilterTabs isOwner={isOwner} currentFilter={currentFilter} onSortChange={sortMovies} />
 
         <MoviesGrid
           movies={filteredMovies}

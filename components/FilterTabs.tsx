@@ -6,13 +6,14 @@ import { useSettings } from "@/hooks/useSettings"
 import { useMovieActions } from "@/hooks/useMovieActions"
 
 interface FilterTabsProps {
+  isOwner: boolean
   currentFilter: string
   currentSort: string
   onFilterChange: (filter: string) => void
   onSortChange: (sort: string) => void
 }
 
-export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort, onFilterChange, onSortChange }: FilterTabsProps) {
+export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, currentSort, onFilterChange, onSortChange }: FilterTabsProps) {
   const { settings, loading: settingsLoading, error: settingsError, updateGridSize, updateViewMode } = useSettings()
   const { removeAllMovies } = useMovieActions()
   const [currentView, setCurrentView] = useState<"grid" | "list">("list")
@@ -127,10 +128,11 @@ export const FilterTabs = memo(function FilterTabs({ currentFilter, currentSort,
       >
         To Watch
       </Button>
-
-      <Button variant="danger" onClick={handleRemoveAllMovies} style={{ marginLeft: "1rem" }}>
-        Remove All Movies
-      </Button>
+      {isOwner && (
+        <Button variant="danger" onClick={handleRemoveAllMovies} style={{ marginLeft: "1rem" }}>
+          Remove All Movies
+        </Button>
+      )}
 
       <div className="view-controls">
         <div className="sort-container">
