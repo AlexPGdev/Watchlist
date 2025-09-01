@@ -1,6 +1,6 @@
 "use client"
 
-import { memo, use, useCallback, useEffect } from "react"
+import { memo, use, useCallback, useEffect, useMemo } from "react"
 import { MemorizedMovieCard } from "./MovieCard"
 import type { Movie } from "@/types/movie"
 import { useState } from "react"
@@ -20,12 +20,24 @@ interface MoviesGridProps {
   movieRatings?: { [movieId: number]: number }
   onRatingsUpdate?: (movieId: number, rating: number) => void
   onContextMenu?: (movieId: number, movie: Movie, position: { x: number; y: number }) => void
+  selectedMoviesList?: number[]
+  onSelectMovie?: (movieId: number) => void
 }
 
-export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner, onMovieClick, onDuplicateMovie, onMovieRemoved, onMovieAdded, updatedExternalRatings, onExternalRatingsUpdated, onStreamingPopup, movieRatings, onRatingsUpdate, onContextMenu }: MoviesGridProps) {  
+export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner, onMovieClick, onDuplicateMovie, onMovieRemoved, onMovieAdded, updatedExternalRatings, onExternalRatingsUpdated, onStreamingPopup, movieRatings, onRatingsUpdate, onContextMenu, selectedMoviesList, onSelectMovie }: MoviesGridProps) {  
   const { settings, loading: settingsLoading, error: settingsError } = useSettings()
   const [watchedCollapsed, setWatchedCollapsed] = useState(false)
   const [toWatchCollapsed, setToWatchCollapsed] = useState(false)
+
+  // const [selectedMovies, setSelectedMovies] = useState<number[]>([]);
+
+  // const handleSelectMovie = (movieId: number) => {
+  //   setSelectedMovies((prev) =>
+  //     prev.includes(movieId)
+  //       ? prev.filter((id) => id !== movieId)
+  //       : [...prev, movieId]
+  //   );
+  // };
 
   useEffect(() => {
     if(watchedCollapsed) {
@@ -49,8 +61,8 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
     }
   })
 
-  const handleMovieClick = useCallback((movie: Movie) => {
-    onMovieClick(movie)
+  const handleMovieClick = useCallback(( movie: Movie) => {
+      onMovieClick(movie)
   }, [onMovieClick])
 
   const handleDuplicateClick = useCallback((movie: Movie, movieId: number) => {
@@ -80,6 +92,20 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
       content.style.maxHeight = content.scrollHeight + 'px';
     }
   }
+
+  const watchedMovies = useMemo(
+    () => movies
+      .filter((m) => m.watched)
+      .sort((a, b) => (a.watchDate ? new Date(a.watchDate).getTime() : 0) - (b.watchDate ? new Date(b.watchDate).getTime() : 0)),
+    [movies]
+  );
+  
+  const toWatchMovies = useMemo(
+    () => movies
+      .filter((m) => !m.watched)
+      .sort((a, b) => (a.addedDate ? new Date(a.addedDate).getTime() : 0) - (b.addedDate ? new Date(b.addedDate).getTime() : 0)),
+    [movies]
+  );
 
   if (settingsLoading) {
     return (
@@ -127,7 +153,7 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
   return (
     <div id="movies-grid-container">
       <div id="movies-grid-watched">
-        {movies.filter((movie) => movie.watched).length > 0 && (
+        {watchedMovies.length > 0 && (
           <div className="watched-section">
             <div className="watched-header" onClick={handleWatchedCollapsed} id="watchedHeader">
                 <span className={`expand-arrow ${watchedCollapsed ? "collapsed" : ""}`} id="watchedArrow">▼</span>
@@ -137,9 +163,10 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
             </div>
             <div className={`watched-content ${watchedCollapsed ? "collapsed" : ""}`} id="watchedContent">
               <div id="movies-grid" className={`movies-${viewMode === 1 ? "grid" : "list"} grid-size-${gridSize}`} style={{ marginBottom: "0px" }}>
-                {movies.filter((movie) => movie.watched).sort((a, b) => {const aTime = a.watchDate ? new Date(a.watchDate).getTime() : 0; const bTime = b.watchDate ? new Date(b.watchDate).getTime() : 0; return aTime - bTime}).map((movie) => (
+                {watchedMovies.map((movie, index) => (
                   <MemorizedMovieCard
                     key={movie.id}
+                    index={index}
                     movie={movie}
                     isOwner={isOwner}
                     isLoggedIn={isLoggedIn}
@@ -151,13 +178,16 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
                     movieRatings={movieRatings}
                     onRatingsUpdate={onRatingsUpdate}
                     onContextMenu={onContextMenu}
+                    selectedMoviesList={selectedMoviesList}
+                    isSelectionMode={selectedMoviesList?.length > 0}
+                    onSelectMovie={onSelectMovie}
                   />
                 ))}
               </div>
             </div>
           </div>
         )}
-        {movies.filter((movie) => !movie.watched).length > 0 && (
+        {toWatchMovies.length > 0 && (
           <div className="watched-section">
             <div className="watched-header" onClick={handleToWatchCollapsed} id="toWatchHeader">
                 <span className={`expand-arrow ${toWatchCollapsed ? "collapsed" : ""}`} id="watchedArrow">▼</span>
@@ -167,9 +197,10 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
             </div>
             <div className={`watched-content ${toWatchCollapsed ? "collapsed" : ""}`} id="toWatchContent">
               <div id="movies-grid2" className={`movies-${viewMode === 1 ? "grid" : "list"} grid-size-${gridSize}`}>
-                {movies.filter((movie) => !movie.watched).sort((a, b) => {const aTime = a.addedDate ? new Date(a.addedDate).getTime() : 0; const bTime = b.addedDate ? new Date(b.addedDate).getTime() : 0; return aTime - bTime}).map((movie) => (
+                {toWatchMovies.map((movie, index) => (
                   <MemorizedMovieCard
                     key={movie.id}
+                    index={watchedMovies.length + index}
                     movie={movie}
                     isOwner={isOwner}
                     isLoggedIn={isLoggedIn}
@@ -181,6 +212,9 @@ export const MoviesGrid = memo(function MoviesGrid({ movies, isLoggedIn, isOwner
                     movieRatings={movieRatings}
                     onRatingsUpdate={onRatingsUpdate}
                     onContextMenu={onContextMenu}
+                    selectedMoviesList={selectedMoviesList}
+                    isSelectionMode={selectedMoviesList?.length > 0}
+                    onSelectMovie={onSelectMovie}
                   />
                 ))}
               </div>

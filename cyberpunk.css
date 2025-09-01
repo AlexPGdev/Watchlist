@@ -2525,3 +2525,14 @@ footer span {
     opacity: 0;
     overflow: hidden;
 }
+
+.selected-mark {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.selected-mark img {
+    width: 20px;
+    height: 20px;
+}

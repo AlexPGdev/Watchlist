@@ -64,6 +64,8 @@ export default function Home() {
   const [currentSort, setCurrentSort] = useState("addeddate-asc")
   const [filter, setFilter] = useState("all")
 
+  const [selectedMoviesList, setSelectedMoviesList] = useState<number[]>([]);
+
   // Compute filtered movies locally
   const filtered = useMemo(() => {
     let result = [...movies];
@@ -121,6 +123,22 @@ export default function Home() {
       loadMovies()
     }
   }, [isLoggedIn, loadMovies])
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      const { movieId, selected } = e.detail;
+      setSelectedMoviesList(prev =>
+        selected ? [...prev, movieId] : prev.filter(id => id !== movieId)
+      )
+    };
+  
+    window.addEventListener("selection-changed", handler);
+    return () => window.removeEventListener("selection-changed", handler);
+  }, []);
+
+  useEffect(() => {
+    console.log("All selected movies:", selectedMoviesList);
+  }, [selectedMoviesList]);
 
   const handleLoginClick = useCallback(() => {
     setShowLoginModal(true)
@@ -224,6 +242,23 @@ export default function Home() {
     }
   }
 
+  const handleSelectMovie = (movieId: number) => {
+    // console.log('SELECTED MOVIE ID: ', movieId)
+    // setSelectedMoviesList(prev => {
+    //   const next = !prev;
+  
+    //   // notify parent AFTER state is decided
+    //   setTimeout(() => {
+    //     const event = new CustomEvent("selection-changed", {
+    //       detail: { movieId: movieId, selected: next }
+    //     });
+    //     window.dispatchEvent(event);
+    //   }, 0);
+  
+    //   return next;
+    // });
+  };
+
   useEffect(() => {
     document.addEventListener('scroll', handleScroll)
   }, [])
@@ -246,7 +281,14 @@ export default function Home() {
           showAddButton={isLoggedIn}
         />
 
-        <FilterTabs isOwner={true} currentFilter={filter} currentSort={currentSort} onFilterChange={handleFilterChange} onSortChange={handleSortChange} />
+        <FilterTabs 
+          isOwner={true} 
+          currentFilter={filter} 
+          currentSort={currentSort} 
+          onFilterChange={handleFilterChange} 
+          onSortChange={handleSortChange}
+          selectedMoviesList={selectedMoviesList}
+        />
 
         <MoviesGrid
           movies={filtered}
@@ -262,7 +304,10 @@ export default function Home() {
           onRatingsUpdate={handleRatingsUpdate}
           onLoginClick={handleLoginClick}
           onContextMenu={handleContextMenu}
+          selectedMoviesList={selectedMoviesList}
+          onSelectMovie={handleSelectMovie}
         />
+
 
         <AboutCredits />
 
@@ -311,6 +356,7 @@ export default function Home() {
           position={contextMenu.position}
           onMovieRemoved={loadMovies}
           onClose={() => setContextMenu(prev => ({ ...prev, isVisible: false }))}
+          onSelectMovie={handleSelectMovie}
         />
 
       <Footer />

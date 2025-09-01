@@ -13,9 +13,10 @@ interface ContextMenuProps {
     position?: { x: number; y: number }
     onMovieRemoved?: () => void
     onClose?: () => void
+    onSelectMovie?: (movieId: number) => void
 }
 
-export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie, position, onMovieRemoved, onClose }: ContextMenuProps) {
+export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie, position, onMovieRemoved, onClose, onSelectMovie }: ContextMenuProps) {
     const [hovered, setHovered] = useState(false)
     const { useRemoveMovie } = useMovieActions()
 
@@ -54,6 +55,28 @@ export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie,
         }, 300)
     }
 
+    const handleSelectMovie = (e: React.MouseEvent, movieId?: number) => {
+        e.stopPropagation()
+        if (!movieId) return;
+
+        console.log('tesstinggg')
+
+        // // fire a custom event
+        const event = new CustomEvent("toggle-movie-select", { detail: { movieId } });
+        window.dispatchEvent(event);
+
+        if (onClose) onClose();
+
+        // setTimeout(() => {
+        //     const event = new CustomEvent("selection-changed", {
+        //         detail: { movieId: movieId, selected: true }
+        //     });
+        //     window.dispatchEvent(event);
+        // }, 0);
+
+        //   return true;
+    };
+
     return (
         <div
             className="context-menu"
@@ -65,6 +88,22 @@ export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie,
             onClick={(e) => e.stopPropagation()}
         >
             <div className="context-menu-buttons" style={{cursor: "pointer", opacity: hovered ? "0.8" : "1"}} onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
+                <Button onClick={(e: React.MouseEvent) =>  handleSelectMovie(e, movie?.id)}>
+                    <div className="context-menu-mark-watched-button">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="white"
+                            style={{ marginRight: '0.5rem', verticalAlign: 'middle' }}
+                            viewBox="0 0 32 32"
+                        >
+                            <path d="M16 0a16 16 0 1 0 16 16A16 16 0 0 0 16 0zm0 30a14 14 0 1 1 14-14 14 14 0 0 1-14 14z"/><path d="m13 20.59-4.29-4.3-1.42 1.42 5 5a1 1 0 0 0 1.41 0l11-11-1.41-1.41z"/>
+                        </svg>
+                        <span style={{verticalAlign: "middle"}}>Select Movie</span>
+                    </div>
+                </Button>
+                
                 <Button>
                     <div className="context-menu-mark-watched-button">
                         <svg
@@ -92,9 +131,9 @@ export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie,
                         </svg>
                         {
                             (movie?.watched === false ?
-                                <span style={{verticalAlign: "middle"}}>Mark as Watched</span>
+                                <span style={{verticalAlign: "middle"}}>Mark Watched</span>
                                 :
-                                <span style={{verticalAlign: "middle"}}>Mark as Unwatched</span>
+                                <span style={{verticalAlign: "middle"}}>Mark Unwatched</span>
                             )
                         }
                     </div>

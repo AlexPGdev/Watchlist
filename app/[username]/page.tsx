@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { Header } from "@/components/Header"
 import { Stats } from "@/components/Stats"
@@ -18,6 +18,7 @@ import { useUserMovies } from "@/hooks/useUserMovies"
 import type { Movie } from "@/types/movie"
 import '../../cyberpunk.css'
 import { Footer } from "@/components/Footer"
+import { ContextMenu } from "@/components/ContextMenu"
 
 export default function UserProfile() {
   const params = useParams()
@@ -54,6 +55,17 @@ export default function UserProfile() {
     isVisible: false,
     streamingServices: null,
     movieTitle: "",
+    position: { x: 0, y: 0 }
+  })
+  const [contextMenu, setContextMenu] = useState<{
+    isVisible: boolean;
+    streamingServices: any;
+    movie: Movie;
+    position: { x: number; y: number };
+  }>({
+    isVisible: false,
+    streamingServices: null,
+    movie: null,
     position: { x: 0, y: 0 }
   })
 
@@ -123,6 +135,15 @@ export default function UserProfile() {
     }
   }
 
+  const handleContextMenu = useCallback((movieId: number, movie: Movie, position: { x: number; y: number }) => {
+    setContextMenu({
+      isVisible: true,
+      streamingServices: null,
+      movie: movie,
+      position: position
+    })
+  }, [])
+
   useEffect(() => {
     document.addEventListener('scroll', handleScroll)
   }, [])
@@ -178,6 +199,7 @@ export default function UserProfile() {
           updatedRatings={updatedRatings}
           onRatingsUpdated={handleRatingsUpdated}
           onStreamingPopup={handleStreamingPopup}
+          onContextMenu={handleContextMenu}
         />
 
         <AboutCredits />
@@ -216,6 +238,13 @@ export default function UserProfile() {
         position={streamingPopup.position}
         onClose={() => setStreamingPopup(prev => ({ ...prev, isVisible: false }))}
       />
+
+        <ContextMenu 
+          isVisible={contextMenu.isVisible}
+          movie={contextMenu.movie}
+          position={contextMenu.position}
+          onClose={() => setContextMenu(prev => ({ ...prev, isVisible: false }))}
+        />
 
       <Footer />
     </div>

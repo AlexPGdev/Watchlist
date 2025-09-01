@@ -11,12 +11,20 @@ interface FilterTabsProps {
   currentSort: string
   onFilterChange: (filter: string) => void
   onSortChange: (sort: string) => void
+  selectedMoviesList?: number[]
 }
 
-export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, currentSort, onFilterChange, onSortChange }: FilterTabsProps) {
+export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, currentSort, onFilterChange, onSortChange, selectedMoviesList }: FilterTabsProps) {
   const { settings, loading: settingsLoading, error: settingsError, updateGridSize, updateViewMode } = useSettings()
   const { removeAllMovies } = useMovieActions()
   const [currentView, setCurrentView] = useState<"grid" | "list">("list")
+
+  const seen = new Set();
+  selectedMoviesList = selectedMoviesList?.filter(item => {
+    if(seen.has(item)) return false;
+    seen.add(item);
+    return true;
+  })
 
   useEffect(() => {
     if (settings?.view === 1) {
@@ -89,14 +97,14 @@ export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, cur
   }, [removeAllMovies])
   
   const handleWatched = useCallback(() => {
-    let moviesGridElement = document.getElementById('watchedHeader') as HTMLElement
+    let moviesGridElement = document.querySelector('#movies-grid-watched > div:nth-child(1) > div.watched-header') as HTMLElement
     window.scrollTo({ behavior: 'smooth', top: moviesGridElement?.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 70 })
   }, [])
 
-  const handleToWatch = useCallback(() => {
-    let moviesGridElement = document.getElementById('toWatchHeader') as HTMLElement
+  const handleToWatch = () => {
+    let moviesGridElement = document.querySelector("#movies-grid-watched > div:nth-child(2) > div.watched-header") as HTMLElement
     window.scrollTo({ behavior: 'smooth', top: moviesGridElement?.getBoundingClientRect().top - document.body.getBoundingClientRect().top - 70 })
-  }, [])
+  }
 
   if (settingsLoading) {
     return <div className="filter-tabs">Loading settings...</div>
@@ -133,6 +141,9 @@ export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, cur
           Remove All Movies
         </Button>
       )}
+      <div>
+        Selected {selectedMoviesList?.length || 0} movies
+      </div>
 
       <div className="view-controls">
         <div className="sort-container">
