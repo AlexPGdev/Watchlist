@@ -16,12 +16,12 @@ export const Stats = React.memo(function Stats({ stats }: StatsProps) {
         <div className="stat-label">Total Movies</div>
       </div>
       <div className="stat-card">
-        <div className="stat-number">{stats.toWatch}</div>
-        <div className="stat-label">To Watch</div>
-      </div>
-      <div className="stat-card">
         <div className="stat-number">{stats.watched}</div>
         <div className="stat-label">Watched</div>
+      </div>
+      <div className="stat-card">
+        <div className="stat-number">{stats.toWatch}</div>
+        <div className="stat-label">To Watch</div>
       </div>
     </div>
   )

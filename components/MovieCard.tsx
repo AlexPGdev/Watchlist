@@ -225,7 +225,6 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
 
           handleToggleSelected(e, document.querySelector(`[data-movie-index="${i}"]`)?.dataset.movieId)
         }
-        
       }
 
       console.log(lastSelected)
@@ -236,11 +235,6 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
       onClick(e)
     }
   }
-
-  //console.log(String(movie.ambientColor).split(",")[0])
-
-  // console.log(`LENGTH: ${selectedMoviesList?.length || 0}`)
-
 
   return (
     <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""} ${isSelected ? "selected" : ""}`} onClick={handleOnClick} onContextMenu={handleRightClick} data-movie-id={movie.id} data-movie-index={index} style={{ background: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), rgba(${movie.ambientColor},${parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) < 180 ? 0.8 : parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) > 500 ? 0.2 : 0.4})` }}>
