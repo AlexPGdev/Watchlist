@@ -37,7 +37,7 @@ export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, cur
   const gridSize = settings?.gridSize || 3
 
   const handleGridSizeIncrease = useCallback(() => {
-    const newSize = gridSize + 1
+    const newSize = parseInt(gridSize) + 1
     const gridSizeBtn = document.getElementById("movies-grid") as HTMLElement
     const gridSizeBtn2 = document.getElementById("movies-grid2") as HTMLElement
 
@@ -55,7 +55,7 @@ export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, cur
   }, [gridSize, updateGridSize])
 
   const handleGridSizeDecrease = useCallback(() => {
-    const newSize = gridSize - 1
+    const newSize = parseInt(gridSize) - 1
     const gridSizeBtn = document.getElementById("movies-grid") as HTMLElement
     const gridSizeBtn2 = document.getElementById("movies-grid2") as HTMLElement
 
@@ -183,16 +183,16 @@ export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, cur
             className="grid-size-btn"
             onClick={handleGridSizeDecrease}
             title="Decrease Grid Size"
-            disabled={settings?.view === 0 || settings?.gridSize === 2}
+            disabled={parseInt(settings?.view) === 0 || parseInt(settings?.gridSize) === 2}
           >
             -
           </Button>
-          <span id="grid-size-value" aria-disabled={settings?.view === 0}>{gridSize}</span>
+          <span id="grid-size-value" aria-disabled={parseInt(settings?.view) === 0}>{gridSize}</span>
           <Button
             className="grid-size-btn"
             onClick={handleGridSizeIncrease}
             title="Increase Grid Size"
-            disabled={settings?.view === 0 || settings?.gridSize === 5}
+            disabled={parseInt(settings?.view) === 0 || parseInt(settings?.gridSize) === 5}
           >
             +
           </Button>

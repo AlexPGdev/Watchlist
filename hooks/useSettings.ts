@@ -19,7 +19,14 @@ export function useSettings() {
       const response = await fetch("https://api.alexpg.dev/watchlist/api/settings", {
         credentials: "include"
       })
-      if (!response.ok) throw new Error("Failed to fetch settings")
+      if (!response.ok) {
+        const defaultSettings = {
+          gridSize: localStorage.getItem("gridSize") || 3,
+          view: localStorage.getItem("viewMode") || 1
+        }
+        setSettings(defaultSettings)
+        return
+      }
       const data = await response.json()
       setSettings(data)
     } catch (err: any) {
@@ -39,6 +46,7 @@ export function useSettings() {
   }, [])
 
   const updateGridSize = async (newSize: number) => {
+    console.log(newSize)
     try {
       const response = await fetch("https://api.alexpg.dev/watchlist/api/settings", {
         method: "PATCH",
@@ -48,7 +56,9 @@ export function useSettings() {
         },
         body: JSON.stringify({ gridSize: newSize }),
       })
-      if (!response.ok) throw new Error("Failed to update grid size")
+      if (!response.ok) {
+        localStorage.setItem("gridSize", newSize.toString())
+      }
       await fetchSettings()
     } catch (err: any) {
       setError(err.message)
@@ -65,7 +75,9 @@ export function useSettings() {
         },
         body: JSON.stringify({ view: newMode }),
       })
-      if (!response.ok) throw new Error("Failed to update view mode")
+      if (!response.ok) {
+        localStorage.setItem("viewMode", newMode.toString())
+      }
       await fetchSettings()
     } catch (err: any) {
       setError(err.message)

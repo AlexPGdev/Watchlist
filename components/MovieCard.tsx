@@ -180,7 +180,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
   }
 
   
-  const handleToggleSelected = (e: React.MouseEvent) => {
+  const handleToggleSelected = (e: React.MouseEvent, movieId?: number) => {
     console.log('aaaaww')
     e.stopPropagation()
     setIsSelected(prev => {
@@ -190,7 +190,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
       // notify parent AFTER state is decided
       setTimeout(() => {
         const event = new CustomEvent("selection-changed", {
-          detail: { movieId: movie.id, selected: next }
+          detail: { movieId: movieId ? movieId : movie.id, selected: movieId ? true : next }
         });
         window.dispatchEvent(event);
       }, 0);
@@ -220,23 +220,12 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
       let lastSelected = movieCards[movieCards.length - 1]
 
       if(document.querySelector(`[data-movie-id="${movie.id}"]`)?.dataset.movieIndex > lastSelected) {
-        for(let i = lastSelected; i < document.querySelector(`[data-movie-id="${movie.id}"]`)?.dataset.movieIndex; i++) {
-          setIsSelected(prev => {
-            console.log('asdddd')
-            const next = !prev;
-      
-            // notify parent AFTER state is decided
-            setTimeout(() => {
-              const event = new CustomEvent("selection-changed", {
-                detail: { movieId: document.querySelector(`[data-movie-index="${i}"]`)?.dataset.movieId, selected: true }
-              });
-              window.dispatchEvent(event);
-            }, 0);
-      
-            return next;
-          })
-          handleToggleSelected
+        for(let i = lastSelected+1; i <= document.querySelector(`[data-movie-id="${movie.id}"]`)?.dataset.movieIndex; i++) {
+          console.log(document.querySelector(`[data-movie-index="${i}"]`)?.dataset.movieId)
+
+          handleToggleSelected(e, document.querySelector(`[data-movie-index="${i}"]`)?.dataset.movieId)
         }
+        
       }
 
       console.log(lastSelected)
