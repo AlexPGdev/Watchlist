@@ -141,12 +141,14 @@ export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, cur
           Remove All Movies
         </Button>
       )}
-      <div>
-        Selected {selectedMoviesList?.length || 0} movies
-      </div>
+      {selectedMoviesList && selectedMoviesList?.length > 0 && (
+        <div>
+          Selected {selectedMoviesList?.length || 0} movies
+        </div>
+      )}
 
       <div className="view-controls">
-        <div className="sort-container">
+        {/* <div className="sort-container">
           <div className="sort-wrapper">
             <select className="sort-select" value={currentSort} onChange={(e) => onSortChange(e.target.value)} title="Sort movies">
               <option value="addeddate-asc">Added Date (Oldest)</option>
@@ -161,7 +163,7 @@ export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, cur
               <option value="watchdate-asc">Watch Date (Oldest)</option>
             </select>
           </div>
-        </div>
+        </div> */}
 
         <Button
           className={`view-btn ${currentView === "grid" ? "active" : ""}`}
