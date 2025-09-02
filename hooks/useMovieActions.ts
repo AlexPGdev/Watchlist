@@ -2,8 +2,10 @@
 
 import type { Movie } from "@/types/movie"
 import { getColor } from "color-thief-react"
+import { useMovies } from "./useMovies"
 
 export function useMovieActions() {
+  const { loadMovies } = useMovies()
   const useToggleWatched = async (movieId: number) => {
     try {
       const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/${movieId}/watch`, {
@@ -14,6 +16,8 @@ export function useMovieActions() {
       if (!response.ok) {
         throw new Error("Failed to update watch status")
       }
+
+      loadMovies()
 
       // Trigger a page reload or state update
       //window.location.reload()
@@ -39,11 +43,14 @@ export function useMovieActions() {
           })
         })
         return data
-      })
 
+      })
+      
       if (!response.ok) {
         throw new Error("Failed to remove movie")
       }
+      
+      loadMovies()
 
       // Trigger a page reload or state update
       //window.location.reload()
@@ -62,6 +69,8 @@ export function useMovieActions() {
       if (!response.ok) {
         throw new Error("Failed to remove movie")
       }
+
+      loadMovies()
 
       // Trigger a page reload or state update
       //window.location.reload()
@@ -175,7 +184,6 @@ export function useMovieActions() {
         }
         throw new Error("Failed to add movie")
       }
-
       
       const addedMovie = await response.json()
 
