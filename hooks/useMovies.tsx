@@ -29,14 +29,55 @@ export const MoviesProvider = memo(function MoviesProvider({ children }: { child
   const [searchQuery, setSearchQuery] = useState("")
   const [currentSort, setCurrentSort] = useState("addeddate-asc")
 
+  function useDailyStreak(movies) {
+    return useMemo(() => {
+      if (!movies || movies.length === 0) return 0;
+  
+      const watchedDays = Array.from(
+        new Set(
+          movies
+            .filter((m) => m.watched && m.watchDate)
+            .map((m) => {
+              const d = new Date(m.watchDate);
+              d.setHours(0, 0, 0, 0);
+              return d.getTime();
+            })
+        )
+      );
+  
+      if (watchedDays.length === 0) return 0;
+  
+      let streak = 0;
+  
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+  
+      let currentDay = new Date(today);
+  
+      if (!watchedDays.includes(today.getTime())) {
+        currentDay.setDate(currentDay.getDate() - 1);
+      }
+  
+      while (watchedDays.includes(currentDay.getTime())) {
+        streak++;
+        currentDay.setDate(currentDay.getDate() - 1);
+      }
+  
+      return streak;
+    }, [movies]);
+  }
+
+  const dailyStreak = useDailyStreak(movies);
+
   const stats = useMemo(
     () => ({
       total: movies.length,
       watched: movies.filter((m) => m.watched).length,
       toWatch: movies.filter((m) => !m.watched).length,
+      dailyStreak,
     }),
-    [movies],
-  )
+    [movies, dailyStreak]
+  );
 
   // const stats = {
   //   total: movies.length,
