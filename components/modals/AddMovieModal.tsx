@@ -51,7 +51,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
 
     const debounceTimeout = setTimeout(async () => {
       try {
-        const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/search?query=${encodeURIComponent(searchQuery)}`)
+        const response = await fetch(`http://localhost:8080/api/nmovies/search?query=${encodeURIComponent(searchQuery)}`)
         const data = await response.json()
 
         if (data.Error) {
@@ -70,13 +70,15 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
 
   const handleMovieSelect = async (movie: SearchResult) => {
     try {
-      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/details?id=${movie.id}`)
+      const response = await fetch(`http://localhost:8080/api/nmovies/details?id=${movie.id}`)
       const movieDetails = await response.json()
+
+      console.log(movieDetails.release_dates.results.filter((r: any) => r.iso_3166_1 === "US")[0].release_dates.find((r: any) => r.certification.trim() !== "").certification)
 
       const newMovie: Partial<Movie> = {
         title: movieDetails.title,
         description: movieDetails.overview,
-        watched: false,
+        // watched: false,
         year: movieDetails.release_date.split("-")[0],
         genres: movieDetails.genres.map((g: any) => g.name),
         posterPath: `https://image.tmdb.org/t/p/w500/${movie.poster_path}`,
@@ -85,9 +87,11 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
         streamingServices: [],
         imdbRating: 0,
         rtRating: null,
+        runtime: movieDetails.runtime,
+        certification: movieDetails.release_dates.results.filter((r: any) => r.iso_3166_1 === "US")[0].release_dates.find((r: any) => r.certification.trim() !== "").certification,
       }
 
-      if (movies.some((m) => m.imdbId && newMovie.imdbId && m.imdbId === newMovie.imdbId)) {
+      if (movies.some((m) => m.tmdbId && newMovie.tmdbId && m.tmdbId === newMovie.tmdbId)) {
         onDuplicateMovie(newMovie);
         onClose();
         return;
@@ -114,7 +118,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
   const handleAIRecommendations = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch("https://api.alexpg.dev/watchlist/api/movies/recommendations", {
+      const response = await fetch("http://localhost:8080/api/nmovies/recommendations", {
         credentials: "include",
       })
 

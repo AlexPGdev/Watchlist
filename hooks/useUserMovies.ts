@@ -12,18 +12,59 @@ export function useUserMovies(username: string) {
   const [error, setError] = useState<string | null>(null)
   const [ownerName, setOwnerName] = useState<string>("")
 
+  function useDailyStreak(movies) {
+    return useMemo(() => {
+      if (!movies || movies.length === 0) return 0;
+  
+      const watchedDays = Array.from(
+        new Set(
+          movies
+            .filter((m) => m.watched && m.watchDate)
+            .map((m) => {
+              const d = new Date(m.watchDate);
+              d.setHours(0, 0, 0, 0);
+              return d.getTime();
+            })
+        )
+      );
+  
+      if (watchedDays.length === 0) return 0;
+  
+      let streak = 0;
+  
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+  
+      let currentDay = new Date(today);
+  
+      if (!watchedDays.includes(today.getTime())) {
+        currentDay.setDate(currentDay.getDate() - 1);
+      }
+  
+      while (watchedDays.includes(currentDay.getTime())) {
+        streak++;
+        currentDay.setDate(currentDay.getDate() - 1);
+      }
+  
+      return streak;
+    }, [movies]);
+  }
+
+  const dailyStreak = useDailyStreak(movies);
+
   const stats = useMemo(
     () => ({
       total: movies.length,
       watched: movies.filter((m) => m.watched).length,
       toWatch: movies.filter((m) => !m.watched).length,
+      dailyStreak,
     }),
-    [movies],
-  )
+    [movies, dailyStreak]
+  );
 
   const loadUserMovies = useCallback(async () => {
     try {
-      const response = await fetch(`https://api.alexpg.dev/watchlist/api/page/${username}`, {
+      const response = await fetch(`http://localhost:8080/api/page-movies/${username}`, {
         credentials: "include",
       })
 
@@ -39,7 +80,7 @@ export function useUserMovies(username: string) {
       }
 
       const data = await response.json()
-      setMovies(data.movies || [])
+      setMovies(data || [])
       setOwnerName(data.ownerName || username)
       setError(null)
     } catch (error) {

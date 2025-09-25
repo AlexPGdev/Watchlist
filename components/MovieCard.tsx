@@ -34,7 +34,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
   const [isRemoving, setIsRemoving] = useState(false)
   const [toggleWatched, setToggleWatched] = useState(movie.watched);
 
-  const selectedRating = movieRatings?.[movie.id] ?? movie.rating ?? -1
+  const [selectedRating, setSelectedRating] = useState(movieRatings?.[movie.id] ?? movie.rating ?? -1)
 
   // Get the current ratings (either from updatedRatings or from movie)
   const currentRatings = updatedExternalRatings?.[movie.id] || { imdbRating: movie.imdbRating, rtRating: movie.rtRating };
@@ -116,7 +116,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
     const rect = button.getBoundingClientRect()
     
     try {
-      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/streaming-availability?id=${movie.tmdbId}`)
+      const response = await fetch(`http://localhost:8080/api/movies/streaming-availability?id=${movie.tmdbId}`)
       const data = await response.json()
       if (onStreamingPopup) {
         onStreamingPopup(data, movie.title, { x: rect.right + 10 + window.scrollX, y: rect.top + window.scrollY })
@@ -131,10 +131,8 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
 
     const newRating = selectedRating === rating ? -1 : rating
 
-    if(onRatingsUpdate){
-      onRatingsUpdate(movie.id, newRating)
-    }
-
+    setSelectedRating(newRating)
+    
     await useRateMovie(movie.id, newRating);
 
     // if (selectedRating === rating) {
@@ -232,12 +230,31 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
       console.log(movieCards)
       console.log(movie.id)
     } else {
+      console.log(e.target.parentNode)
+      if(e.target.classList.contains('watched-badge') || e.target.parentNode?.classList.contains('watched-badge')) {
+        return;
+      }
       onClick(e)
     }
   }
 
   return (
-    <div className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""} ${isSelected ? "selected" : ""}`} onClick={handleOnClick} onContextMenu={handleRightClick} data-movie-id={movie.id} data-movie-index={index} style={{ background: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), rgba(${movie.ambientColor},${parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) < 180 ? 0.8 : parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) > 500 ? 0.2 : 0.4})` }}>
+    <div
+      className={`movie-card ${toggleWatched ? "watched" : ""} ${isRemoving ? "removing" : ""} ${isSelected ? "selected" : ""}`}
+      onClick={handleOnClick}
+      onContextMenu={handleRightClick}
+      data-movie-id={movie.id}
+      data-movie-index={index}
+      style={{ 
+        // ...(index % 3 === 0 && {
+        //   boxShadow: `-10px 0 20px 20px rgba(${movie.ambientColor},${parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) < 180 ? 0.8 : parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) > 500 ? 0.2 : 0.4}), 10px 0 20px 20px rgba(${document.querySelector(`[data-movie-index="${index+1}"]`)?.style.background.split(")), ")[1].split("(")[1].split(")")[0]})`
+        // }),
+        // ...(index % 3 !== 0 && {
+        //   boxShadow: `10px 0 20px 20px rgba(${document.querySelector(`[data-movie-index="${index-1}"]`)?.style.background.split(")), ")[1].split("(")[1].split(")")[0]}), 10px 0 20px 20px rgba(${movie.ambientColor},${parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) < 180 ? 0.8 : parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) > 500 ? 0.2 : 0.4})`
+        // }),
+        background: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), rgba(${movie.ambientColor},${parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) < 180 ? 0.8 : parseInt(String(movie.ambientColor).split(",")[0]) + parseInt(String(movie.ambientColor).split(",")[1]) + parseInt(String(movie.ambientColor).split(",")[2]) > 500 ? 0.2 : 0.4})` 
+      }}
+    >
       
       {isSelected && (
         <div className="selected-mark" onClick={handleToggleSelected}>
@@ -265,9 +282,23 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
           <div className="movie-title" title={movie.title}>
             {movie.title}
           </div>
-          <div className="movie-year">{movie.year}</div>
+          <div className="movie-sub-info">
+            <div className="movie-year">{movie.year}</div>
+            {movie?.certification && (
+              <div className="separator">•</div>
+            )}
+            {movie?.certification && (
+              <div className="movie-certification">{movie.certification}</div>
+            )}
+            {movie?.runtime && (
+              <div className="separator">•</div>
+            )}
+            {movie?.runtime && (
+              <div className="movie-runtime">{movie.runtime > 60 ? `${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m` : `${movie.runtime} mins`}</div>
+            )}
+          </div>    
           <div className="movie-genres">
-            {movie.genres.map((genre) => (
+            {movie.genres && movie.genres.length > 0 && movie.genres.map((genre) => (
               <span key={genre} className="genre-tag" title={genre}>
                 {genre}
               </span>
@@ -372,6 +403,21 @@ const areEqual = (prev: MovieCardProps, next: MovieCardProps) => {
 
   return (
     prev.movie.id === next.movie.id &&
+    prev.movie.title === next.movie.title &&
+    prev.movie.description === next.movie.description &&
+    prev.movie.year === next.movie.year &&
+    prev.movie.genres === next.movie.genres &&
+    prev.movie.posterPath === next.movie.posterPath &&
+    prev.movie.trailerPath === next.movie.trailerPath &&
+    prev.movie.imdbId === next.movie.imdbId &&
+    prev.movie.tmdbId === next.movie.tmdbId &&
+    prev.movie.rating === next.movie.rating &&
+    prev.movie.streamingServices === next.movie.streamingServices &&
+    prev.movie.imdbRating === next.movie.imdbRating &&
+    prev.movie.rtRating === next.movie.rtRating &&
+    prev.movie.ambientColor === next.movie.ambientColor &&
+    prev.movie.runtime === next.movie.runtime &&
+    prev.movie.certification === next.movie.certification &&
     // prev.isSelected === next.isSelected &&
     prev.isSelectionMode === next.isSelectionMode &&
     prev.selectedMoviesList === next.selectedMoviesList &&

@@ -22,7 +22,7 @@ export const UserSearch = memo(function UserSearch() {
 
     const debounceTimeout = setTimeout(async () => {
       try {
-        const response = await fetch(`https://api.alexpg.dev/watchlist/api/search?q=${encodeURIComponent(query)}`)
+        const response = await fetch(`http://localhost:8080/api/search?q=${encodeURIComponent(query)}`)
         const usernames = await response.json()
         setSuggestions(usernames)
         setShowSuggestions(usernames.length > 0)

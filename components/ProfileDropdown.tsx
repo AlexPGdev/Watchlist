@@ -60,7 +60,7 @@ export const ProfileDropdown = memo(function ProfileDropdown({ user }: ProfileDr
 
       {showDropdown && (
         <div className="profile-dropdown show">
-          <div
+          {/* <div
             className="dropdown-item theme-item"
             onClick={(e) => {
               e.stopPropagation()
@@ -94,7 +94,7 @@ export const ProfileDropdown = memo(function ProfileDropdown({ user }: ProfileDr
                 </button>
               </div>
             )}
-          </div>
+          </div> */}
           <button
             className="dropdown-item"
             onClick={() => {

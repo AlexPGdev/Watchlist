@@ -70,6 +70,10 @@ export function MovieDetailsModal({
   }, [isOpen, movie]);
 
   useEffect(() => {
+    if(movie?.ambientColor) {
+      setDominantColor(Array(movie.ambientColor));
+      
+    } else {
       if (movie?.posterPath) {
         const imgUrl = `/api/proxy-image?url=${movie?.posterPath}`;
 
@@ -79,7 +83,8 @@ export function MovieDetailsModal({
         });
 
       }
-    }, [movie]);
+    }
+  }, [movie]);
 
   const fetchStreamingServices = async () => {
     if (!movie) return;
@@ -87,7 +92,7 @@ export function MovieDetailsModal({
     setLoadingStreaming(true);
     try {
       const response = await fetch(
-        `https://api.alexpg.dev/watchlist/api/movies/streaming-availability?id=${movie?.tmdbId}`
+        `http://localhost:8080/api/movies/streaming-availability?id=${movie?.tmdbId}`
       );
       const data = await response.json();
 
@@ -140,7 +145,7 @@ export function MovieDetailsModal({
 
     try {
       const response = await fetch(
-        `https://api.alexpg.dev/watchlist/api/movies/extended-details?id=${movie?.tmdbId}`
+        `http://localhost:8080/api/movies/extended-details?id=${movie?.tmdbId}`
       );
       const data = await response.json();
       console.log(data.credits.crew)
@@ -209,7 +214,7 @@ export function MovieDetailsModal({
       className={`modal show${isOpen ? " modal-fade-in" : " modal-fade-out"}`}
       onClick={handleOnClose}
       id="movie-details-modal"
-      style={{ backgroundColor: `rgb(${dominantColor?.map(c => Math.floor(c * 0.2))}, 0.8)` }}
+      style={{ backgroundColor: `rgba(${parseInt(String(dominantColor).split(",")[0]) * 0.2}, ${parseInt(String(dominantColor).split(",")[1]) * 0.2}, ${parseInt(String(dominantColor).split(",")[2]) * 0.2}, 0.8)` }}
     >
       <div
         className={`modal-content movie-details-content active${
@@ -217,7 +222,7 @@ export function MovieDetailsModal({
         }`}
         onClick={(e) => e.stopPropagation()}
         style={{
-          backgroundColor: `rgba(${dominantColor},0.4)`,
+          background: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), rgba(${dominantColor},${parseInt(String(dominantColor).split(",")[0]) + parseInt(String(dominantColor).split(",")[1]) + parseInt(String(dominantColor).split(",")[2]) < 180 ? 0.8 : parseInt(String(dominantColor).split(",")[0]) + parseInt(String(dominantColor).split(",")[1]) + parseInt(String(dominantColor).split(",")[2]) > 500 ? 0.2 : 0.4})`,
           transition: "background-color 0.4s ease"
         }}
       >
@@ -244,10 +249,16 @@ export function MovieDetailsModal({
                 <img src="/imdb.svg"></img>
                 {movie.imdbRating}/10
               </span>
-              <span className="rtRating">
-                <img src={"/rt.png"}></img>
-                {movie.rtRating}
-              </span>
+              <div className="rtRatingContainer">
+                <span className="rtRating">
+                  <img src={"/rt.png"}></img>
+                  {movie.rtRating}
+                </span>
+                <span className="rtAudienceRating">
+                  <img src={"/rt-audience.png"}></img>
+                  {movie.rtAudienceRating}
+                </span>
+              </div>
             </div>
           </div>
         </div>

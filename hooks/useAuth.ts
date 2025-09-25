@@ -22,7 +22,7 @@ export function useAuth() {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch("https://api.alexpg.dev/watchlist/api/user", {
+      const response = await fetch("http://localhost:8080/api/user", {
         credentials: "include",
       })
 
@@ -42,7 +42,7 @@ export function useAuth() {
   }
 
   const login = async (username: string, password: string) => {
-    const response = await fetch("https://api.alexpg.dev/watchlist/api/login", {
+    const response = await fetch("http://localhost:8080/api/login", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -62,7 +62,7 @@ export function useAuth() {
   }
 
   const signup = async (username: string, password: string) => {
-    const response = await fetch("https://api.alexpg.dev/watchlist/api/signup", {
+    const response = await fetch("http://localhost:8080/api/signup", {
       method: "POST",
       credentials: "include",
       headers: {
@@ -83,7 +83,7 @@ export function useAuth() {
   }
 
   const logout = async () => {
-    await fetch("https://api.alexpg.dev/watchlist/api/logout", {
+    await fetch("http://localhost:8080/api/logout", {
       method: "POST",
       credentials: "include",
     })

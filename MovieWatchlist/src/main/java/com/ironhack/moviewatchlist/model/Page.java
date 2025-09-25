@@ -31,11 +31,14 @@ public class Page {
     @Column(name = "owner_name")
     private String ownerName;
 
-    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Movie> movies = new ArrayList<>();
+    // @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Movie> movies = new ArrayList<>();
+
+    // @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Collection> collections = new ArrayList<>();
 
     @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Collection> collections = new ArrayList<>();
+    private List<PageNMovie> pageNMovies = new ArrayList<>();
 
     public Page() {
         this.createdDate = System.currentTimeMillis();
@@ -98,21 +101,21 @@ public class Page {
         this.owner = owner;
     }
 
-    public List<Movie> getMovies() {
-        return movies;
-    }
+    // public List<Movie> getMovies() {
+    //     return movies;
+    // }
 
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
-    }
+    // public void setMovies(List<Movie> movies) {
+    //     this.movies = movies;
+    // }
 
-    public List<Collection> getCollections() {
-        return collections;
-    }
+    // public List<Collection> getCollections() {
+    //     return collections;
+    // }
 
-    public void setCollections(List<Collection> collections) {
-        this.collections = collections;
-    }
+    // public void setCollections(List<Collection> collections) {
+    //     this.collections = collections;
+    // }
 
     public String getOwnerName() {
         return ownerName;
@@ -122,23 +125,44 @@ public class Page {
         this.ownerName = ownerName;
     }
 
-    public void addMovie(Movie movie) {
-        if (!this.movies.contains(movie)) {
-            this.movies.add(movie);
+    // public void addMovie(Movie movie) {
+    //     if (!this.movies.contains(movie)) {
+    //         this.movies.add(movie);
+    //     }
+    // }
+
+    // public void removeMovie(Movie movie) {
+    //     this.movies.remove(movie);
+    // }
+
+    // public void addCollection(Collection collection) {
+    //     this.collections.add(collection);
+    //     collection.setPage(this);
+    // }
+
+    // public void removeCollection(Collection collection) {
+    //     this.collections.remove(collection);
+    //     collection.setPage(null);
+    // }
+
+    // @JsonIgnore
+    public List<PageNMovie> getPageNMovies() {
+        return pageNMovies;
+    }
+
+    public void setPageNMovies(List<PageNMovie> pageNMovies) {
+        this.pageNMovies = pageNMovies;
+    }
+
+    public void addMovie(PageNMovie pageNMovie) {
+        if (!this.pageNMovies.contains(pageNMovie)) {
+            this.pageNMovies.add(pageNMovie);
         }
     }
 
-    public void removeMovie(Movie movie) {
-        this.movies.remove(movie);
-    }
-
-    public void addCollection(Collection collection) {
-        this.collections.add(collection);
-        collection.setPage(this);
-    }
-
-    public void removeCollection(Collection collection) {
-        this.collections.remove(collection);
-        collection.setPage(null);
+    @JsonIgnore
+    public void removeMovie(PageNMovie pageNMovie) {
+        this.pageNMovies.remove(pageNMovie);
+        pageNMovie.setPage(null);
     }
 }

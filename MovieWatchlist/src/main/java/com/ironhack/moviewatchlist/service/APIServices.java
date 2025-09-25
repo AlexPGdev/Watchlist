@@ -33,7 +33,7 @@ import java.util.Optional;
 public class APIServices {
     private final MovieRepository movieRepository;
 
-    private static final Dotenv dotenv = Dotenv.configure().load();
+    private static final Dotenv dotenv = Dotenv.configure().directory("d:/watchlist-react/Watchlist/MovieWatchlist/.env").load();
 
     private final WebClient omdbWebClient;
 
@@ -50,14 +50,14 @@ public class APIServices {
 
     public List<Movie> searchMovies(String query) throws TmdbException {
 
-        MovieResultsPage tmdbSearch = tmdbApi.getSearch().searchMovie(query, false, "en", null, 1, "de", null);
+        MovieResultsPage tmdbSearch = tmdbApi.getSearch().searchMovie(query, false, "en", null, 1, null, null);
 
         System.out.println(tmdbSearch.getResults());
         return tmdbSearch.getResults();
     }
 
     public MovieDb getMovieDetails(Integer id) throws TmdbException {
-        MovieDb tmdbMovie = tmdbApi.getMovies().getDetails(id, "en-US", MovieAppendToResponse.CREDITS, MovieAppendToResponse.IMAGES, MovieAppendToResponse.VIDEOS);
+        MovieDb tmdbMovie = tmdbApi.getMovies().getDetails(id, "en-US", MovieAppendToResponse.CREDITS, MovieAppendToResponse.IMAGES, MovieAppendToResponse.VIDEOS, MovieAppendToResponse.RELEASE_DATES);
         System.out.println("MOVIE DETAILS!!!!!!");
         System.out.println(tmdbMovie);
         return tmdbMovie;
@@ -97,16 +97,18 @@ public class APIServices {
         Document imdb = Jsoup.connect("https://www.imdb.com/title/" + id + "/").get();
         Document rt = Jsoup.connect(tomatoUrl).get();
 
-        Elements imdbRatingElement = imdb.select("#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-b234497d-3.ffckSa > div.sc-8e956c5c-0.cfWEab.sc-13687a64-1.iWItnY > div > div:nth-child(1) > a > span > div > div.sc-4dc495c1-0.fUqjJu > div.sc-4dc495c1-2.jaffDQ > span.sc-4dc495c1-1.lbQcRY");
+        Elements imdbRatingElement = imdb.select("#__next > main > div > section.ipc-page-background.ipc-page-background--base.sc-358297d7-0.CHcbB > section > div:nth-child(5) > section > section > div.sc-14a487d5-3.ckSjzt > div.sc-8e956c5c-0.cfWEab.sc-13687a64-1.iWItnY > div > div:nth-child(1) > a > span > div > div.sc-4dc495c1-0.fUqjJu > div.sc-4dc495c1-2.jaffDQ > span.sc-4dc495c1-1.lbQcRY");
         Elements rtRatingElement = rt.select(".media-scorecard > media-scorecard:nth-child(1) > rt-text:nth-child(3)");
+        Elements rtAudienceRatingElement = rt.select("#modules-wrap > div.media-scorecard.no-border > media-scorecard > rt-text:nth-child(7)");
 
-        if (imdbRatingElement.isEmpty() || rtRatingElement.isEmpty()) {
+        if (imdbRatingElement.isEmpty() || rtRatingElement.isEmpty() || rtAudienceRatingElement.isEmpty()) {
             throw new IOException("Could not find rating elements on one of the pages.");
         }
 
         double imdbRating = Double.parseDouble(imdbRatingElement.text());
         String rtRating = rtRatingElement.text();
+        String rtAudienceRating = rtAudienceRatingElement.text();
 
-        return new RatingResponse(imdbRating, rtRating);
+        return new RatingResponse(imdbRating, rtRating, rtAudienceRating);
     }
 }

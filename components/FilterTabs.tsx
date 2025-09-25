@@ -27,9 +27,11 @@ export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, cur
   })
 
   useEffect(() => {
-    if (settings?.view === 1) {
+    if (settings?.view === 1 || settings?.view === undefined && localStorage.getItem("viewMode") === "1") {
+      console.log("GIRID MODEE")
       setCurrentView("grid")
-    } else if (settings?.view === 0) {
+    } else if (settings?.view === 0 || settings?.view === undefined && localStorage.getItem("viewMode") === "0") {
+      console.log("LIST MODEE")
       setCurrentView("list")
     }
   }, [settings?.view])
@@ -114,38 +116,42 @@ export const FilterTabs = memo(function FilterTabs({ isOwner, currentFilter, cur
   }
 
   return (
+
+    
     <div className="filter-tabs">
-      {/* <Button variant="filter" className={`${currentFilter === "all" ? "btn-filter-active" : ""}`} onClick={() => onFilterChange("all")}>
-        All Movies
-      </Button> */}
-      <Button
-        variant="filter"
-        className={`${currentFilter === "watched" ? "btn-filter-active" : ""}`}
-        id="watched-btn"
-        // onClick={() => onFilterChange("watched")}
-        onClick={handleWatched}
-      >
-        Watched
-      </Button>
-      <Button
-        variant="filter"
-        id="to-watch-btn"
-        className={`${currentFilter === "to-watch" ? "btn-filter-active" : ""}`}
-        // onClick={() => onFilterChange("to-watch")}
-        onClick={handleToWatch}
-      >
-        To Watch
-      </Button>
-      {isOwner && (
-        <Button variant="danger" onClick={handleRemoveAllMovies} style={{ marginLeft: "1rem" }}>
-          Remove All Movies
+      <div style={{display: "flex"}}>
+        {/* <Button variant="filter" className={`${currentFilter === "all" ? "btn-filter-active" : ""}`} onClick={() => onFilterChange("all")}>
+          All Movies
+        </Button> */}
+        <Button
+          variant="filter"
+          className={`${currentFilter === "watched" ? "btn-filter-active" : ""}`}
+          id="watched-btn"
+          // onClick={() => onFilterChange("watched")}
+          onClick={handleWatched}
+        >
+          Watched
         </Button>
-      )}
-      {selectedMoviesList && selectedMoviesList?.length > 0 && (
-        <div>
-          Selected {selectedMoviesList?.length || 0} movies
-        </div>
-      )}
+        <Button
+          variant="filter"
+          id="to-watch-btn"
+          className={`${currentFilter === "to-watch" ? "btn-filter-active" : ""}`}
+          // onClick={() => onFilterChange("to-watch")}
+          onClick={handleToWatch}
+        >
+          To Watch
+        </Button>
+        {/* {isOwner && (
+          <Button variant="danger" onClick={handleRemoveAllMovies} style={{ marginLeft: "1rem" }}>
+            Remove All Movies
+          </Button>
+        )} */}
+        {selectedMoviesList && selectedMoviesList?.length > 0 && (
+          <div style={{marginTop: "auto", marginBottom: "auto", marginLeft: "20px"}}>
+            Selected {selectedMoviesList?.length || 0} movies
+          </div>
+        )}
+      </div>
 
       <div className="view-controls">
         {/* <div className="sort-container">

@@ -182,6 +182,7 @@ export default function Home() {
         }
       }))
     }
+    console.log(ratings)
   }, [])
 
   const handleStreamingPopup = useCallback((streamingServices: any, movieTitle: string, position: { x: number; y: number }) => {

@@ -1,14 +1,22 @@
 package com.ironhack.moviewatchlist.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class Movie {
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
 
+@Entity
+@Table(name = "nmovie")
+public class NMovie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,9 +30,8 @@ public class Movie {
     private int year;
 
     @ElementCollection
+    @CollectionTable(name = "nmovie_genres", joinColumns = @JoinColumn(name = "nmovie_id"))
     private List<String> genres = new ArrayList<>();
-
-    private boolean watched;
 
     @Column(name = "poster_path")
     private String posterPath;
@@ -32,56 +39,41 @@ public class Movie {
     @Column(name = "trailer_path")
     private String trailerPath;
 
-    @Column(name = "watch_date")
-    private Long watchDate;
-
     private String imdbId;
     private Integer tmdbId;
-    private Integer rating = -1;
 
     @ElementCollection
     private List<String> streamingServices = new ArrayList<>();
 
     private double imdbRating;
     private String rtRating;
+    private String rtAudienceRating;
 
     private String ambientColor;
-
-    private Long addedDate;
 
     private Integer runtime;
 
     private String certification;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "page_id", nullable = false)
-    @JsonIgnore
-    private Page page;
-
-    public Movie() {
-        this.addedDate = System.currentTimeMillis();
+    public NMovie() {
     }
 
-    public Movie(String title, String description, int year, List<String> genres, boolean watched, String posterPath, String trailerPath, Long watchDate, String imdbId, Integer tmdbId, List<String> streamingServices, Integer rating, double imdbRating, String rtRating, String ambientColor, Integer runtime, String certification, Page page) {
+    public NMovie(String title, String description, int year, List<String> genres, String posterPath, String trailerPath, String imdbId, Integer tmdbId, List<String> streamingServices, double imdbRating, String rtRating, String rtAudienceRating, String ambientColor, Integer runtime, String certification) {
         this.title = title;
         this.description = description;
         this.year = year;
         this.genres = genres;
-        this.watched = watched;
         this.posterPath = posterPath;
         this.trailerPath = trailerPath;
-        this.watchDate = watchDate;
         this.imdbId = imdbId;
         this.tmdbId = tmdbId;
         this.streamingServices = streamingServices;
-        this.rating = rating;
         this.imdbRating = imdbRating;
         this.rtRating = rtRating;
+        this.rtAudienceRating = rtAudienceRating;
         this.ambientColor = ambientColor;
-        this.addedDate = System.currentTimeMillis();
         this.runtime = runtime;
         this.certification = certification;
-        this.page = page;
     }
 
     public Long getId() {
@@ -124,14 +116,6 @@ public class Movie {
         this.genres = genres;
     }
 
-    public boolean isWatched() {
-        return watched;
-    }
-
-    public void setWatched(boolean watched) {
-        this.watched = watched;
-    }
-
     public String getPosterPath() {
         return posterPath;
     }
@@ -146,14 +130,6 @@ public class Movie {
 
     public void setTrailerPath(String trailerPath) {
         this.trailerPath = trailerPath;
-    }
-
-    public Long getWatchDate() {
-        return watchDate;
-    }
-
-    public void setWatchDate(Long watchDate) {
-        this.watchDate = watchDate;
     }
 
     public String getImdbId() {
@@ -180,14 +156,6 @@ public class Movie {
         this.streamingServices = streamingServices;
     }
 
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
     public double getImdbRating() {
         return imdbRating;
     }
@@ -204,20 +172,20 @@ public class Movie {
         this.rtRating = rtRating;
     }
 
+    public String getRtAudienceRating() {
+        return rtAudienceRating;
+    }
+
+    public void setRtAudienceRating(String rtAudienceRating) {
+        this.rtAudienceRating = rtAudienceRating;
+    }
+
     public String getAmbientColor() {
         return ambientColor;
     }
 
     public void setAmbientColor(String ambientColor) {
         this.ambientColor = ambientColor;
-    }
-
-    public Long getAddedDate() {
-        return addedDate;
-    }
-
-    public void setAddedDate(Long addedDate) {
-        this.addedDate = addedDate;
     }
 
     public Integer getRuntime() {
@@ -234,13 +202,5 @@ public class Movie {
 
     public void setCertification(String certification) {
         this.certification = certification;
-    }
-
-    public Page getPage() {
-        return page;
-    }
-
-    public void setPage(Page page) {
-        this.page = page;
     }
 }

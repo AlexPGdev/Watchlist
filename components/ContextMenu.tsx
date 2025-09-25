@@ -18,7 +18,7 @@ interface ContextMenuProps {
 
 export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie, position, onMovieRemoved, onClose, onSelectMovie }: ContextMenuProps) {
     const [hovered, setHovered] = useState(false)
-    const { useRemoveMovie } = useMovieActions()
+    const { useRemoveMovie, useEditWatchdate, useRefreshMovie } = useMovieActions()
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -77,6 +77,97 @@ export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie,
         //   return true;
     };
 
+    const handleEditWatchdateClick = async (movieId: number) => {
+        if (onClose) onClose();
+        const currentDate = movie?.watchDate ? new Date(movie?.watchDate) : new Date();
+        const dateString = currentDate.toISOString().split('T')[0];
+
+        const badgeElement = document.querySelector(`[data-movie-id="11"] > .watched-badge`)
+
+        const dateInput = document.createElement('input');
+        dateInput.type = 'date';
+        dateInput.className = 'date-input';
+        dateInput.value = dateString;
+        // dateInput.locale = 'en-GB';
+
+        const originalContent = badgeElement?.innerHTML;
+
+        badgeElement.innerHTML = '';
+        badgeElement?.appendChild(dateInput);
+
+        dateInput.focus();
+
+        const saveDate = () => {
+            const newDate = dateInput.value;
+            if (newDate) {
+                movie.watchDate = new Date(newDate).getTime();
+
+                // Send API request to update watch date
+                fetch(`http://localhost:8080/api/page-movies/${movieId}/watch-date?watchDate=${new Date(newDate).getTime()}`, {
+                    method: 'PATCH',
+                    credentials: "include"
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Failed to update watch date');
+                            badgeElement.innerHTML = originalContent;
+                            return;
+                        }
+
+                        // Update badge with new date
+                        const formattedDate = new Date(movie.watchDate).toLocaleDateString('en-GB');
+                        badgeElement.innerHTML = `✓ Watched on ${formattedDate}`;
+                    })
+                    .catch(error => {
+                        console.error('Error updating watch date:', error);
+                        // Revert on error
+                        badgeElement.innerHTML = originalContent;
+                    });
+            } else {
+                // Revert if no date selected
+                badgeElement.innerHTML = originalContent;
+            }
+        };
+
+        // Handle cancel on Escape
+        const cancelEdit = () => {
+            badgeElement.innerHTML = originalContent;
+        };
+    
+        dateInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveDate();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                cancelEdit();
+            }
+        });
+    
+        dateInput.addEventListener('blur', saveDate);
+    
+        // Prevent event bubbling to avoid triggering other handlers
+        dateInput.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // useEditWatchdate(movieId, new Date().toISOString())
+    }
+
+    const handleRefreshMovie = (movieId: number, movieTmdbId: number) => {
+        return async () => {
+            if (onClose) onClose();
+            try {
+                await useRefreshMovie(movieId, movieTmdbId)
+                if (onMovieRemoved) {
+                    onMovieRemoved()
+                }
+            } catch (error) {
+                console.error("Error refreshing movie:", error)
+            }
+        }
+    }
+
     return (
         <div
             className="context-menu"
@@ -101,6 +192,38 @@ export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie,
                             <path d="M16 0a16 16 0 1 0 16 16A16 16 0 0 0 16 0zm0 30a14 14 0 1 1 14-14 14 14 0 0 1-14 14z"/><path d="m13 20.59-4.29-4.3-1.42 1.42 5 5a1 1 0 0 0 1.41 0l11-11-1.41-1.41z"/>
                         </svg>
                         <span style={{verticalAlign: "middle"}}>Select Movie</span>
+                    </div>
+                </Button>
+
+                <Button onClick={handleRefreshMovie(movie?.id, movie?.tmdbId)}>
+                    <div className="context-menu-mark-watched-button">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="white"
+                            style={{ marginRight: '0.5rem', verticalAlign: 'middle' }}
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M19 4v2.339A9 9 0 0 0 3 12h2a6.987 6.987 0 0 1 12.725-4H15v2h6V4zM12 19a6.957 6.957 0 0 1-5.726-3H9v-2H3v6h2v-2.339A9 9 0 0 0 21 12h-2a7.009 7.009 0 0 1-7 7z"/>
+                        </svg>
+                        <span style={{verticalAlign: "middle"}}>Refresh</span>
+                    </div>
+                </Button>
+
+                <Button onClick={() => handleEditWatchdateClick(movie?.id)}>
+                    <div className="context-menu-mark-watched-button">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="white"
+                            style={{ marginRight: '0.5rem', verticalAlign: 'middle' }}
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="m7 18.264 10-10 5 5V2h-4V0h-2v2H6V0H4v2H0v19h7zM2 4h2v2h2V4h10v2h2V4h2v3H2zM22 14.92 15.92 21H22v-6.08z"/><path d="M8 18.678v4.414h4.414l9-9L17 9.678zm2 2.414v-1.586l1.586 1.586zm3-1.414-1.586-1.586L17 12.506l1.586 1.586z"/>
+                        </svg>
+                        <span style={{verticalAlign: "middle"}}>Edit Watch Date</span>
                     </div>
                 </Button>
                 
@@ -138,6 +261,22 @@ export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie,
                         }
                     </div>
                 </Button>
+
+                {/* <Button onClick={() => handleEditWatchdateClick(movie?.id)}>
+                    <div className="context-menu-mark-watched-button">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="white"
+                            style={{ marginRight: '0.5rem', verticalAlign: 'middle' }}
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="m7 18.264 10-10 5 5V2h-4V0h-2v2H6V0H4v2H0v19h7zM2 4h2v2h2V4h10v2h2V4h2v3H2zM22 14.92 15.92 21H22v-6.08z"/><path d="M8 18.678v4.414h4.414l9-9L17 9.678zm2 2.414v-1.586l1.586 1.586zm3-1.414-1.586-1.586L17 12.506l1.586 1.586z"/>
+                        </svg>
+                        <span style={{verticalAlign: "middle"}}>Edit Watch Date</span>
+                    </div>
+                </Button> */}
                 
                 <Button variant="danger" onClick={() => handleRemoveClick(movie?.id)}>
                     <div className="context-menu-remove-button">
