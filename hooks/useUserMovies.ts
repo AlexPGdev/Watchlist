@@ -64,7 +64,7 @@ export function useUserMovies(username: string) {
 
   const loadUserMovies = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/page-movies/${username}`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/page-movies/${username}`, {
         credentials: "include",
       })
 

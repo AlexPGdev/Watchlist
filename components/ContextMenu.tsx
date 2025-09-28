@@ -82,7 +82,7 @@ export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie,
         const currentDate = movie?.watchDate ? new Date(movie?.watchDate) : new Date();
         const dateString = currentDate.toISOString().split('T')[0];
 
-        const badgeElement = document.querySelector(`[data-movie-id="11"] > .watched-badge`)
+        const badgeElement = document.querySelector(`[data-movie-id="${movieId}"] > .watched-badge`)
 
         const dateInput = document.createElement('input');
         dateInput.type = 'date';
@@ -103,7 +103,7 @@ export const ContextMenu = memo(function ContextMenu({ isVisible = false, movie,
                 movie.watchDate = new Date(newDate).getTime();
 
                 // Send API request to update watch date
-                fetch(`http://localhost:8080/api/page-movies/${movieId}/watch-date?watchDate=${new Date(newDate).getTime()}`, {
+                fetch(`https://api.alexpg.dev/watchlist/api/page-movies/${movieId}/watch-date?watchDate=${new Date(newDate).getTime()}`, {
                     method: 'PATCH',
                     credentials: "include"
                 })

@@ -4,10 +4,8 @@ import com.ironhack.moviewatchlist.dto.CreatePageRequest;
 import com.ironhack.moviewatchlist.dto.PublicPageDTO;
 import com.ironhack.moviewatchlist.exceptions.PageNotFoundException;
 import com.ironhack.moviewatchlist.exceptions.PageNotPublicException;
-import com.ironhack.moviewatchlist.model.Movie;
 import com.ironhack.moviewatchlist.model.Page;
 import com.ironhack.moviewatchlist.model.User;
-import com.ironhack.moviewatchlist.repository.MovieRepository;
 import com.ironhack.moviewatchlist.repository.UserRepository;
 import com.ironhack.moviewatchlist.service.PageService;
 import org.springframework.http.HttpStatus;
@@ -21,39 +19,37 @@ public class PageController {
 
     private final PageService pageService;
     private final UserRepository userRepository;
-    private final MovieRepository movieRepository;
 
-    public PageController(PageService pageService, UserRepository userRepository, MovieRepository movieRepository) {
+    public PageController(PageService pageService, UserRepository userRepository) {
         this.pageService = pageService;
         this.userRepository = userRepository;
-        this.movieRepository = movieRepository;
     }
 
-    @GetMapping
-    public PublicPageDTO getUserPage(Authentication authentication) {
-        User currentUser = userRepository.findByUsername(authentication.getName());
-        if(pageService.getUserPublicPage(currentUser) == null) {
-            pageService.createPage("Movie Watchlist", "My watchlist", true, currentUser);
-        }
-        if(!authentication.getName().equals(currentUser.getUsername()) && !pageService.getUserPublicPage(currentUser).isPublic()) {
-            throw new PageNotPublicException("Page is not public");
-        }
-        return pageService.getUserPublicPage(currentUser);
-    }
+    // @GetMapping
+    // public PublicPageDTO getUserPage(Authentication authentication) {
+    //     User currentUser = userRepository.findByUsername(authentication.getName());
+    //     if(pageService.getUserPublicPage(currentUser) == null) {
+    //         pageService.createPage("Movie Watchlist", "My watchlist", true, currentUser);
+    //     }
+    //     if(!authentication.getName().equals(currentUser.getUsername()) && !pageService.getUserPublicPage(currentUser).isPublic()) {
+    //         throw new PageNotPublicException("Page is not public");
+    //     }
+    //     return pageService.getUserPublicPage(currentUser);
+    // }
 
-    @GetMapping("/{username}")
-    public PublicPageDTO getUserPageByUsername(@PathVariable String username, Authentication authentication) {
+    // @GetMapping("/{username}")
+    // public PublicPageDTO getUserPageByUsername(@PathVariable String username, Authentication authentication) {
 
-        if(pageService.getUserPublicPageByUsername(username) == null) {
-            throw new PageNotFoundException("Page not found");
-        }
+    //     if(pageService.getUserPublicPageByUsername(username) == null) {
+    //         throw new PageNotFoundException("Page not found");
+    //     }
 
-        if(authentication != null && !authentication.getName().equalsIgnoreCase(username) && !pageService.getUserPublicPageByUsername(username).isPublic() || authentication == null && !pageService.getUserPublicPageByUsername(username).isPublic()) {
-            throw new PageNotPublicException("Page is not public");
-        }
+    //     if(authentication != null && !authentication.getName().equalsIgnoreCase(username) && !pageService.getUserPublicPageByUsername(username).isPublic() || authentication == null && !pageService.getUserPublicPageByUsername(username).isPublic()) {
+    //         throw new PageNotPublicException("Page is not public");
+    //     }
 
-        return pageService.getUserPublicPageByUsername(username);
-    }
+    //     return pageService.getUserPublicPageByUsername(username);
+    // }
 
     @PostMapping
     public ResponseEntity<Page> createPage(@RequestBody CreatePageRequest request, Authentication authentication) {
@@ -91,30 +87,30 @@ public class PageController {
         }
     }
 
-    @PostMapping("/page/{pageId}/movies/{movieId}")
-    public ResponseEntity<Page> addMovieToPage(@PathVariable Long pageId, @PathVariable Long movieId,
-                                               Authentication authentication) {
-        try {
-            User currentUser = userRepository.findByUsername(authentication.getName());
-            Movie movie = movieRepository.findMovieById(movieId);
-            Page page = pageService.addMovieToPage(pageId, movie, currentUser);
-            return ResponseEntity.ok(page);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-    }
+    // @PostMapping("/page/{pageId}/movies/{movieId}")
+    // public ResponseEntity<Page> addMovieToPage(@PathVariable Long pageId, @PathVariable Long movieId,
+    //                                            Authentication authentication) {
+    //     try {
+    //         User currentUser = userRepository.findByUsername(authentication.getName());
+    //         Movie movie = movieRepository.findMovieById(movieId);
+    //         Page page = pageService.addMovieToPage(pageId, movie, currentUser);
+    //         return ResponseEntity.ok(page);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    //     }
+    // }
 
-    @DeleteMapping("/page/{pageId}/movies/{movieId}")
-    public ResponseEntity<Page> removeMovieFromPage(@PathVariable Long pageId, @PathVariable Long movieId,
-                                                    Authentication authentication) {
-        try {
-            User currentUser = userRepository.findByUsername(authentication.getName());
-            Movie movie = movieRepository.findMovieById(movieId);
-            Page page = pageService.removeMovieFromPage(pageId, movie, currentUser);
-            return ResponseEntity.ok(page);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-    }
+    // @DeleteMapping("/page/{pageId}/movies/{movieId}")
+    // public ResponseEntity<Page> removeMovieFromPage(@PathVariable Long pageId, @PathVariable Long movieId,
+    //                                                 Authentication authentication) {
+    //     try {
+    //         User currentUser = userRepository.findByUsername(authentication.getName());
+    //         Movie movie = movieRepository.findMovieById(movieId);
+    //         Page page = pageService.removeMovieFromPage(pageId, movie, currentUser);
+    //         return ResponseEntity.ok(page);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    //     }
+    // }
 
 }

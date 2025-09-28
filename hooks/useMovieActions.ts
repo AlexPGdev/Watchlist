@@ -8,7 +8,7 @@ export function useMovieActions() {
   const { loadMovies } = useMovies()
   const useToggleWatched = async (movieId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/page-movies/${movieId}/watch`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/page-movies/${movieId}/watch`, {
         method: "PATCH",
         credentials: "include",
       })
@@ -29,7 +29,7 @@ export function useMovieActions() {
   const removeAllMovies = async () => {
     try {
       console.log("ASMLDFNANKRFAJ")
-      const response = await fetch(`http://localhost:8080/api/nmovies`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/nmovies`, {
         method: "GET",
         credentials: "include",
       }).then(function(response) {
@@ -37,7 +37,7 @@ export function useMovieActions() {
       }).then(function(data) {
         console.log(data)
         data.forEach(m => {
-          fetch(`http://localhost:8080/api/nmovies/${m.id}`, {
+          fetch(`https://api.alexpg.dev/watchlist/api/nmovies/${m.id}`, {
             method: "DELETE",
             credentials: "include",
           })
@@ -61,7 +61,7 @@ export function useMovieActions() {
 
   const useRemoveMovie = async (movieId: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/page-movies/${movieId}`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/page-movies/${movieId}`, {
         method: "DELETE",
         credentials: "include",
       })
@@ -82,7 +82,7 @@ export function useMovieActions() {
   const useRefreshMovie = async (movieId: number, movieTmdbId: number) => {
     try {
 
-      const movieDetailsResponse = await fetch(`http://localhost:8080/api/nmovies/details?id=${movieTmdbId}`)
+      const movieDetailsResponse = await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/details?id=${movieTmdbId}`)
       const movieDetails = await movieDetailsResponse.json()
 
       console.log(movieDetails)
@@ -103,7 +103,7 @@ export function useMovieActions() {
         certification: movieDetails.release_dates.results.filter((r: any) => r.iso_3166_1 === "US")[0].release_dates.find((r: any) => r.certification.trim() !== "").certification,
       }
 
-      const response = await fetch(`http://localhost:8080/api/nmovies/refresh/${movieTmdbId}`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/refresh/${movieTmdbId}`, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -116,6 +116,10 @@ export function useMovieActions() {
         throw new Error("Failed to refresh movie")
       }
 
+      console.log(movieDetails)
+
+      loadExtraDetails(movieId, movieTmdbId, movieDetails.posterPath)
+
       loadMovies()
 
       // Trigger a page reload or state update
@@ -127,7 +131,7 @@ export function useMovieActions() {
 
   const useRateMovie = async (movieId: number, rating: number) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/page-movies/${movieId}/rating?rating=${rating}`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/page-movies/${movieId}/rating?rating=${rating}`, {
         method: "PATCH",
         credentials: "include",
       })
@@ -144,7 +148,7 @@ export function useMovieActions() {
   const loadAmbientColor = async (movieId: number, posterPath: string) => {
 
     getColor(`/api/proxy-image?url=https://image.tmdb.org/t/p/w500/${posterPath}`, "rgbArray").then( async (data) => {
-      await fetch(`http://localhost:8080/api/nmovies/ambient-color?id=${movieId}&color=${data}`, {
+      await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/ambient-color?id=${movieId}&color=${data}`, {
         method: "PATCH",
         credentials: "include",
       })
@@ -157,20 +161,20 @@ export function useMovieActions() {
 
   }
 
-  const loadExtraDetails = async (movieId: number, tmdbId: string, posterPath: string, onRatingsUpdated?: (ratings: any) => void) => {
-    getColor(`/api/proxy-image?url=https://image.tmdb.org/t/p/w500/${posterPath}`, "rgbArray").then( async (data) => {
+  const loadExtraDetails = async (movieId: number, tmdbId: any, posterPath: string, onRatingsUpdated?: (ratings: any) => void) => {
+    // getColor(`/api/proxy-image?url=https://image.tmdb.org/t/p/w500/${posterPath}`, "rgbArray").then( async (data) => {
 
-      await fetch(`http://localhost:8080/api/nmovies/ambient-color?id=${movieId}&color=${data}`, {
-        method: "PATCH",
-        credentials: "include",
-      })
+    //   await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/ambient-color?id=${movieId}&color=${data}`, {
+    //     method: "PATCH",
+    //     credentials: "include",
+    //   })
 
-      let movieCard = document.querySelector(`[data-movie-id="${movieId}"]`) as HTMLElement
+    //   let movieCard = document.querySelector(`[data-movie-id="${movieId}"]`) as HTMLElement
 
-      if(movieCard) movieCard.style.backgroundColor = `rgba(${data},0.3)`
+    //   if(movieCard) movieCard.style.backgroundColor = `rgba(${data},0.3)`
 
       try {
-        const response = await fetch(`http://localhost:8080/api/nmovies/${tmdbId}/ratings`, {
+        const response = await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/${tmdbId}/ratings`, {
           credentials: "include",
           method: "PATCH"
         })
@@ -187,12 +191,12 @@ export function useMovieActions() {
         throw error
       }
 
-    })
+    // })
   }
 
   const loadExternalRatings = async (movieImdbId: string, movieId: number, onRatingsUpdated?: (ratings: any) => void) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/nmovies/${movieId}/ratings`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/${movieId}/ratings`, {
         credentials: "include",
         method: "PATCH"
       })
@@ -213,7 +217,7 @@ export function useMovieActions() {
   const useAddMovieToWatchlist = async (movie: Partial<Movie>, force = false, onRatingsUpdated?: (ratings: any) => void) => {
     console.log(movie)
     try {
-      const response = await fetch("http://localhost:8080/api/page-movies", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/page-movies", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -250,7 +254,7 @@ export function useMovieActions() {
 
   const useEditWatchdate = async (movieId: number, watchDate: string) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/nmovies/${movieId}/watch-date?watchDate=${watchDate}`, {
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/${movieId}/watch-date?watchDate=${watchDate}`, {
         method: "PATCH",
         credentials: "include",
       })
@@ -270,7 +274,7 @@ export function useMovieActions() {
 
   const useAddToWatchlist = async (tmdbId: number, movieId: number, onDuplicate?: (movie: Partial<Movie>, movieId: number) => void) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/nmovies/details?id=${tmdbId}`)
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/details?id=${tmdbId}`)
       const movieDetails = await response.json()
 
       const newMovie: Partial<Movie> = {
@@ -289,7 +293,7 @@ export function useMovieActions() {
         certification: movieDetails.release_dates.results.filter((r: any) => r.iso_3166_1 === "US")[0].release_dates[0].certification,
       }
 
-      const userMovies = await fetch(`http://localhost:8080/api/page-movies`, {
+      const userMovies = await fetch(`https://api.alexpg.dev/watchlist/api/page-movies`, {
         credentials: "include",
       })
       const userMoviesData = await userMovies.json()
@@ -304,7 +308,7 @@ export function useMovieActions() {
       if (movieCardButton) movieCardButton.textContent = "Added to Watchlist"
 
       // Actually add the movie to the watchlist
-      const addResponse = await fetch("http://localhost:8080/api/page-movies", {
+      const addResponse = await fetch("https://api.alexpg.dev/watchlist/api/page-movies", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -331,7 +335,7 @@ export function useMovieActions() {
 
   const useGetAIRecommendations = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/nmovies/recommendations", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/nmovies/recommendations", {
         credentials: "include",
       })
 

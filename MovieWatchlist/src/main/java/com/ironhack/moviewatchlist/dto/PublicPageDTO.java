@@ -1,6 +1,5 @@
 package com.ironhack.moviewatchlist.dto;
 
-import com.ironhack.moviewatchlist.model.Movie;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,6 @@ public class PublicPageDTO {
     private boolean isPublic;
     private String ownerName;
     private Long id;
-    List<Movie> movies;
 
     public String getTitle() {
         return title;
@@ -52,14 +50,6 @@ public class PublicPageDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public List<Movie> getMovies() {
-        return movies;
-    }
-
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
     }
 
 }

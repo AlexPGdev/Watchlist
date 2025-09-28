@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
     const { username, password } = await request.json()
 
     // Forward the request to your existing backend
-    const response = await fetch("http://localhost:8080/api/login", {
+    const response = await fetch("https://api.alexpg.dev/watchlist/api/login", {
       method: "POST",
       credentials: "include",
       headers: {

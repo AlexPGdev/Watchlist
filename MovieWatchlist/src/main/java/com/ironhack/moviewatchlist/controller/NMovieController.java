@@ -17,11 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ironhack.moviewatchlist.dto.RatingResponse;
-import com.ironhack.moviewatchlist.model.Movie;
 import com.ironhack.moviewatchlist.model.NMovie;
 import com.ironhack.moviewatchlist.model.Page;
 import com.ironhack.moviewatchlist.model.User;
-import com.ironhack.moviewatchlist.repository.MovieRepository;
 import com.ironhack.moviewatchlist.repository.PageRepository;
 import com.ironhack.moviewatchlist.repository.UserRepository;
 import com.ironhack.moviewatchlist.service.APIServices;
@@ -41,15 +39,13 @@ public class NMovieController {
     private final NMovieService nmovieService;
     private final UserRepository userRepository;
     private final PageService pageService;
-    private final MovieRepository movieRepository;
     private final APIServices apiServices;
     private final PageRepository pageRepository;
 
-    public NMovieController(NMovieService nmovieService, UserRepository userRepository, PageService pageService, MovieRepository movieRepository, APIServices apiServices, PageRepository pageRepository) {
+    public NMovieController(NMovieService nmovieService, UserRepository userRepository, PageService pageService, APIServices apiServices, PageRepository pageRepository) {
         this.nmovieService = nmovieService;
         this.userRepository = userRepository;
         this.pageService = pageService;
-        this.movieRepository = movieRepository;
         this.apiServices = apiServices;
         this.pageRepository = pageRepository;
     }
@@ -114,11 +110,6 @@ public class NMovieController {
     @PatchMapping("/ambient-color")
     public NMovie updateAmbientColor(@RequestParam(name = "id") Long id, String color, Authentication authentication) {
         return nmovieService.updateAmbientColor(id, color);
-    }
-
-    @PatchMapping("/{id}/watch-date")
-    public Movie updateMovieWatchDate(@PathVariable Long id, @RequestParam(name = "watchDate") Long watchDate) {
-        return null;
     }
     
 }

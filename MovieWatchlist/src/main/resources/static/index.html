@@ -96,7 +96,7 @@
         const username = path.split('/')[1];
 
         if(username){
-            fetch(`http://localhost:8080/api/movies`)
+            fetch(`https://api.alexpg.dev/watchlist/api/movies`)
             .then(response => response.json())
             .then(data => {
                 movies = data;
@@ -151,7 +151,7 @@
             return;
         }
 
-        fetch('http://localhost:8080/api/login', {
+        fetch('https://api.alexpg.dev/watchlist/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -201,7 +201,7 @@
     }
 
     function loadMovies() {
-        fetch('http://localhost:8080/api/movies', {
+        fetch('https://api.alexpg.dev/watchlist/api/movies', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -473,7 +473,7 @@
                     console.log(movie.id)
                     console.log(movie)
 
-                    fetch(`http://localhost:8080/api/movies/${movie.id}/streaming-service`, {
+                    fetch(`https://api.alexpg.dev/watchlist/api/movies/${movie.id}/streaming-service`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -518,7 +518,7 @@
         if (movie) {
             movie.watched = !movie.watched;
 
-            fetch(`http://localhost:8080/api/movies/${movie.id}/watch`, {
+            fetch(`https://api.alexpg.dev/watchlist/api/movies/${movie.id}/watch`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -566,7 +566,7 @@
                 movie.watchDate = new Date(newDate).getTime();
 
                 // Send API request to update watch date
-                fetch(`http://localhost:8080/api/movies/${movieId}/watch-date?watchDate=${new Date(newDate).getTime()}`, {
+                fetch(`https://api.alexpg.dev/watchlist/api/movies/${movieId}/watch-date?watchDate=${new Date(newDate).getTime()}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -622,7 +622,7 @@
     function removeMovie(id) {
         movies = movies.filter(m => m.id !== id);
 
-        fetch(`http://localhost:8080/api/movies/${id}`, {
+        fetch(`https://api.alexpg.dev/watchlist/api/movies/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -736,7 +736,7 @@
 
                     movies.push(newMovie);
 
-                    fetch('http://localhost:8080/api/movies', {
+                    fetch('https://api.alexpg.dev/watchlist/api/movies', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

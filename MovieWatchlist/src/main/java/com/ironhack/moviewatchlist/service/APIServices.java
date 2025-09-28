@@ -1,7 +1,6 @@
 package com.ironhack.moviewatchlist.service;
 
 import com.ironhack.moviewatchlist.dto.RatingResponse;
-import com.ironhack.moviewatchlist.repository.MovieRepository;
 
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.collections.Images;
@@ -31,9 +30,8 @@ import java.util.Optional;
 
 @Service
 public class APIServices {
-    private final MovieRepository movieRepository;
 
-    private static final Dotenv dotenv = Dotenv.configure().directory("d:/watchlist-react/Watchlist/MovieWatchlist/.env").load();
+    private static final Dotenv dotenv = Dotenv.configure().load();
 
     private final WebClient omdbWebClient;
 
@@ -43,9 +41,8 @@ public class APIServices {
 
     TmdbApi tmdbApi = new TmdbApi(tmdbKey);
 
-    public APIServices(WebClient.Builder webClientBuilder, MovieRepository movieRepository) throws TmdbException {
+    public APIServices(WebClient.Builder webClientBuilder) throws TmdbException {
         this.omdbWebClient = webClientBuilder.baseUrl("https://www.omdbapi.com").build();
-        this.movieRepository = movieRepository;
     }
 
     public List<Movie> searchMovies(String query) throws TmdbException {

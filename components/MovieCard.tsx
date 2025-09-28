@@ -116,7 +116,7 @@ export function MovieCard({ movie, isOwner, isLoggedIn, onClick, onDuplicateMovi
     const rect = button.getBoundingClientRect()
     
     try {
-      const response = await fetch(`http://localhost:8080/api/movies/streaming-availability?id=${movie.tmdbId}`)
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/movies/streaming-availability?id=${movie.tmdbId}`)
       const data = await response.json()
       if (onStreamingPopup) {
         onStreamingPopup(data, movie.title, { x: rect.right + 10 + window.scrollX, y: rect.top + window.scrollY })

@@ -92,7 +92,7 @@ export function MovieDetailsModal({
     setLoadingStreaming(true);
     try {
       const response = await fetch(
-        `http://localhost:8080/api/movies/streaming-availability?id=${movie?.tmdbId}`
+        `https://api.alexpg.dev/watchlist/api/nmovies/streaming-availability?id=${movie?.tmdbId}`
       );
       const data = await response.json();
 
@@ -145,7 +145,7 @@ export function MovieDetailsModal({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/movies/extended-details?id=${movie?.tmdbId}`
+        `https://api.alexpg.dev/watchlist/api/nmovies/extended-details?id=${movie?.tmdbId}`
       );
       const data = await response.json();
       console.log(data.credits.crew)

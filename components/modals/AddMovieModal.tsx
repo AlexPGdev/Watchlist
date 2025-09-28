@@ -27,7 +27,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [showResults, setShowResults] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { useAddMovieToWatchlist, useGetAIRecommendations } = useMovieActions()
+  const { useAddMovieToWatchlist, useGetAIRecommendations, useToggleWatched } = useMovieActions()
   const { movies } = useMovies()
   const [show, setShow] = useState(false)
   const [ AIRecommendation, setAIRecommendation ] = useState<any>(null)
@@ -51,7 +51,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
 
     const debounceTimeout = setTimeout(async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/nmovies/search?query=${encodeURIComponent(searchQuery)}`)
+        const response = await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/search?query=${encodeURIComponent(searchQuery)}`)
         const data = await response.json()
 
         if (data.Error) {
@@ -70,7 +70,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
 
   const handleMovieSelect = async (movie: SearchResult) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/nmovies/details?id=${movie.id}`)
+      const response = await fetch(`https://api.alexpg.dev/watchlist/api/nmovies/details?id=${movie.id}`)
       const movieDetails = await response.json()
 
       console.log(movieDetails.release_dates.results.filter((r: any) => r.iso_3166_1 === "US")[0].release_dates.find((r: any) => r.certification.trim() !== "").certification)
@@ -118,7 +118,7 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
   const handleAIRecommendations = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch("http://localhost:8080/api/nmovies/recommendations", {
+      const response = await fetch("https://api.alexpg.dev/watchlist/api/nmovies/recommendations", {
         credentials: "include",
       })
 
@@ -134,6 +134,46 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
     } catch (error) {
       console.error("Error getting AI recommendations:", error)
     }
+  }
+
+  const handleBackup = async () => {
+    let movies = await fetch("https://api.alexpg.dev/watchlist/api/page-movies", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    let moviesData = await movies.json()
+
+    console.log(moviesData)
+    let response = await fetch("https://alexpgdev.com/movie.json")
+    let data = await response.json()
+    console.log(data[2].data)
+
+    let i = 0;
+
+    let interval = setInterval(async () => {
+      if (i < moviesData.length) {
+        let movie = moviesData[i]
+        let movieData = data[2].data.find((m: any) => parseInt(m.tmdb_id) === parseInt(movie.tmdbId))
+
+        if(movie.watched === true && movieData.watch_date !== movie.watchDate) {
+          console.log(movie)
+          console.log("WATCHED")
+          await fetch(`https://api.alexpg.dev/watchlist/api/page-movies/${movie.id}/watch-date?watchDate=${movieData.watch_date}`, {
+                  method: 'PATCH',
+                  credentials: "include"
+                })
+
+        }
+
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 100);
+
   }
 
   if (!show && !isOpen) return null
@@ -186,6 +226,9 @@ export const AddMovieModal = memo(function AddMovieModal({ isOpen, onClose, onDu
           </div>
         </div>
         <div className="modal-actions">
+          <Button onClick={handleBackup}>
+            Backup Movies
+          </Button>
           <Button
             onClick={handleAIRecommendations}
             disabled={isLoading}

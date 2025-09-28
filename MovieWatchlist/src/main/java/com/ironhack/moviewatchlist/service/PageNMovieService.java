@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.ironhack.moviewatchlist.dto.PageNMovieDTO;
-import com.ironhack.moviewatchlist.model.Movie;
 import com.ironhack.moviewatchlist.model.NMovie;
 import com.ironhack.moviewatchlist.model.Page;
 import com.ironhack.moviewatchlist.model.PageNMovie;

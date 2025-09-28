@@ -42,7 +42,9 @@ public class NMovieService {
 
         NMovie nMovie = nmovieRepository.findById(saveNMovie.getId()).orElseThrow();
         Optional<Video> trailer = apiServices.getMovieTrailer(saveNMovie.getTmdbId());
-        nMovie.setTrailerPath(trailer.get().getKey());
+        if(trailer.isPresent() && trailer.get().getKey() != null) {
+            nMovie.setTrailerPath(trailer.get().getKey());
+        }
         nmovieRepository.save(nMovie);
 
         return saveNMovie;

@@ -32,7 +32,7 @@ public class Collection {
             joinColumns = @JoinColumn(name = "collection_id"),
             inverseJoinColumns = @JoinColumn(name = "movie_id")
     )
-    private List<Movie> movies = new ArrayList<>();
+    private List<NMovie> nmovies = new ArrayList<>();
 
     public Collection() {
         this.createdDate = System.currentTimeMillis();
@@ -85,21 +85,21 @@ public class Collection {
         this.page = page;
     }
 
-    public List<Movie> getMovies() {
-        return movies;
+    public List<NMovie> getMovies() {
+        return nmovies;
     }
 
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
+    public void setMovies(List<NMovie> nmovies) {
+        this.nmovies = nmovies;
     }
 
-    public void addMovie(Movie movie) {
-        if (!this.movies.contains(movie)) {
-            this.movies.add(movie);
+    public void addMovie(NMovie nmovie) {
+        if (!this.nmovies.contains(nmovie)) {
+            this.nmovies.add(nmovie);
         }
     }
 
-    public void removeMovie(Movie movie) {
-        this.movies.remove(movie);
+    public void removeMovie(NMovie nmovie) {
+        this.nmovies.remove(nmovie);
     }
 }
